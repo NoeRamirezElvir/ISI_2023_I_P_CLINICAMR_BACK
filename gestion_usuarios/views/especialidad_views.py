@@ -5,9 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import re
 from ..models import *
+from django.views.decorators.http import require_http_methods
 
-# Create your views here.
-#OBTENER los registros de cargos
+@method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
 class EspecialidadViews(View):
     #Este metodo permite realizar las conultas que necesitan autentificacion. POST PUT DELETE
     @method_decorator(csrf_exempt)
@@ -23,7 +23,7 @@ class EspecialidadViews(View):
                     especialidades = especialidades[0]
                     especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
                 else:
-                    especialidades = {'message': "No se encontraron los datos"} 
+                    especialidades = {'message': "No se encontraron los datos", 'especialidades':[]} 
                     return JsonResponse(especialidades)
             elif(criterio=="nombre"):
                 especialidades = list(EspecialidadMedico.objects.filter(nombre=campo).values())
@@ -31,20 +31,22 @@ class EspecialidadViews(View):
                     especialidades = especialidades[0]
                     especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
                 else:
-                    especialidades = {'message': "No se encontraron los datos"} 
+                    especialidades = {'message': "No se encontraron los datos",'especialidades':[]} 
                     return JsonResponse(especialidades)
         else:
             especialidades = list(EspecialidadMedico.objects.values())
             if len(especialidades) > 0:
                 especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
             else:
-                especialidades = {'message': "No se encontraron los datos"} 
+                especialidades = {'message': "No se encontraron los datos", 'especialidades':[]} 
         return JsonResponse(especialidades)
 
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if len(jd['nombre']) <= 0:
+        if not jd['nombre'].isalpha():
+            especialidades = {'message': "El nombre solo puede contener letras."}
+        elif len(jd['nombre']) <= 0:
             especialidades = {'message': "El nombre esta vacío."}
         elif validar_especialidad_repetida(jd['nombre']):
             especialidades = {'message': "El nombre ya existe."}
@@ -70,7 +72,9 @@ class EspecialidadViews(View):
         especialidades = list(EspecialidadMedico.objects.filter(id=id).values())
         if len(especialidades) > 0:
             especialidad=EspecialidadMedico.objects.get(id=id)
-            if len(jd['nombre']) <= 0:
+            if not jd['nombre'].isalpha():
+                especialidades = {'message': "El nombre solo puede contener letras."}
+            elif len(jd['nombre']) <= 0:
                 especialidades = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 especialidades = {'message': "El nombre debe tener mas de 4 caracteres."}
@@ -98,7 +102,7 @@ class EspecialidadViews(View):
             EspecialidadMedico.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro"}
+            datos = {'message':"No se encontraró el registro", 'especialidades':[]}
         return JsonResponse(datos)
 
 def validar_especialidad_repetida(nombre): 

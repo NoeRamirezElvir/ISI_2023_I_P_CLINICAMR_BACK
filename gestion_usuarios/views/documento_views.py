@@ -5,9 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 import json
 import re
 from ..models import *
+from django.views.decorators.http import require_http_methods
 
-# Create your views here.
-#OBTENER los registros de cargos
+@method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
 class DocumentoViews(View):
     #Este metodo permite realizar las conultas que necesitan autentificacion. POST PUT DELETE
     @method_decorator(csrf_exempt)
@@ -23,7 +23,7 @@ class DocumentoViews(View):
                     documentos = documentos[0]
                     documentos = {'message': "Consulta exitosa", 'documentos': documentos}
                 else:
-                    documentos = {'message': "No se encontraron los datos"} 
+                    documentos = {'message': "No se encontraron los datos", 'documentos': []} 
                     return JsonResponse(documentos)
             elif criterio == "nombre":
                 documentos = list(TipoDocumentos.objects.filter(nombre=campo).values())
@@ -31,20 +31,22 @@ class DocumentoViews(View):
                     documentos = documentos[0]
                     documentos = {'message': "Consulta exitosa", 'documentos': documentos}
                 else:
-                    documentos = {'message': "No se encontraron los datos"} 
+                    documentos = {'message': "No se encontraron los datos", 'documentos': []} 
                     return JsonResponse(documentos)
         else:
             documentos = list(TipoDocumentos.objects.values())
             if len(documentos) > 0:
                 documentos = {'message': "Consulta exitosa", 'documentos': documentos}
             else:
-                documentos = {'message': "No se encontraron los datos"} 
+                documentos = {'message': "No se encontraron los datos", 'documentos': []} 
         return JsonResponse(documentos)
 
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if len(jd['nombre']) <= 0:
+        if not jd['nombre'].isalpha():
+            documentos = {'message': "El nombre solo puede contener letras."}
+        elif len(jd['nombre']) <= 0:
             documentos = {'message': "El nombre esta vacío."}
         elif (validar_documento_repetido(jd['nombre'])):
             documentos = {'message': "El cargo ya existe."}
@@ -68,7 +70,9 @@ class DocumentoViews(View):
         documentos = list(TipoDocumentos.objects.filter(id=id).values())
         if len(documentos) > 0:
             documento=TipoDocumentos.objects.get(id=id)
-            if len(jd['nombre']) <= 0:
+            if not jd['nombre'].isalpha():
+                documentos = {'message': "El nombre solo puede contener letras."}
+            elif len(jd['nombre']) <= 0:
                 documentos = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 2:
                 documentos = {'message': "El nombre debe tener mas de 2 caracteres."}
@@ -93,7 +97,7 @@ class DocumentoViews(View):
             TipoDocumentos.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro"}
+            datos = {'message':"No se encontraró el registro", 'documentos': []}
         return JsonResponse(datos)
 
 def validar_documento_repetido(nombre): 

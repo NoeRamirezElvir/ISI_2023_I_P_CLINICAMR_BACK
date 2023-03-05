@@ -7,9 +7,9 @@ from passlib.context import CryptContext
 import json
 import re
 from ..models import *
+from django.views.decorators.http import require_http_methods
 
-# Create your views here.
-#OBTENER los registros de cargos
+@method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
 class UsuarioViews(View):
     #Este metodo permite realizar las conultas que necesitan autentificacion. POST PUT DELETE
     @method_decorator(csrf_exempt)
@@ -25,7 +25,7 @@ class UsuarioViews(View):
                     usuariosr = usuariosr[0]
                     usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
                 else:
-                    usuariosr = {'message': "No se encontraron los datos"} 
+                    usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
                     return JsonResponse(usuariosr)
             elif criterio == "nombre":
                 usuariosr = list(Usuario.objects.filter(nombreUsuario=campo).values())
@@ -33,14 +33,14 @@ class UsuarioViews(View):
                     usuariosr = usuariosr[0]
                     usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
                 else:
-                    usuariosr = {'message': "No se encontraron los datos"} 
+                    usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
                     return JsonResponse(usuariosr)
         else:
             usuariosr = list(Usuario.objects.values())
             if len(usuariosr) > 0:
                 usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
             else:
-                usuariosr = {'message': "No se encontraron los datos"} 
+                usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
         return JsonResponse(usuariosr)
 
 #Agregar un registro de cargos
@@ -79,7 +79,7 @@ class UsuarioViews(View):
             usuariosr = {'message': "Bloqueado unicamente puede ser 0 o 1."}
         else:
             usuariosr = {'message': "Registro Exitoso."}
-            Usuario.objects.create(idEmpleado=instanciar_empleado(jd['idEmpleado']), nombreUsuario=jd['nombreUsuario'],password=encriptar_password(jd['password']), activo=jd['activo'], bloqueado=jd['bloqueado'],fechaCreacion=datetime.now(),fechaModificacion=datetime.now)
+            Usuario.objects.create(idEmpleado=instanciar_empleado(jd['idEmpleado']), nombreUsuario=jd['nombreUsuario'],password=encriptar_password(jd['password']), activo=jd['activo'], bloqueado=jd['bloqueado'],fechaCreacion=datetime.now(),fechaModificacion=datetime.now())
             usuariosr = {'message':"Registro Exitoso."}
         return JsonResponse(usuariosr)
 
@@ -96,6 +96,8 @@ class UsuarioViews(View):
                 usuariosr = {'message': "El nombre debe tener mas de 5 caracteres."}
             elif len(jd['nombreUsuario']) > 50:
                 usuariosr = {'message': "El nombre debe tener menos de 50 caracteres."}
+            elif validar_usuario_repedio_empleado(jd['nombreUsuario'],jd['idEmpleado']):
+                usuariosr = {'message': "El usuario ya existe."}
             elif len(jd['password']) <= 0:
                 usuariosr = {'message': "La contraseña esta vacía."}
             elif len(jd['password']) < 7:
@@ -118,9 +120,9 @@ class UsuarioViews(View):
                 usuariosr = {'message': "Bloqueado debe ser positivo."}
             elif jd['bloqueado'] > 1:
                 usuariosr = {'message': "Bloqueado unicamente puede ser 0 o 1."}
-            
             else:
                 usuariosr = {'message': "Registro Exitoso."}
+                usuario.idEmpleado = instanciar_empleado(jd['idEmpleado'])
                 usuario.nombreUsuario = jd['nombreUsuario']
                 usuario.password = encriptar_password(jd['password'])
                 usuario.activo = jd['activo']
@@ -138,7 +140,7 @@ class UsuarioViews(View):
             Usuario.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro"}
+            datos = {'message':"No se encontraró el registro", 'usuariosr': []}
         return JsonResponse(datos)
 
 
@@ -150,6 +152,21 @@ def validar_usuario_repetido(nombreUsuario):
         else:
             return False
     return False
+
+def validar_usuario_repedio_empleado(nombreUsuario, idEmpleado):
+    if (nombreUsuario and idEmpleado):
+        usuarios = Usuario.objects.filter(nombreUsuario=nombreUsuario)
+        x = 0
+        for i in usuarios:
+            if i.idEmpleado == idEmpleado and i.nombreUsuario == nombreUsuario:
+                    x = x + 1
+                    if x > 1:
+                        return True
+                    else:
+                        return False
+        
+    
+
 
 def instanciar_empleado(id):
     if (id>0):
@@ -166,13 +183,6 @@ def encriptar_password(password):
     encriptado = contexto.hash(password)
     return encriptado
 
-def validar_password(password,encriptado):
-    contexto = CryptContext(
-        schemes=["pbkdf2_sha256"],
-        default="pbkdf2_sha256",
-        pbkdf2_sha256__rounds=10
-    )
-    verify = contexto.verify(password, encriptado)
-    return verify
+
     
          

@@ -6,9 +6,9 @@ from datetime import datetime
 import json
 import re
 from ..models import *
+from django.views.decorators.http import require_http_methods
 
-# Create your views here.
-#OBTENER los registros de cargos
+@method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
 class EmpleadoViews(View):
     #Este metodo permite realizar Els conultas que necesitan autentificacion. POST PUT DELETE
     @method_decorator(csrf_exempt)
@@ -25,39 +25,43 @@ class EmpleadoViews(View):
                     empleados = empleados[0]
                     empleados = {'message': "Consulta exitosa", 'empleados': empleados}
                 else:
-                    empleados = {'message': "No se encontraron los datos"} 
+                    empleados = {'message': "No se encontraron los datos", 'empleados': []} 
                     return JsonResponse(empleados)
             elif(criterio=="nombre"):
                 empleados = list(Empleado.objects.filter(nombre=campo).values())
                 if len(empleados) > 0:
                     empleados = {'message': "Consulta exitosa", 'empleados': empleados}
                 else:
-                    empleados = {'message': "No se encontraron los datos"} 
+                    empleados = {'message': "No se encontraron los datos", 'empleados': []} 
                     return JsonResponse(empleados)
             elif(criterio=="documento"):
                 empleados = list(Empleado.objects.filter(documento=campo).values())
                 if len(empleados) > 0:
                     empleados = {'message': "Consulta exitosa", 'empleados': empleados}
                 else:
-                    empleados = {'message': "No se encontraron los datos"} 
+                    empleados = {'message': "No se encontraron los datos", 'empleados': []} 
                     return JsonResponse(empleados)
         else:
             empleados = list(Empleado.objects.values())
             if len(empleados) > 0:
                 empleados = {'message': "Consulta exitosa", 'empleados': empleados}
             else:
-                empleados = {'message': "No se encontraron los datos"} 
+                empleados = {'message': "No se encontraron los datos", 'empleados': []} 
         return JsonResponse(empleados)
     
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if len(jd['nombre']) <= 0:
+        if not jd['nombre'].isalpha():
+            empleados = {'message': "El nombre solo puede contener letras."}
+        elif len(jd['nombre']) <= 0:
             empleados = {'message': "El nombre esta vacío."}
         elif len(jd['nombre']) < 3:
             empleados = {'message': "El nombre debe tener más de 3 caracteres."}
         elif len(jd['nombre']) > 50:
             empleados = {'message': "El nombre debe tener menos de 50 caracteres."}
+        elif not jd['apellidos'].isalpha():
+            empleados = {'message': "El apellido solo puede contener letras."}
         elif len(jd['apellidos']) <= 0:
             empleados = {'message': "El apellido esta vacío."}
         elif len(jd['apellidos']) < 3:
@@ -76,6 +80,8 @@ class EmpleadoViews(View):
             empleados = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
             empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+        elif str(jd['telefono']).isalpha():
+            empleados = {'message': "El teléfono solo puede contener numeros."}
         elif len(str(jd['telefono'])) <= 0:
             empleados = {'message': "El teléfono esta vacío."}
         elif len(str(jd['telefono'])) < 8:
@@ -132,12 +138,16 @@ class EmpleadoViews(View):
         empleados = list(Empleado.objects.filter(id=id).values())
         if len(empleados) > 0:
             empleado=Empleado.objects.get(id=id)
+            if not jd['nombre'].isalpha():
+                empleados = {'message': "El nombre solo puede contener letras."}
             if len(jd['nombre']) <= 0:
                 empleados = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 3:
                 empleados = {'message': "El nombre debe tener más de 3 caracteres."}
             elif len(jd['nombre']) > 50:
                 empleados = {'message': "El nombre debe tener menos de 50 caracteres."}
+            elif not jd['apellidos'].isalpha():
+                empleados = {'message': "El apellido solo puede contener letras."}
             elif len(jd['apellidos']) <= 0:
                 empleados = {'message': "El apellido esta vacío."}
             elif len(jd['apellidos']) < 3:
@@ -156,6 +166,8 @@ class EmpleadoViews(View):
                 empleados = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
                 empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+            elif str(jd['telefono']).isalpha():
+                empleados = {'message': "El teléfono solo puede contener numeros."}
             elif len(str(jd['telefono'])) <= 0:
                 empleados = {'message': "El teléfono esta vacío."}
             elif len(str(jd['telefono'])) < 8:
@@ -225,7 +237,7 @@ class EmpleadoViews(View):
             Empleado.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro"}
+            datos = {'message':"No se encontraró el registro", 'empleados': []}
         return JsonResponse(datos)
     
 
