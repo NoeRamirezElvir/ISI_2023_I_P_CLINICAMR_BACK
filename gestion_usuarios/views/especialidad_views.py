@@ -44,9 +44,7 @@ class EspecialidadViews(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if not jd['nombre'].isalpha():
-            especialidades = {'message': "El nombre solo puede contener letras."}
-        elif len(jd['nombre']) <= 0:
+        if len(jd['nombre']) <= 0:
             especialidades = {'message': "El nombre esta vacío."}
         elif validar_especialidad_repetida(jd['nombre']):
             especialidades = {'message': "El nombre ya existe."}
@@ -72,9 +70,7 @@ class EspecialidadViews(View):
         especialidades = list(EspecialidadMedico.objects.filter(id=id).values())
         if len(especialidades) > 0:
             especialidad=EspecialidadMedico.objects.get(id=id)
-            if not jd['nombre'].isalpha():
-                especialidades = {'message': "El nombre solo puede contener letras."}
-            elif len(jd['nombre']) <= 0:
+            if len(jd['nombre']) <= 0:
                 especialidades = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 especialidades = {'message': "El nombre debe tener mas de 4 caracteres."}
