@@ -20,7 +20,7 @@ class EspecialidadViews(View):
             if(criterio=="id"):
                 especialidades = list(EspecialidadMedico.objects.filter(id=campo).values())
                 if len(especialidades) > 0:
-                    especialidades = especialidades[0]
+                    especialidades = especialidades
                     especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
                 else:
                     especialidades = {'message': "No se encontraron los datos", 'especialidades':[]} 
@@ -28,7 +28,7 @@ class EspecialidadViews(View):
             elif(criterio=="nombre"):
                 especialidades = list(EspecialidadMedico.objects.filter(nombre=campo).values())
                 if len(especialidades) > 0:
-                    especialidades = especialidades[0]
+                    especialidades = especialidades
                     especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
                 else:
                     especialidades = {'message': "No se encontraron los datos",'especialidades':[]} 

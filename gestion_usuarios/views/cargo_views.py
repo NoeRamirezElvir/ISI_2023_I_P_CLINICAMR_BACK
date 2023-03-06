@@ -20,7 +20,7 @@ class CargosView(View):
             if criterio == "id":
                 cargos = list(CargoEmpleado.objects.filter(id=campo).values())
                 if len(cargos) > 0:
-                    cargos = cargos[0]
+                    cargos = cargos
                     cargos = {'message': "Consulta exitosa", 'cargos': cargos}
                 else:
                     cargos = {'message': "No se encontraron los datos", 'cargos': []} 
@@ -28,7 +28,7 @@ class CargosView(View):
             elif criterio == "nombre":
                 cargos = list(CargoEmpleado.objects.filter(nombre=campo).values())
                 if len(cargos) > 0:
-                    cargos = cargos[0]
+                    cargos = cargos
                     cargos = {'message': "Consulta exitosa", 'cargos': cargos}
                 else:
                     cargos = {'message': "No se encontraron los datos", 'cargos': []} 

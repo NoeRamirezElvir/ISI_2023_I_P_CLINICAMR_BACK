@@ -20,7 +20,7 @@ class DocumentoViews(View):
             if criterio == "id":
                 documentos = list(TipoDocumentos.objects.filter(id=campo).values())
                 if len(documentos) > 0:
-                    documentos = documentos[0]
+                    documentos = documentos
                     documentos = {'message': "Consulta exitosa", 'documentos': documentos}
                 else:
                     documentos = {'message': "No se encontraron los datos", 'documentos': []} 
@@ -28,7 +28,7 @@ class DocumentoViews(View):
             elif criterio == "nombre":
                 documentos = list(TipoDocumentos.objects.filter(nombre=campo).values())
                 if len(documentos) > 0:
-                    documentos = documentos[0]
+                    documentos = documentos
                     documentos = {'message': "Consulta exitosa", 'documentos': documentos}
                 else:
                     documentos = {'message': "No se encontraron los datos", 'documentos': []} 

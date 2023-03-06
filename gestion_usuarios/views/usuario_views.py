@@ -22,7 +22,7 @@ class UsuarioViews(View):
             if criterio == "id":
                 usuariosr = list(Usuario.objects.filter(id=campo).values())
                 if len(usuariosr) > 0:
-                    usuariosr = usuariosr[0]
+                    usuariosr = usuariosr
                     usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
                 else:
                     usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
@@ -30,7 +30,7 @@ class UsuarioViews(View):
             elif criterio == "nombre":
                 usuariosr = list(Usuario.objects.filter(nombreUsuario=campo).values())
                 if len(usuariosr) > 0:
-                    usuariosr = usuariosr[0]
+                    usuariosr = usuariosr
                     usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
                 else:
                     usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
