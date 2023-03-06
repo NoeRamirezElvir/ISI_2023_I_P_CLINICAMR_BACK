@@ -18,87 +18,87 @@ class EspecialidadViews(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if(criterio=="id"):
-                especialidades = list(EspecialidadMedico.objects.filter(id=campo).values())
-                if len(especialidades) > 0:
-                    especialidades = especialidades
-                    especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
+                especialidad = list(EspecialidadMedico.objects.filter(id=campo).values())
+                if len(especialidad) > 0:
+                    especialidad = especialidad
+                    especialidad = {'message': "Consulta exitosa", 'especialidad': especialidad}
                 else:
-                    especialidades = {'message': "No se encontraron los datos", 'especialidades':[]} 
-                    return JsonResponse(especialidades)
+                    especialidad = {'message': "No se encontraron los datos", 'especialidad':[]} 
+                    return JsonResponse(especialidad)
             elif(criterio=="nombre"):
-                especialidades = list(EspecialidadMedico.objects.filter(nombre=campo).values())
-                if len(especialidades) > 0:
-                    especialidades = especialidades
-                    especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
+                especialidad = list(EspecialidadMedico.objects.filter(nombre=campo).values())
+                if len(especialidad) > 0:
+                    especialidad = especialidad
+                    especialidad = {'message': "Consulta exitosa", 'especialidad': especialidad}
                 else:
-                    especialidades = {'message': "No se encontraron los datos",'especialidades':[]} 
-                    return JsonResponse(especialidades)
+                    especialidad = {'message': "No se encontraron los datos",'especialidad':[]} 
+                    return JsonResponse(especialidad)
         else:
-            especialidades = list(EspecialidadMedico.objects.values())
-            if len(especialidades) > 0:
-                especialidades = {'message': "Consulta exitosa", 'especialidades': especialidades}
+            especialidad = list(EspecialidadMedico.objects.values())
+            if len(especialidad) > 0:
+                especialidad = {'message': "Consulta exitosa", 'especialidad': especialidad}
             else:
-                especialidades = {'message': "No se encontraron los datos", 'especialidades':[]} 
-        return JsonResponse(especialidades)
+                especialidad = {'message': "No se encontraron los datos", 'especialidad':[]} 
+        return JsonResponse(especialidad)
 
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
         if len(jd['nombre']) <= 0:
-            especialidades = {'message': "El nombre esta vacío."}
+            especialidad = {'message': "El nombre esta vacío."}
         elif validar_especialidad_repetida(jd['nombre']):
-            especialidades = {'message': "El nombre ya existe."}
+            especialidad = {'message': "El nombre ya existe."}
         elif len(jd['nombre']) < 4:
-            especialidades = {'message': "El nombre debe tener mas de 4 caracteres."}
+            especialidad = {'message': "El nombre debe tener mas de 4 caracteres."}
         elif len(jd['nombre']) > 50:
-            especialidades = {'message': "El nombre debe tener menos de 50 caracteres."}
+            especialidad = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif len(jd['descripcion']) <= 0:
-            especialidades = {'message': "La descripción esta vacía."}
+            especialidad = {'message': "La descripción esta vacía."}
         elif len(jd['descripcion']) < 4:
-            especialidades = {'message': "La descripción debe tener mas de 4 caracteres."}
+            especialidad = {'message': "La descripción debe tener mas de 4 caracteres."}
         elif len(jd['descripcion']) > 50:
-            especialidades = {'message': "La descripción debe tener menos de 50 caracteres."}
+            especialidad = {'message': "La descripción debe tener menos de 50 caracteres."}
         else:
-            especialidades = {'message': "Registro Exitoso."}
+            especialidad = {'message': "Registro Exitoso."}
             EspecialidadMedico.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'])
-            especialidades = {'message':"Registro Exitoso."}
-        return JsonResponse(especialidades)
+            especialidad = {'message':"Registro Exitoso."}
+        return JsonResponse(especialidad)
 
 #Actualizar un registro de cargos
     def put(self, request,id):
         jd=json.loads(request.body)
-        especialidades = list(EspecialidadMedico.objects.filter(id=id).values())
-        if len(especialidades) > 0:
-            especialidad=EspecialidadMedico.objects.get(id=id)
+        especialidad = list(EspecialidadMedico.objects.filter(id=id).values())
+        if len(especialidad) > 0:
+            especialidades=EspecialidadMedico.objects.get(id=id)
             if len(jd['nombre']) <= 0:
-                especialidades = {'message': "El nombre esta vacío."}
+                especialidad = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
-                especialidades = {'message': "El nombre debe tener mas de 4 caracteres."}
+                especialidad = {'message': "El nombre debe tener mas de 4 caracteres."}
             elif len(jd['nombre']) > 50:
-                especialidades = {'message': "El nombre debe tener menos de 50 caracteres."}
+                especialidad = {'message': "El nombre debe tener menos de 50 caracteres."}
             elif len(jd['descripcion']) <= 0:
-                especialidades = {'message': "La descripción esta vacía."}
+                especialidad = {'message': "La descripción esta vacía."}
             elif len(jd['descripcion']) < 4:
-                especialidades = {'message': "La descripción debe tener mas de 4 caracteres."}
+                especialidad = {'message': "La descripción debe tener mas de 4 caracteres."}
             elif len(jd['descripcion']) > 50:
-                especialidades = {'message': "La descripción debe tener menos de 50 caracteres."}
+                especialidad = {'message': "La descripción debe tener menos de 50 caracteres."}
             else:
-                especialidades = {'message': "Registro Exitoso."}
-                especialidad.nombre = jd['nombre']
-                especialidad.descripcion = jd['descripcion']
-                especialidad.save()
-                especialidades = {'message': "La actualización fue exitosa."}
-        return JsonResponse(especialidades)
+                especialidad = {'message': "Registro Exitoso."}
+                especialidades.nombre = jd['nombre']
+                especialidades.descripcion = jd['descripcion']
+                especialidades.save()
+                especialidad = {'message': "La actualización fue exitosa."}
+        return JsonResponse(especialidad)
         
         
 #Eliminar un registro de cargos
     def delete(self, request,id):
-        especialidades = list(EspecialidadMedico.objects.filter(id=id).values())
-        if len(especialidades) > 0:
+        especialidad = list(EspecialidadMedico.objects.filter(id=id).values())
+        if len(especialidad) > 0:
             EspecialidadMedico.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro", 'especialidades':[]}
+            datos = {'message':"No se encontraró el registro", 'especialidad':[]}
         return JsonResponse(datos)
 
 def validar_especialidad_repetida(nombre): 
