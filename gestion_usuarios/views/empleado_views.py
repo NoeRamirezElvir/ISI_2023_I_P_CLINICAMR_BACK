@@ -22,7 +22,7 @@ class EmpleadoViews(View):
             if(criterio=="id"):
                 empleados = list(Empleado.objects.filter(id=campo).values())
                 if len(empleados) > 0:
-                    empleados = empleados[0]
+                    empleados = empleados
                     empleados = {'message': "Consulta exitosa", 'empleados': empleados}
                 else:
                     empleados = {'message': "No se encontraron los datos", 'empleados': []} 
