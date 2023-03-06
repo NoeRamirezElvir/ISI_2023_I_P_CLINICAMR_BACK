@@ -44,9 +44,8 @@ class CargosView(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if not jd['nombre'].isalpha():
-            cargos = {'message': "El nombre solo puede contener letras."}
-        elif len(jd['nombre']) <= 0:
+
+        if len(jd['nombre']) <= 0:
             cargos = {'message': "El nombre esta vacío."}
         elif (validar_cargo_repetido(jd['nombre'])):
             cargos = {'message': "El cargo ya existe."}
@@ -76,9 +75,7 @@ class CargosView(View):
         cargos = list(CargoEmpleado.objects.filter(id=id).values())
         if len(cargos) > 0:
             cargo=CargoEmpleado.objects.get(id=id)
-            if not jd['nombre'].isalpha():
-                cargos = {'message': "El nombre solo puede contener letras."}
-            elif len(jd['nombre']) <= 0:
+            if len(jd['nombre']) <= 0:
                 cargos = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 cargos = {'message': "El nombre debe tener mas de 4 caracteres."}

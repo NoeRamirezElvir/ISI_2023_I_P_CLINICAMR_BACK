@@ -52,9 +52,7 @@ class EmpleadoViews(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if not jd['nombre'].isalpha():
-            empleados = {'message': "El nombre solo puede contener letras."}
-        elif len(jd['nombre']) <= 0:
+        if len(jd['nombre']) <= 0:
             empleados = {'message': "El nombre esta vacío."}
         elif len(jd['nombre']) < 3:
             empleados = {'message': "El nombre debe tener más de 3 caracteres."}
@@ -138,8 +136,6 @@ class EmpleadoViews(View):
         empleados = list(Empleado.objects.filter(id=id).values())
         if len(empleados) > 0:
             empleado=Empleado.objects.get(id=id)
-            if not jd['nombre'].isalpha():
-                empleados = {'message': "El nombre solo puede contener letras."}
             if len(jd['nombre']) <= 0:
                 empleados = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 3:

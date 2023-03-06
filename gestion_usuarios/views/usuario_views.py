@@ -53,7 +53,7 @@ class UsuarioViews(View):
             usuariosr = {'message': "El nombre debe tener mas de 5 caracteres."}
         elif len(jd['nombreUsuario']) > 50:
             usuariosr = {'message': "El nombre debe tener menos de 50 caracteres."}
-        if (validar_usuario_repetido(jd['nombreUsuario'])):
+        elif (validar_usuario_repetido(jd['nombreUsuario'])):
             usuariosr = {'message': "El usuario ya existe."}
         elif len(jd['password']) <= 0:
             usuariosr = {'message': "La contraseña esta vacía."}
