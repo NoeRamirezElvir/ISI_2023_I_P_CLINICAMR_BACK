@@ -33,9 +33,7 @@ class MuestraViews(View):
                     muestras = {'message': "Consulta exitosa", 'muestras': muestras}
                 else:
                     muestras = {'message': "No se encontraron los datos", 'muestras': []} 
-                    return JsonResponse(muestras)
-            
-                
+                    return JsonResponse(muestras)        
         else:
             muestras = list(Muestra.objects.values())
             if len(muestras) > 0:
@@ -121,3 +119,10 @@ def instanciar_Muestra(id):
         if Muestras:
             return Muestras
         
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

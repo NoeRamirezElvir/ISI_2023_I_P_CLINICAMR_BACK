@@ -259,3 +259,11 @@ def validar_id_documento(id):
             return False
         else:
             return True
+        
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

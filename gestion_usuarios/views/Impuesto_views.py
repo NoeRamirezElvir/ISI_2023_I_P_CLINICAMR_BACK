@@ -50,9 +50,12 @@ class ImpuestoViews(View):
             Impuestos = {'message': "El Impuesto ya existe."}
         elif len(jd['nombre']) < 2:
             Impuestos = {'message': "El nombre debe tener mas de 2 caracteres."}
-        elif len(jd['nombre']) > 50:
-            Impuestos = {'message': "El nombre debe tener menos de 25 caracteres."}
-        
+        elif not validar_cadena_espacios(jd['nombre']):
+            Impuestos = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
+        elif len(jd['nombre']) > 20:
+            Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
         else:
             Impuestos = {'message': "Registro Exitoso."}
             Impuesto.objects.create(nombre=jd['nombre'])
@@ -73,9 +76,12 @@ class ImpuestoViews(View):
                 Impuestos = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 Impuestos = {'message': "El nombre debe tener mas de 4 caracteres."}
-            elif len(jd['nombre']) > 50:
-                Impuestos = {'message': "El nombre debe tener menos de 50 caracteres."}
-            
+            elif not validar_cadena_espacios(jd['nombre']):
+                Impuestos = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombre']):
+                Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
+            elif len(jd['nombre']) > 20:
+                Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
             else:
                 Impuestos = {'message': "Registro Exitoso."}
                 impuesto.nombre = jd['nombre']
@@ -105,3 +111,11 @@ def validar_Impuesto_repetido(nombre):
         else:
             return False
     return False
+
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

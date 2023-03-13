@@ -56,14 +56,20 @@ class EmpleadoViews(View):
             empleados = {'message': "El nombre esta vacío."}
         elif len(jd['nombre']) < 3:
             empleados = {'message': "El nombre debe tener más de 3 caracteres."}
+        elif not validar_cadena_espacios(jd['nombre']):
+            empleados = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            empleados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 50:
             empleados = {'message': "El nombre debe tener menos de 50 caracteres."}
-        elif not jd['apellidos'].isalpha():
-            empleados = {'message': "El apellido solo puede contener letras."}
         elif len(jd['apellidos']) <= 0:
             empleados = {'message': "El apellido esta vacío."}
         elif len(jd['apellidos']) < 3:
             empleados = {'message': "El apellido debe tener más de 3 caracteres."}
+        elif not validar_cadena_espacios(jd['apellidos']):
+            empleados = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['apellidos']):
+            empleados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}      
         elif len(jd['apellidos']) > 50:
             empleados = {'message': "El apellido debe tener menos de 50 caracteres."}
         elif len(jd['email']) <= 0:
@@ -87,17 +93,15 @@ class EmpleadoViews(View):
         elif len(str(jd['telefono'])) > 15:
             empleados = {'message': "El teléfono debe tener menos de 15 caracteres."}
         elif (str(jd['telefono']))[0] == '1':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+            empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
         elif (str(jd['telefono']))[0] == '4':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+            empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
         elif (str(jd['telefono']))[0] == '5':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+            empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
         elif (str(jd['telefono']))[0] == '6':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
-        elif (str(jd['telefono']))[0] == '7':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+            empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
         elif (str(jd['telefono']))[0] == '0':
-            empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+            empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
         elif len(jd['direccion']) <= 0:
             empleados = {'message': "La dirección esta vacía."}
         elif len(jd['direccion']) < 5:
@@ -140,14 +144,20 @@ class EmpleadoViews(View):
                 empleados = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 3:
                 empleados = {'message': "El nombre debe tener más de 3 caracteres."}
+            elif not validar_cadena_espacios(jd['nombre']):
+                empleados = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombre']):
+                empleados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}      
             elif len(jd['nombre']) > 50:
                 empleados = {'message': "El nombre debe tener menos de 50 caracteres."}
-            elif not jd['apellidos'].isalpha():
-                empleados = {'message': "El apellido solo puede contener letras."}
             elif len(jd['apellidos']) <= 0:
                 empleados = {'message': "El apellido esta vacío."}
             elif len(jd['apellidos']) < 3:
                 empleados = {'message': "El apellido debe tener más de 3 caracteres."}
+            elif not validar_cadena_espacios(jd['apellidos']):
+                empleados = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['apellidos']):
+                empleados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}               
             elif len(jd['apellidos']) > 50:
                 empleados = {'message': "El apellido debe tener menos de 50 caracteres."}
             elif len(jd['email']) <= 0:
@@ -171,17 +181,15 @@ class EmpleadoViews(View):
             elif len(str(jd['telefono'])) > 15:
                 empleados = {'message': "El teléfono debe tener menos de 15 caracteres."}
             elif (str(jd['telefono']))[0] == '1':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+                empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif (str(jd['telefono']))[0] == '4':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+                empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif (str(jd['telefono']))[0] == '5':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+                empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif (str(jd['telefono']))[0] == '6':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
-            elif (str(jd['telefono']))[0] == '7':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+                empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif (str(jd['telefono']))[0] == '0':
-                empleados = {'message': "El teléfono debe comenzar con 2, 3, 8, 9."}
+                empleados = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif len(jd['direccion']) <= 0:
                 empleados = {'message': "La dirección esta vacía."}
             elif len(jd['direccion']) < 5:
@@ -283,3 +291,10 @@ def validar_id_documento(id):
         else:
             return True
         
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

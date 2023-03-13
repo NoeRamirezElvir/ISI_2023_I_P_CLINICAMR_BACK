@@ -51,6 +51,10 @@ class CargosView(View):
             cargos = {'message': "El cargo ya existe."}
         elif len(jd['nombre']) < 4:
             cargos = {'message': "El nombre debe tener mas de 4 caracteres."}
+        elif not validar_cadena_espacios(jd['nombre']):
+            cargos = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            cargos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 50:
             cargos = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif len(jd['descripcion']) <= 0:
@@ -79,6 +83,10 @@ class CargosView(View):
                 cargos = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 cargos = {'message': "El nombre debe tener mas de 4 caracteres."}
+            elif not validar_cadena_espacios(jd['nombre']):
+                cargos = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombre']):
+                cargos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 50:
                 cargos = {'message': "El nombre debe tener menos de 50 caracteres."}
             elif len(jd['descripcion']) <= 0:
@@ -119,3 +127,11 @@ def validar_cargo_repetido(nombre):
         else:
             return False
     return False
+
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

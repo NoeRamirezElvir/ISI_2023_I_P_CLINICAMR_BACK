@@ -47,15 +47,21 @@ class DocumentoViews(View):
         if len(jd['nombre']) <= 0:
             documentos = {'message': "El nombre esta vacío."}
         elif (validar_documento_repetido(jd['nombre'])):
-            documentos = {'message': "El cargo ya existe."}
+            documentos = {'message': "El nombre ya existe."}
         elif len(jd['nombre']) < 2:
             documentos = {'message': "El nombre debe tener mas de 2 caracteres."}
+        elif not validar_cadena_espacios(jd['nombre']):
+            documentos = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            documentos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}      
         elif len(jd['nombre']) > 50:
             documentos = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif (jd['longitud']) <= 0:
             documentos = {'message': "La longitud debe ser mayor a 0."}
         elif (jd['longitud']) < 5:
                 documentos = {'message': "La longitud debe ser mayor a 5."}
+        elif (jd['longitud']) > 999:
+                documentos = {'message': "La longitud debe ser menor."}
         else:
             documentos = {'message': "Registro Exitoso."}
             TipoDocumentos.objects.create(nombre=jd['nombre'], longitud=jd['longitud'])
@@ -72,12 +78,18 @@ class DocumentoViews(View):
                 documentos = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 2:
                 documentos = {'message': "El nombre debe tener mas de 2 caracteres."}
+            elif not validar_cadena_espacios(jd['nombre']):
+                documentos = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombre']):
+                documentos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."} 
             elif len(jd['nombre']) > 50:
                 documentos = {'message': "El nombre debe tener menos de 50 caracteres."}
             elif (jd['longitud']) <= 0:
                 documentos = {'message': "La longitud debe ser mayor a 0."}
             elif (jd['longitud']) < 5:
                 documentos = {'message': "La longitud debe ser mayor a 5."}
+            elif (jd['longitud']) > 999:
+                documentos = {'message': "La longitud debe ser menor."}
             else:
                 documentos = {'message': "Registro Exitoso."}
                 documento.nombre = jd['nombre']
@@ -104,3 +116,11 @@ def validar_documento_repetido(nombre):
         else:
             return False
     return False
+
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

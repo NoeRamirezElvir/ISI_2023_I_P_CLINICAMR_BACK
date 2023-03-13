@@ -51,6 +51,10 @@ class UsuarioViews(View):
             usuariosr = {'message': "El nombre esta vacío."}
         elif len(jd['nombreUsuario']) < 5:
             usuariosr = {'message': "El nombre debe tener mas de 5 caracteres."}
+        elif not validar_cadena_espacios(jd['nombreUsuario']):
+            usuariosr = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombreUsuario']):
+            usuariosr = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombreUsuario']) > 50:
             usuariosr = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif (validar_usuario_repetido(jd['nombreUsuario'])):
@@ -92,6 +96,10 @@ class UsuarioViews(View):
             simbolos =['$', '@', '#', '%', '!', '¡','?', '¿']
             if len(jd['nombreUsuario']) <= 0:
                 usuariosr = {'message': "El nombre esta vacío."}
+            elif not validar_cadena_espacios(jd['nombreUsuario']):
+                usuariosr = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombreUsuario']):
+                usuariosr = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombreUsuario']) < 5:
                 usuariosr = {'message': "El nombre debe tener mas de 5 caracteres."}
             elif len(jd['nombreUsuario']) > 50:
@@ -183,6 +191,13 @@ def encriptar_password(password):
     encriptado = contexto.hash(password)
     return encriptado
 
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))
 
     
          

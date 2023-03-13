@@ -50,12 +50,20 @@ class EspecialidadViews(View):
             especialidad = {'message': "El nombre ya existe."}
         elif len(jd['nombre']) < 4:
             especialidad = {'message': "El nombre debe tener mas de 4 caracteres."}
+        elif not validar_cadena_espacios(jd['nombre']):
+            especialidad = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            especialidad = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
         elif len(jd['nombre']) > 50:
             especialidad = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif len(jd['descripcion']) <= 0:
             especialidad = {'message': "La descripción esta vacía."}
         elif len(jd['descripcion']) < 4:
             especialidad = {'message': "La descripción debe tener mas de 4 caracteres."}
+        elif not validar_cadena_espacios(jd['descripcion']):
+            especialidad = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['descripcion']):
+            especialidad = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
         elif len(jd['descripcion']) > 50:
             especialidad = {'message': "La descripción debe tener menos de 50 caracteres."}
         else:
@@ -74,12 +82,20 @@ class EspecialidadViews(View):
                 especialidad = {'message': "El nombre esta vacío."}
             elif len(jd['nombre']) < 4:
                 especialidad = {'message': "El nombre debe tener mas de 4 caracteres."}
+            elif not validar_cadena_espacios(jd['nombre']):
+                especialidad = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['nombre']):
+                especialidad = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
             elif len(jd['nombre']) > 50:
                 especialidad = {'message': "El nombre debe tener menos de 50 caracteres."}
             elif len(jd['descripcion']) <= 0:
                 especialidad = {'message': "La descripción esta vacía."}
             elif len(jd['descripcion']) < 4:
                 especialidad = {'message': "La descripción debe tener mas de 4 caracteres."}
+            elif not validar_cadena_espacios(jd['descripcion']):
+                especialidad = {'message': "No se permiten mas de un espacio consecutivo."}
+            elif validar_cadena_repeticion(jd['descripcion']):
+                especialidad = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
             elif len(jd['descripcion']) > 50:
                 especialidad = {'message': "La descripción debe tener menos de 50 caracteres."}
             else:
@@ -109,3 +125,11 @@ def validar_especialidad_repetida(nombre):
         else:
             return False
     return False
+
+def validar_cadena_repeticion(cadena):
+    patron = r'([a-zA-Z])\1\1'
+    return bool(re.search(patron, cadena))
+
+def validar_cadena_espacios(cadena):
+    patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
+    return bool(re.match(patron,cadena))

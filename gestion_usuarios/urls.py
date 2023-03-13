@@ -7,10 +7,12 @@ from .views.especialidad_views import *
 from .views.empleado_views import *
 from .views.usuario_views import *
 from .views.Impuesto_views import *
-from .views.Paciente_views import*
+from .views.Paciente_views import *
+from .views.login_views import *
 
 
 urlpatterns = [
+    path('login/', LoginViews.as_view() , name='login_view'),
     path('cargos/', CargosView.as_view() , name='cargo_list'),
     path('cargos/busqueda/<str:criterio>/<str:campo>', CargosView.as_view() , name='cargos_process'),
     path('cargos/id/<int:id>', CargosView.as_view() , name='cargos_process_id'),

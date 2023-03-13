@@ -44,6 +44,7 @@ class Usuario(models.Model):
         bloqueado = models.PositiveSmallIntegerField()
         fechaCreacion = models.DateTimeField(auto_now_add=True)
         fechaModificacion = models.DateTimeField(auto_now=True)
+        intentos = models.PositiveSmallIntegerField(null=True, blank=True,default=0)
 
 class Paciente(models.Model):
         nombre = models.CharField(max_length=40)
