@@ -51,8 +51,8 @@ class Paciente(models.Model):
         apellido = models.CharField(max_length=40)
         fechaNacimiento = models.DateTimeField()
         idTipoDocumento = models.ForeignKey(TipoDocumentos, on_delete=models.PROTECT)
-        documento = models.CharField(max_length=50)
         telefono = models.CharField(max_length=15)
+        documento = models.CharField(max_length=50)
         correo = models.CharField(max_length=40)
         direccion = models.CharField(max_length=40)
 
@@ -80,7 +80,7 @@ class Subtipo(models.Model):
         activo = models.PositiveSmallIntegerField()
 
 class Tipo(models.Model):
-        idSubtipo = models.ForeignKey(Subtipo,  on_delete=models.PROTECT)
+        idsubtipo = models.ForeignKey(Subtipo,  on_delete=models.PROTECT)
         nombre = models.CharField(max_length=40)
         descripcion = models.CharField(max_length=40)
 

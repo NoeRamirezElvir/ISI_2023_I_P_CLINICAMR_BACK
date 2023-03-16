@@ -58,22 +58,24 @@ class PacienteViews(View):
             pacientes = {'message': "El nombre debe tener más de 3 caracteres."}
         elif len(jd['nombre']) > 50:
             pacientes = {'message': "El nombre debe tener menos de 50 caracteres."}
-        elif not jd['apellidos'].isalpha():
-            pacientes = {'message': "El apellido solo puede contener letras."}
-        elif len(jd['apellidos']) <= 0:
+        elif len(jd['apellido']) <= 0:
             pacientes = {'message': "El apellido esta vacío."}
-        elif len(jd['apellidos']) < 3:
+        elif len(jd['apellido']) < 3:
             pacientes = {'message': "El apellido debe tener más de 3 caracteres."}
-        elif len(jd['apellidos']) > 50:
+        elif not validar_cadena_espacios(jd['apellido']):
+            pacientes = {'message': "No se permiten mas de un espacio consecutivo."}
+        elif validar_cadena_repeticion(jd['apellido']):
+            pacientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}      
+        elif len(jd['apellido']) > 50:
             pacientes = {'message': "El apellido debe tener menos de 50 caracteres."}
-        elif len(jd['email']) <= 0:
-            pacientes = {'message': "El email esta vacío."}
-        elif len(jd['email']) < 5:
-            pacientes = {'message': "El email debe tener más de 5 caracteres."}
-        elif len(jd['email']) > 30:
-            pacientes = {'message': "El email debe tener menos de 30 caracteres."}
-        elif validar_email(jd['email']):
-            pacientes = {'message': "El email debe tener un formato válido."}
+        elif len(jd['correo']) <= 0:
+            pacientes = {'message': "El correo esta vacío."}
+        elif len(jd['correo']) < 5:
+            pacientes = {'message': "El correo debe tener más de 5 caracteres."}
+        elif len(jd['correo']) > 30:
+            pacientes = {'message': "El correo debe tener menos de 30 caracteres."}
+        elif validar_correo(jd['correo']):
+            pacientes = {'message': "El correo debe tener un formato válido."}
         elif len(str(jd['fechaNacimiento'])) <= 0:
             pacientes = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
@@ -104,9 +106,9 @@ class PacienteViews(View):
             pacientes = {'message': "La dirección debe tener más de 5 caracteres."}
         elif len(jd['direccion']) > 50:
             pacientes = {'message': "La dirección debe tener menos de 50 caracteres."}
-        elif (jd['idTipoDocumentos']) <= 0:
+        elif (jd['idTipoDocumento']) <= 0:
             pacientes = {'message': "El tipo de documento esta vacío."}
-        elif validar_id_documento(jd['idTipoDocumentos']):
+        elif validar_id_documento(jd['idTipoDocumento']):
             pacientes = {'message': "El id de documento no existe."}
         elif len(jd['documento']) <= 0:
             pacientes = {'message': "El documento esta vacío."}
@@ -116,12 +118,12 @@ class PacienteViews(View):
             pacientes = {'message': "El documento debe tener más de 7 caracteres."}
         elif len(jd['documento']) > 50:
             pacientes = {'message': "El documento debe tener menos de 50 caracteres."}
-        elif len(jd['documento']) < (validar_documento(jd['idTipoDocumentos'])):
+        elif len(jd['documento']) < (validar_documento(jd['idTipoDocumento'])):
             pacientes = {'message': "El documento debe cumplir la longitud asignada."}
         
         else:
             pacientes = {'message': "Registro Exitoso."}
-            Paciente.objects.create(nombre=jd['nombre'], apellidos=jd['apellidos'],fechaNacimiento=datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d"),email=jd['email'],telefono=str(jd['telefono']),direccion=jd['direccion'],idTipoDocumentos=(instanciar_documento(jd['idTipoDocumentos'])),documento=jd['documento'])
+            Paciente.objects.create(nombre=jd['nombre'], apellido=jd['apellido'],fechaNacimiento=datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d"),correo=jd['correo'],telefono=str(jd['telefono']),direccion=jd['direccion'],idTipoDocumento=(instanciar_documento(jd['idTipoDocumento'])),documento=jd['documento'])
             pacientes = {'message':"Registro Exitoso."}
         return JsonResponse(pacientes)
 
@@ -137,22 +139,22 @@ class PacienteViews(View):
                 pacientes = {'message': "El nombre debe tener más de 3 caracteres."}
             elif len(jd['nombre']) > 50:
                 pacientes = {'message': "El nombre debe tener menos de 50 caracteres."}
-            elif not jd['apellidos'].isalpha():
+            elif not jd['apellido'].isalpha():
                 pacientes = {'message': "El apellido solo puede contener letras."}
-            elif len(jd['apellidos']) <= 0:
+            elif len(jd['apellido']) <= 0:
                 pacientes = {'message': "El apellido esta vacío."}
-            elif len(jd['apellidos']) < 3:
+            elif len(jd['apellido']) < 3:
                 pacientes = {'message': "El apellido debe tener más de 3 caracteres."}
-            elif len(jd['apellidos']) > 50:
+            elif len(jd['apellido']) > 50:
                 pacientes = {'message': "El apellido debe tener menos de 50 caracteres."}
-            elif len(jd['email']) <= 0:
-                pacientes = {'message': "El email esta vacío."}
-            elif len(jd['email']) < 5:
-                pacientes = {'message': "El email debe tener más de 5 caracteres."}
-            elif len(jd['email']) > 30:
-                pacientes = {'message': "El email debe tener menos de 30 caracteres."}
-            elif validar_email(jd['email']):
-                pacientes = {'message': "El email debe tener un formato válido."}
+            elif len(jd['correo']) <= 0:
+                pacientes = {'message': "El correo esta vacío."}
+            elif len(jd['correo']) < 5:
+                pacientes = {'message': "El correo debe tener más de 5 caracteres."}
+            elif len(jd['correo']) > 30:
+                pacientes = {'message': "El correo debe tener menos de 30 caracteres."}
+            elif validar_correo(jd['correo']):
+                pacientes = {'message': "El correo debe tener un formato válido."}
             elif len(str(jd['fechaNacimiento'])) <= 0:
                 pacientes = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
@@ -183,9 +185,9 @@ class PacienteViews(View):
                 pacientes = {'message': "La dirección debe tener más de 5 caracteres."}
             elif len(jd['direccion']) > 50:
                 pacientes = {'message': "La dirección debe tener menos de 50 caracteres."}
-            elif (jd['idTipoDocumentos']) <= 0:
+            elif (jd['idTipoDocumento']) <= 0:
                 pacientes = {'message': "El tipo de documento esta vacío."}
-            elif validar_id_documento(jd['idTipoDocumentos']):
+            elif validar_id_documento(jd['idTipoDocumento']):
                 pacientes = {'message': "El id de documento no existe."}
             elif len(jd['documento']) <= 0:
                 pacientes = {'message': "El documento esta vacío."}
@@ -193,18 +195,18 @@ class PacienteViews(View):
                 pacientes = {'message': "El documento debe tener más de 7 caracteres."}
             elif len(jd['documento']) > 50:
                 pacientes = {'message': "El documento debe tener menos de 50 caracteres."}
-            elif len(jd['documento']) < (validar_documento(jd['idTipoDocumentos'])):
+            elif len(jd['documento']) < (validar_documento(jd['idTipoDocumento'])):
                 pacientes = {'message': "El documento debe cumplir la longitud asignada."}
             
             else:
                 pacientes = {'message': "Registro Exitoso."}
                 paciente.nombre = jd['nombre']
-                paciente.apellidos = jd['apellidos']
-                paciente.email = jd['email']
+                paciente.apellido = jd['apellido']
+                paciente.correo = jd['correo']
                 paciente.telefono = str(jd['telefono'])
                 paciente.direccion = jd['direccion']
                 paciente.fechaNacimiento = datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d")
-                paciente.idTipoDocumentos = instanciar_documento(jd['idTipoDocumentos'])
+                paciente.idTipoDocumento = instanciar_documento(jd['idTipoDocumento'])
                 paciente.documento = jd['documento']
                 
                 print(paciente)
@@ -225,7 +227,7 @@ class PacienteViews(View):
     
 
 #validaciones metodos
-def validar_email(correo):
+def validar_correo(correo):
     expresion_regular = r"(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|\"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*\")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])"
     return re.match(expresion_regular, correo) is None
 

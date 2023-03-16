@@ -9,7 +9,9 @@ from .views.usuario_views import *
 from .views.Impuesto_views import *
 from .views.Paciente_views import *
 from .views.login_views import *
-
+from .views.TipoMuestra_views import *
+from .views.SubTipo_views import *
+from .views.Tipo_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -36,5 +38,17 @@ urlpatterns = [
     path('pacientes/id/<int:id>', PacienteViews.as_view() , name='paciente_process_id'),
     path('muestras/', PacienteViews.as_view() , name='muestra_list'),
     path('muestras/busqueda/<str:criterio>/<str:campo>', PacienteViews.as_view() , name='muestra_process'),
-    path('muestras/id/<int:id>', PacienteViews.as_view() , name='muestra_process_id'),
+    path('muestras/id/<int:id>', PacienteViews.as_view() , name='muestra_process_id'), 
+    path('tmuestra/', Tipo_muestraViews.as_view() , name='tmuestra_list'),
+    path('tmuestra/busqueda/<str:criterio>/<str:campo>', Tipo_muestraViews.as_view() , name='tmuestra_process'),
+    path('tmuestra/id/<int:id>', Tipo_muestraViews.as_view() , name='tmuestra_process_id'), 
+    path('subtipo/', subtipoView.as_view() , name='subtipo_list'),
+    path('subtipo/busqueda/<str:criterio>/<str:campo>', subtipoView.as_view() , name='subtipo_process'),
+    path('subtipo/id/<int:id>', subtipoView.as_view() , name='subtipo_process_id'), 
+    path('tipo/', TiposView.as_view() , name='tipo_list'),
+    path('tipo/busqueda/<str:criterio>/<str:campo>', TiposView.as_view() , name='tipo_process'),
+    path('tipo/id/<int:id>', TiposView.as_view() , name='tipo_process_id'), 
+
+
+    
 ]
