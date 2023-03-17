@@ -49,7 +49,7 @@ class Usuario(models.Model):
 class Paciente(models.Model):
         nombre = models.CharField(max_length=40)
         apellido = models.CharField(max_length=40)
-        fechaNacimiento = models.DateTimeField()
+        fechaNacimiento = models.DateField()
         idTipoDocumento = models.ForeignKey(TipoDocumentos, on_delete=models.PROTECT)
         telefono = models.CharField(max_length=15)
         documento = models.CharField(max_length=50)
