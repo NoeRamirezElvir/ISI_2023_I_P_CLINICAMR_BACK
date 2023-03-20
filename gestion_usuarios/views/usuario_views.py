@@ -73,6 +73,8 @@ class UsuarioViews(View):
             usuariosr = {'message':'La contraseña debe tener al menos una letra minuscula'}   
         elif not any(char in simbolos for char in jd['password']):
             usuariosr = {'message':'La contraseña debe contener algun caracter especial $@#'}
+        elif not jd['password'] == jd['passwordc']:
+            usuariosr = {'message':'Las contraseñas no coinciden'}    
         elif jd['activo'] < 0:
             usuariosr = {'message': "Activo debe ser positivo."}
         elif jd['activo'] > 1:
@@ -111,7 +113,9 @@ class UsuarioViews(View):
             elif len(jd['password']) < 7:
                 usuariosr = {'message':'La contraseña debe tener mas de 7 caracteres' } 
             elif len(jd['password']) > 15:
-                usuariosr = {'message':'La contraseña debe tener menos de 16 caracteres'}       
+                usuariosr = {'message':'La contraseña debe tener menos de 16 caracteres'}
+            elif not jd['password'] == jd['passwordc']:
+                usuariosr = {'message':'Las contraseñas no coinciden'}    
             elif not any(char.isdigit() for char in jd['password']):
                 usuariosr = {'message':'La contraseña debe tener al menos un numero'}
             elif not any(char.isupper() for char in jd['password']):

@@ -1,3 +1,5 @@
+from datetime import datetime
+from django.utils import timezone
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -56,9 +58,16 @@ class ImpuestoViews(View):
             Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 20:
             Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
+        elif jd['valor'] <= 0:
+            Impuestos = {'message': "El valor debe ser mayor a 0."}
+        elif (validar_valor_repetido(jd['valor'])):
+            Impuestos = {'message': "El valor ya esta en uso."}
+        elif jd['valor'] > 1:
+            Impuestos = {'message': "El valor es muy alto."}
         else:
             Impuestos = {'message': "Registro Exitoso."}
-            Impuesto.objects.create(nombre=jd['nombre'])
+            Impuesto.objects.create(nombre=jd['nombre'], valor=jd['valor'])
+            ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
             
             Impuestos = {'message':"Registro Exitoso."}
         return JsonResponse(Impuestos)
@@ -82,10 +91,20 @@ class ImpuestoViews(View):
                 Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 20:
                 Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
+            elif jd['valor'] <= 0:
+                Impuestos = {'message': "El valor debe ser mayor a 0."}
+            elif jd['valor'] > 1:
+                Impuestos = {'message': "El valor es muy alto."}
             else:
                 Impuestos = {'message': "Registro Exitoso."}
                 impuesto.nombre = jd['nombre']
-                
+                if not float(impuesto.valor) == float(jd['valor']):
+                    historico = ImpuestoHitorico.objects.filter(idImpuesto=impuesto.id, valor=impuesto.valor).last()
+                    if historico is not None:
+                        historico.fechaFinal = datetime.now()
+                        historico.save()
+                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                impuesto.valor = jd['valor'] 
                 impuesto.save()
                 Impuestos = {'message': "La actualización fue exitosa."}
         return JsonResponse(Impuestos)
@@ -112,6 +131,15 @@ def validar_Impuesto_repetido(nombre):
             return False
     return False
 
+def validar_valor_repetido(valor): 
+    if (valor):
+        registros = Impuesto.objects.filter(valor=valor)
+        if len(registros) > 0:
+            return True
+        else:
+            return False
+    return False
+
 def validar_cadena_repeticion(cadena):
     patron = r'([a-zA-Z])\1\1'
     return bool(re.search(patron, cadena))
@@ -119,3 +147,9 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
+
+def instanciar_impuesto(nombre):
+    if (nombre):
+        impuesto = Impuesto.objects.get(nombre=nombre)
+    if impuesto:
+        return impuesto

@@ -12,6 +12,9 @@ from .views.login_views import *
 from .views.TipoMuestra_views import *
 from .views.SubTipo_views import *
 from .views.Tipo_views import *
+from .views.impuesto_historico_views import *
+from .views.cita_views import *
+from .views.Muestra_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -36,9 +39,9 @@ urlpatterns = [
     path('pacientes/', PacienteViews.as_view() , name='paciente_list'),
     path('pacientes/busqueda/<str:criterio>/<str:campo>', PacienteViews.as_view() , name='paciente_process'),
     path('pacientes/id/<int:id>', PacienteViews.as_view() , name='paciente_process_id'),
-    path('muestras/', PacienteViews.as_view() , name='muestra_list'),
-    path('muestras/busqueda/<str:criterio>/<str:campo>', PacienteViews.as_view() , name='muestra_process'),
-    path('muestras/id/<int:id>', PacienteViews.as_view() , name='muestra_process_id'), 
+    path('muestras/', MuestrasViews.as_view() , name='muestra_list'),
+    path('muestras/busqueda/<str:criterio>/<str:campo>', MuestrasViews.as_view() , name='muestra_process'),
+    path('muestras/id/<int:id>', MuestrasViews.as_view() , name='muestra_process_id'), 
     path('tmuestra/', Tipo_muestraViews.as_view() , name='tmuestra_list'),
     path('tmuestra/busqueda/<str:criterio>/<str:campo>', Tipo_muestraViews.as_view() , name='tmuestra_process'),
     path('tmuestra/id/<int:id>', Tipo_muestraViews.as_view() , name='tmuestra_process_id'), 
@@ -48,6 +51,12 @@ urlpatterns = [
     path('tipo/', TiposView.as_view() , name='tipo_list'),
     path('tipo/busqueda/<str:criterio>/<str:campo>', TiposView.as_view() , name='tipo_process'),
     path('tipo/id/<int:id>', TiposView.as_view() , name='tipo_process_id'), 
+    path('impuestoHistorico/', ImpuestoHistorico.as_view() , name='impuesto_historico_list'),
+    path('impuestoHistorico/busqueda/<str:criterio>/<str:campo>', ImpuestoHistorico.as_view() , name='impuesto_historico_process'),
+    path('impuestoHistorico/id/<int:id>', ImpuestoHistorico.as_view() , name='impuesto_historico_process_id'), 
+    path('citas/', CitasViews.as_view() , name='citas_list'),
+    path('citas/busqueda/<str:criterio>/<str:campo>', CitasViews.as_view() , name='citas_process'),
+    path('citas/id/<int:id>', CitasViews.as_view() , name='citas_process_id'), 
 
 
     
