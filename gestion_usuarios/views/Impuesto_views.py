@@ -98,12 +98,16 @@ class ImpuestoViews(View):
             else:
                 Impuestos = {'message': "Registro Exitoso."}
                 impuesto.nombre = jd['nombre']
-                if not float(impuesto.valor) == float(jd['valor']):
+                if float(impuesto.id) == float(id):
                     historico = ImpuestoHitorico.objects.filter(idImpuesto=impuesto.id, valor=impuesto.valor).last()
                     if historico is not None:
                         historico.fechaFinal = datetime.now()
                         historico.save()
                         ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                    else:
+                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                else:
+                    ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
                 impuesto.valor = jd['valor'] 
                 impuesto.save()
                 Impuestos = {'message': "La actualización fue exitosa."}
@@ -150,6 +154,6 @@ def validar_cadena_espacios(cadena):
 
 def instanciar_impuesto(nombre):
     if (nombre):
-        impuesto = Impuesto.objects.get(nombre=nombre)
+        impuesto = Impuesto.objects.filter(nombre=nombre).last()
     if impuesto:
         return impuesto

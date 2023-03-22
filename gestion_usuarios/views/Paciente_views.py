@@ -58,12 +58,17 @@ class PacienteViews(View):
             pacientes = {'message': "El nombre debe tener más de 3 caracteres."}
         elif len(jd['nombre']) > 50:
             pacientes = {'message': "El nombre debe tener menos de 50 caracteres."}
+        elif validar_cadena_repeticion(jd['nombre']):
+            pacientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."} 
+        elif not validar_cadena_espacios(jd['nombre']):
+            pacientes = {'message': "No se permiten mas de un espacio consecutivo."}
         elif len(jd['apellido']) <= 0:
             pacientes = {'message': "El apellido esta vacío."}
         elif len(jd['apellido']) < 3:
             pacientes = {'message': "El apellido debe tener más de 3 caracteres."}
         elif not validar_cadena_espacios(jd['apellido']):
             pacientes = {'message': "No se permiten mas de un espacio consecutivo."}
+        
         elif validar_cadena_repeticion(jd['apellido']):
             pacientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}      
         elif len(jd['apellido']) > 50:
@@ -80,6 +85,7 @@ class PacienteViews(View):
             pacientes = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
             pacientes = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+       
         elif str(jd['telefono']).isalpha():
             pacientes = {'message': "El teléfono solo puede contener numeros."}
         elif len(str(jd['telefono'])) <= 0:

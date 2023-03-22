@@ -26,6 +26,8 @@ class LoginViews(View):
         if len(usuario) > 0:
             if usuario[0].bloqueado == 1:
                 mensaje = {'mensaje':"El usuario esta bloqueado, contacte al administrador"}
+            elif usuario[0].activo == 0:
+                mensaje = {'mensaje':"El usuario esta desactivado, contacte al administrador"}
             else:
                 if verificar_password(password, usuario[0].password):
                     mensaje = {'mensaje':"Inicio Exitoso"}
