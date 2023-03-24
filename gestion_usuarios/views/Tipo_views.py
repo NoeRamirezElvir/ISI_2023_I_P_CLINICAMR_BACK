@@ -34,6 +34,27 @@ class TiposView(View):
                 else:
                     tipo = {'message': "No se encontraron los datos", 'tipo': []} 
                     return JsonResponse(tipo)
+            elif criterio == "subtipo":
+                idSubtipo = Subtipo.objects.filter(nombre=campo).last()
+                if idSubtipo is not None:
+                    tipos = list(Tipo.objects.filter(idsubtipo=idSubtipo.id).values())
+                    context = {
+                        'message': "Consulta Exitosa",
+                        'tipos': tipos
+                    }
+                    return JsonResponse(context)
+                else:
+                    context = {
+                        'message': "No se encontraron los datos",
+                        'historicos': []
+                    }
+                    return JsonResponse(context)
+            else:
+                context = {
+                        'message': "No se encontraron los datos",
+                        'historicos': []
+                    }
+                return JsonResponse(context)
         else:
             tipo = list(Tipo.objects.values())
             if len(tipo) > 0:

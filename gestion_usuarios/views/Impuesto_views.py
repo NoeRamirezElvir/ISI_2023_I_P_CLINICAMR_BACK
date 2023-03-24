@@ -1,5 +1,4 @@
-from datetime import datetime
-from django.utils import timezone
+from datetime import datetime, timedelta
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -97,17 +96,18 @@ class ImpuestoViews(View):
                 Impuestos = {'message': "El valor es muy alto."}
             else:
                 Impuestos = {'message': "Registro Exitoso."}
+                nombre_temp=impuesto.nombre
                 impuesto.nombre = jd['nombre']
                 if float(impuesto.id) == float(id):
                     historico = ImpuestoHitorico.objects.filter(idImpuesto=impuesto.id, valor=impuesto.valor).last()
                     if historico is not None:
-                        historico.fechaFinal = datetime.now()
+                        historico.fechaFinal = fecha_final()
                         historico.save()
-                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(nombre_temp), fechaInicio=datetime.now(),valor=jd['valor'])
                     else:
-                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                        ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(nombre_temp), fechaInicio=datetime.now(),valor=jd['valor'])
                 else:
-                    ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(jd['nombre']), fechaInicio=datetime.now(),valor=jd['valor'])
+                    ImpuestoHitorico.objects.create(idImpuesto=instanciar_impuesto(nombre_temp), fechaInicio=datetime.now(),valor=jd['valor'])
                 impuesto.valor = jd['valor'] 
                 impuesto.save()
                 Impuestos = {'message': "La actualización fue exitosa."}
@@ -125,6 +125,9 @@ class ImpuestoViews(View):
     
 
 
+def fecha_final():
+    fecha_menos_un_dia=datetime.today()+timedelta(days=-1)
+    return fecha_menos_un_dia
 
 def validar_Impuesto_repetido(nombre): 
     if (nombre):

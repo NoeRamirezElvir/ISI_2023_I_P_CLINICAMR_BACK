@@ -124,3 +124,20 @@ class PrecioHistoricoMedicamento(models.Model):
         fechaFinal = models.DateTimeField(null=True, blank=True)
         activo  = models.PositiveSmallIntegerField()
         precio = models.DecimalField(max_digits=8, decimal_places=2)
+
+class Laboratorios(models.Model):
+        nombre = models.CharField(max_length=50)
+        direccion = models.CharField(max_length=50)
+        telefono = models.CharField(max_length=15)
+        disponibilidad = models.CharField(max_length=50)
+
+class Enfermedad(models.Model):
+        nombre = models.CharField(max_length=50)
+
+class Sintoma(models.Model):
+        nombre = models.CharField(max_length=50)
+        descripcion = models.CharField(max_length=50)
+
+class EnfermedadDetalle(models.Model):
+        idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
+        idSintoma = models.ForeignKey(Sintoma, on_delete=models.PROTECT)

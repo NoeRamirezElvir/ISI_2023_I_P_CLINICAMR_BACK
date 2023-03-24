@@ -68,7 +68,6 @@ class CargosView(View):
         elif jd['activo'] > 1:
             cargos = {'message': "Activo debe unicamente puede ser 0 o 1."}
         else:
-            cargos = {'message': "Registro Exitoso."}
             CargoEmpleado.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],activo=jd['activo'])
             cargos = {'message':"Registro Exitoso."}
         return JsonResponse(cargos)
@@ -97,7 +96,7 @@ class CargosView(View):
                 cargos = {'message': "La descripción debe tener menos de 50 caracteres."}
             elif jd['activo'] < 0:
                 cargos = {'message': "Activo debe ser positivo."}
-            elif jd['activo'] < 0:
+            elif jd['activo'] > 1:
                 cargos = {'message': "Activo debe unicamente puede ser 0 o 1."}
             else:
                 cargos = {'message': "Registro Exitoso."}

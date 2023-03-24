@@ -15,6 +15,14 @@ from .views.Tipo_views import *
 from .views.impuesto_historico_views import *
 from .views.cita_views import *
 from .views.Muestra_views import *
+from .views.medicamento_views import *
+from .views.proveedor_views import *
+from .views.costo_historico_medicamento_views import *
+from .views.precio_historico_medicamento_views import *
+from .views.laboratorio_views import *
+from .views.sintoma_views import *
+from .views.enfermedad_views import *
+from .views.enfermedad_detalle_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -57,6 +65,40 @@ urlpatterns = [
     path('citas/', CitasViews.as_view() , name='citas_list'),
     path('citas/busqueda/<str:criterio>/<str:campo>', CitasViews.as_view() , name='citas_process'),
     path('citas/id/<int:id>', CitasViews.as_view() , name='citas_process_id'), 
+
+    path('proveedores/', ProveedorView.as_view() , name='proveedores_list'),
+    path('proveedores/busqueda/<str:criterio>/<str:campo>', ProveedorView.as_view() , name='proveedore_process'),
+    path('proveedores/id/<int:id>', ProveedorView.as_view() , name='proveedore_process_id'), 
+
+    path('medicamentos/', MedicamentosViews.as_view() , name='medicamentos_list'),
+    path('medicamentos/busqueda/<str:criterio>/<str:campo>', MedicamentosViews.as_view() , name='medicamentos_process'),
+    path('medicamentos/id/<int:id>', MedicamentosViews.as_view() , name='medicamentos_process_id'), 
+
+    path('costoHistoricoMedicamento/', CostoHistoricoMedicamentosViews.as_view() , name='costo_historico_medicamento_list'),
+    path('costoHistoricoMedicamento/busqueda/<str:criterio>/<str:campo>', CostoHistoricoMedicamentosViews.as_view() , name='costo_historico_medicamento_process'),
+    path('costoHistoricoMedicamento/id/<int:id>', CostoHistoricoMedicamentosViews.as_view() , name='costo_historico_medicamento_process_id'), 
+
+    path('precioHistoricoMedicamento/', PrecioHistoricoMedicamentosViews.as_view() , name='precio_historico_medicamento_list'),
+    path('precioHistoricoMedicamento/busqueda/<str:criterio>/<str:campo>', PrecioHistoricoMedicamentosViews.as_view() , name='precio_historico_medicamento_process'),
+    path('precioHistoricoMedicamento/id/<int:id>', PrecioHistoricoMedicamentosViews.as_view() , name='precio_historico_medicamento_process_id'), 
+    
+    path('laboratorios/', LaboratorioView.as_view() , name='laboratorios_list'),
+    path('laboratorios/busqueda/<str:criterio>/<str:campo>', LaboratorioView.as_view() , name='laboratorios_process'),
+    path('laboratorios/id/<int:id>', LaboratorioView.as_view() , name='laboratorios_process_id'), 
+    
+    path('sintomas/', SintomasView.as_view() , name='sintomas_list'),
+    path('sintomas/busqueda/<str:criterio>/<str:campo>', SintomasView.as_view() , name='sintomas_process'),
+    path('sintomas/id/<int:id>', SintomasView.as_view() , name='sintomas_process_id'), 
+
+    path('enfermedades/', EnfermedadView.as_view() , name='enfermedades_list'),
+    path('enfermedades/busqueda/<str:criterio>/<str:campo>', EnfermedadView.as_view() , name='enfermedades_process'),
+    path('enfermedades/id/<int:id>', EnfermedadView.as_view() , name='enfermedades_process_id'),
+
+    path('enfermedadDetalle/', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_list'),
+    path('enfermedadDetalle/busqueda/<str:criterio>/<str:campo>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process'),
+    path('enfermedadDetalle/id/<int:id>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process_id'), 
+
+ 
 
 
     
