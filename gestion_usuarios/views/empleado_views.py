@@ -116,10 +116,6 @@ class EmpleadoViews(View):
             empleados = {'message': "El documento esta vacío."}
         elif (validar_documento_repetido(jd['documento'])):
             empleados = {'message': "El documento esta en uso."}
-        elif len(jd['documento']) < 7:
-            empleados = {'message': "El documento debe tener más de 7 caracteres."}
-        elif len(jd['documento']) > 50:
-            empleados = {'message': "El documento debe tener menos de 50 caracteres."}
         elif not len(jd['documento']) == (validar_documento(jd['idTipoDocumentos'])):
             empleados = {'message': "El documento debe cumplir la longitud asignada."}
         elif (jd['idCargoEmpleado']) <= 0:
@@ -202,10 +198,6 @@ class EmpleadoViews(View):
                 empleados = {'message': "El id de documento no existe."}
             elif len(jd['documento']) <= 0:
                 empleados = {'message': "El documento esta vacío."}
-            elif len(jd['documento']) < 7:
-                empleados = {'message': "El documento debe tener más de 7 caracteres."}
-            elif len(jd['documento']) > 50:
-                empleados = {'message': "El documento debe tener menos de 50 caracteres."}
             elif not len(jd['documento']) == (validar_documento(jd['idTipoDocumentos'])):
                 empleados = {'message': "El documento debe cumplir la longitud asignada."}
             elif (jd['idCargoEmpleado']) <= 0:
