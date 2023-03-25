@@ -68,8 +68,6 @@ class MedicamentosViews(View):
                 mensaje_post = {'message': "El nombre de medicamento ya esta en uso."}
             elif jd['idTipo'] is None:
                 mensaje_post = {'message': "Seleccione un tipo existente."}
-            elif jd['idTipo'].isalpha():
-                mensaje_post = {'message': "Seleccione un tipo existente."}
             elif int(jd['idTipo']) == 0:
                 mensaje_post = {'message': "Seleccione un tipo existente."}
             elif validar_id_tipo(int(jd['idTipo'])):
@@ -122,15 +120,11 @@ class MedicamentosViews(View):
                 mensaje_post = {'message': "El stock maximo debe ser mayor al stock minimo."}
             elif jd['idProveedor'] is None:
                 mensaje_post = {'message': "Seleccione un proveedor existente."}
-            elif jd['idProveedor'].isalpha():
-                mensaje_post = {'message': "Seleccione un proveedor existente."}
             elif int(jd['idProveedor']) == 0:
                 mensaje_post = {'message': "Seleccione un proveedor existente."}
             elif validar_id_proveedor(int(jd['idProveedor'])):
                 mensaje_post = {'message': "El proveedor no existe."}
             elif jd['idImpuesto'] is None:
-                mensaje_post = {'message': "Seleccione un impuesto existente."}
-            elif jd['idImpuesto'].isalpha():
                 mensaje_post = {'message': "Seleccione un impuesto existente."}
             elif int(jd['idImpuesto']) == 0:
                 mensaje_post = {'message': "Seleccione un impuesto existente."}
@@ -203,8 +197,6 @@ class MedicamentosViews(View):
                     mensaje_put = {'message': "El nombre debe tener menos de 50 caracteres."}
                 elif jd['idTipo'] is None:
                     mensaje_put = {'message': "Seleccione un tipo existente."}
-                elif jd['idTipo'].isalpha():
-                    mensaje_put = {'message': "Seleccione un tipo existente."}
                 elif int(jd['idTipo']) == 0:
                     mensaje_put = {'message': "Seleccione un tipo existente."}
                 elif validar_id_tipo(int(jd['idTipo'])):
@@ -257,15 +249,11 @@ class MedicamentosViews(View):
                     mensaje_put = {'message': "El stock maximo debe ser mayor al stock minimo."}
                 elif jd['idProveedor'] is None:
                     mensaje_put = {'message': "Seleccione un proveedor existente."}
-                elif jd['idProveedor'].isalpha():
-                    mensaje_put = {'message': "Seleccione un proveedor existente."}
                 elif int(jd['idProveedor']) == 0:
                     mensaje_put = {'message': "Seleccione un proveedor existente."}
                 elif validar_id_proveedor(int(jd['idProveedor'])):
                     mensaje_put = {'message': "El proveedor no existe."}
                 elif jd['idImpuesto'] is None:
-                    mensaje_put = {'message': "Seleccione un impuesto existente."}
-                elif jd['idImpuesto'].isalpha():
                     mensaje_put = {'message': "Seleccione un impuesto existente."}
                 elif int(jd['idImpuesto']) == 0:
                     mensaje_put = {'message': "Seleccione un impuesto existente."}
