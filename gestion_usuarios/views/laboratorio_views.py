@@ -25,7 +25,7 @@ class LaboratorioView(View):
                         laboratorios = {'message': "Consulta exitosa", 'laboratorios': laboratorios}
                     else:
                         laboratorios = {'message': "No se encontraron los datos", 'laboratorios': []} 
-                        return JsonResponse(proveedores)
+                        return JsonResponse(laboratorios)
                 elif criterio == "nombre":
                     laboratorios = list(Laboratorios.objects.filter(nombre=campo).values())
                     if len(laboratorios) > 0:
@@ -88,16 +88,10 @@ class LaboratorioView(View):
                 mensaje_post = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
             elif (validar_telefono_repetido(jd['telefono'])):
                 mensaje_post = {'message': "El telefono ya esta en uso."}
-            elif len(jd['disponibilidad']) <= 0:
-                mensaje_post = {'message': "La dirección esta vacía."}
-            elif len(jd['disponibilidad']) < 5:
-                mensaje_post = {'message': "La dirección debe tener más de 5 caracteres."}
-            elif len(jd['disponibilidad']) > 50:
-                mensaje_post = {'message': "La dirección debe tener menos de 50 caracteres."}
-            elif not validar_cadena_espacios(jd['disponibilidad']):
-                mensaje_post = {'message': "No se permiten mas de un espacio consecutivo.[disponibilidad]"}
-            elif validar_cadena_repeticion(jd['disponibilidad']):
-                mensaje_post = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[disponibilidad]"}
+            elif jd['disponibilidad'] < 0:
+                mensaje_post = {'message': "disponibilidad debe ser positivo."}
+            elif jd['disponibilidad'] > 1:
+                mensaje_post = {'message': "disponibilidad debe unicamente puede ser 0 o 1."}
             else:
                 mensaje_post = {'message': "Registro Exitoso."}
                 Laboratorios.objects.create(nombre=jd['nombre'],
@@ -153,17 +147,12 @@ class LaboratorioView(View):
                     mensaje_put = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
                 elif (str(jd['telefono']))[0] == '0':
                     mensaje_put = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
-                elif len(jd['disponibilidad']) <= 0:
-                    mensaje_put = {'message': "La dirección esta vacía."}
-                elif len(jd['disponibilidad']) < 5:
-                    mensaje_put = {'message': "La dirección debe tener más de 5 caracteres."}
-                elif len(jd['disponibilidad']) > 50:
-                    mensaje_put = {'message': "La dirección debe tener menos de 50 caracteres."}
-                elif not validar_cadena_espacios(jd['disponibilidad']):
-                    mensaje_put = {'message': "No se permiten mas de un espacio consecutivo.[disponibilidad]"}
-                elif validar_cadena_repeticion(jd['disponibilidad']):
-                    mensaje_put = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[disponibilidad]"}
+                elif jd['disponibilidad'] < 0:
+                    mensaje_put = {'message': "disponibilidad debe ser positivo."}
+                elif jd['disponibilidad'] > 1:
+                    mensaje_put = {'message': "disponibilidad debe unicamente puede ser 0 o 1."}
                 else:
+                    mensaje_put = {'message': "Registro Exitoso."}
                     laboratorio_actualizar.nombre = jd['nombre']
                     laboratorio_actualizar.direccion = jd['direccion']
                     laboratorio_actualizar.telefono = jd['telefono']

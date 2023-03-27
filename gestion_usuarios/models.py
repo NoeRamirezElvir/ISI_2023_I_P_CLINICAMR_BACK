@@ -129,7 +129,7 @@ class Laboratorios(models.Model):
         nombre = models.CharField(max_length=50)
         direccion = models.CharField(max_length=50)
         telefono = models.CharField(max_length=15)
-        disponibilidad = models.CharField(max_length=50)
+        disponibilidad = models.PositiveSmallIntegerField()
 
 class Enfermedad(models.Model):
         nombre = models.CharField(max_length=50)
@@ -141,3 +141,8 @@ class Sintoma(models.Model):
 class EnfermedadDetalle(models.Model):
         idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
         idSintoma = models.ForeignKey(Sintoma, on_delete=models.PROTECT)
+
+class MetodoDePago(models.Model):
+        nombre = models.CharField(max_length=50)
+        descripcion = models.CharField(max_length=50)
+

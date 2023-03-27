@@ -23,6 +23,7 @@ from .views.laboratorio_views import *
 from .views.sintoma_views import *
 from .views.enfermedad_views import *
 from .views.enfermedad_detalle_views import *
+from .views.metodoPago_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -98,7 +99,10 @@ urlpatterns = [
     path('enfermedadDetalle/busqueda/<str:criterio>/<str:campo>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process'),
     path('enfermedadDetalle/id/<int:id>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process_id'), 
 
- 
+    path('metodop/', metodoPagoViews.as_view() , name='metodop'),
+    path('metodop/busqueda/<str:criterio>/<str:campo>', metodoPagoViews.as_view() , name='metodop'),
+    path('metodop/id/<int:id>', metodoPagoViews.as_view() , name='metodop'), 
+
 
 
     
