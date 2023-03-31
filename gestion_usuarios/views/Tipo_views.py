@@ -6,6 +6,7 @@ import json
 import re
 from ..models import *
 from django.views.decorators.http import require_http_methods
+from decimal import Decimal
 
 @method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
 class TiposView(View):
@@ -90,11 +91,20 @@ class TiposView(View):
             tipo = {'message': "El tipo esta vacío."}
         elif validar_id_subtipo(jd['idsubtipo']):
             tipo = {'message': "El id de subtipo no existe."}
+        elif Decimal(jd['precio']) <= 0:
+                tipo = {'message': "El precio debe ser mayor a 0."}
+        elif len(str(jd['precio'])) > 11:
+            tipo = {'message': "El precio debe tener menos de 10 digitos."}
+        elif round(Decimal(jd['precio'])) > 99999999.99:
+            tipo = {'message': "El precio es muy alto."}
+        elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
+            tipo = {'message': "El precio debe ser mayo al costo de compra."}
         
         
         else:
-            tipo = {'message': "Registro Exitoso."}
-            Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(jd['idsubtipo']))
+            precios= Decimal(jd['precio'])
+            
+            Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(jd['idsubtipo'],precio=precios))
             tipo = {'message':"Registro Exitoso."}
         return JsonResponse(tipo)
 
@@ -120,13 +130,22 @@ class TiposView(View):
                 tipo = {'message': "La descripción debe tener mas de 4 caracteres."}
             elif len(jd['descripcion']) > 50:
                 tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
+            elif Decimal(jd['precio']) <= 0:
+                tipo = {'message': "El precio debe ser mayor a 0."}
+            elif len(str(jd['precio'])) > 11:
+                tipo = {'message': "El precio debe tener menos de 10 digitos."}
+            elif round(Decimal(jd['precio'])) > 99999999.99:
+                tipo = {'message': "El precio es muy alto."}
+            elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
+                tipo = {'message': "El precio debe ser mayo al costo de compra."}
+            
+            
             else:
                 tipo = {'message': "Registro Exitoso."}
                 tipos.idsubtipo = instanciar_subtipo(jd['idsubtipo'])
                 tipos.nombre = jd['nombre']
                 tipos.descripcion = jd['descripcion']
-                
-                
+                tipos.precio = Decimal(jd['precio'])    
                 tipos.save()
                 tipo = {'message': "La actualización fue exitosa."}
         return JsonResponse(tipo)

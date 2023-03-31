@@ -24,6 +24,11 @@ from .views.sintoma_views import *
 from .views.enfermedad_views import *
 from .views.enfermedad_detalle_views import *
 from .views.metodoPago_views import *
+from .views.diagnostico_views import *
+from .views.parametros_generales_views import *
+from .views.diagnostico_detalle import *
+from .views.tratamiento_views import *
+from .views.Resultado_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -103,7 +108,24 @@ urlpatterns = [
     path('metodop/busqueda/<str:criterio>/<str:campo>', metodoPagoViews.as_view() , name='metodop'),
     path('metodop/id/<int:id>', metodoPagoViews.as_view() , name='metodop'), 
 
+    path('diagnostico/', DiagnosticoView.as_view() , name='diagnostico_list'),
+    path('diagnostico/busqueda/<str:criterio>/<str:campo>', DiagnosticoView.as_view() , name='diagnostico_process'),
+    path('diagnostico/id/<int:id>', DiagnosticoView.as_view() , name='diagnostico_process_id'), 
 
+    path('parametrosgenerales/', Parametros_GeneralesViews.as_view() , name='parametrosgenerales_list'),
+    path('parametrosgenerales/busqueda/<str:criterio>/<str:campo>', Parametros_GeneralesViews.as_view() , name='parametrosgenerales_process'),
+    path('parametrosgenerales/id/<int:id>', Parametros_GeneralesViews.as_view() , name='parametrosgenerales_process_id'), 
 
+    path('diagnosticoDetalle/', DiagnosticoDetalleView.as_view() , name='diagnosticoDetalle_list'),
+    path('diagnosticoDetalle/busqueda/<str:criterio>/<str:campo>', DiagnosticoDetalleView.as_view() , name='diagnosticoDetalle_process'),
+    path('diagnosticoDetalle/id/<int:id>', DiagnosticoDetalleView.as_view() , name='diagnosticoDetalle_process_id'), 
+
+    path('tratamientos/', tratamientosViews.as_view() , name='tratamientos_list'),
+    path('tratamientos/busqueda/<str:criterio>/<str:campo>', tratamientosViews.as_view() , name='tratamientos_process'),
+    path('tratamientos/id/<int:id>', tratamientosViews.as_view() , name='tratamientos_process_id'), 
+    
+     path('resultados/', resultadosViews.as_view() , name='resultados_list'),
+    path('resultados/busqueda/<str:criterio>/<str:campo>', resultadosViews.as_view() , name='resultados_process'),
+    path('resultados/id/<int:id>', resultadosViews.as_view() , name='resultados_process_id'), 
     
 ]

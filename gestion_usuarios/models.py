@@ -90,6 +90,7 @@ class Tipo(models.Model):
         idsubtipo = models.ForeignKey(Subtipo,  on_delete=models.PROTECT)
         nombre = models.CharField(max_length=40)
         descripcion = models.CharField(max_length=40)
+        precio = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
 #Falta
 class Proveedor(models.Model):
         nombre = models.CharField(max_length=50)
@@ -146,3 +147,37 @@ class MetodoDePago(models.Model):
         nombre = models.CharField(max_length=50)
         descripcion = models.CharField(max_length=50)
 
+class Diagnostico(models.Model):
+        descripcion = models.CharField(max_length=100)
+
+class Consulta(models.Model):
+        idCita = models.ForeignKey(TipoMuestra, on_delete=models.PROTECT)
+        idEmpleado = models.ForeignKey(Paciente, on_delete=models.PROTECT)
+        fecha = models.DateField()
+
+class ParametrosGenerales(models.Model):
+        nombre =models.CharField(max_length=50)
+        descripcion = models.CharField(max_length=50)
+        valor = models.DecimalField(max_digits=4, decimal_places=2)
+
+
+class ConsultaDetalle(models.Model):
+        idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
+        idSintoma = models.ForeignKey(Sintoma, on_delete=models.PROTECT)
+        idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)
+
+
+class DiagnosticoDetalle(models.Model):
+        idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
+        idDiagnostico = models.ForeignKey(Diagnostico, on_delete=models.PROTECT)
+
+
+class Tratamiento(models.Model):
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT)
+        fecha = models.DateField()
+
+class Resultados(models.Model):
+        idTratamiento = models.ForeignKey(Tratamiento, on_delete=models.PROTECT)        
+        fecha = models.DateField()
+        observacion = models.CharField(max_length=100)
