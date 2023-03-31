@@ -29,6 +29,8 @@ from .views.parametros_generales_views import *
 from .views.diagnostico_detalle import *
 from .views.tratamiento_views import *
 from .views.Resultado_views import *
+from .views.precio_historico_examen_views import *
+from .views.precio_historico_tratamiento_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -124,8 +126,16 @@ urlpatterns = [
     path('tratamientos/busqueda/<str:criterio>/<str:campo>', tratamientosViews.as_view() , name='tratamientos_process'),
     path('tratamientos/id/<int:id>', tratamientosViews.as_view() , name='tratamientos_process_id'), 
     
-     path('resultados/', resultadosViews.as_view() , name='resultados_list'),
+    path('resultados/', resultadosViews.as_view() , name='resultados_list'),
     path('resultados/busqueda/<str:criterio>/<str:campo>', resultadosViews.as_view() , name='resultados_process'),
     path('resultados/id/<int:id>', resultadosViews.as_view() , name='resultados_process_id'), 
+    
+    path('precioHistoricoExamen/', PrecioHistoricoExamenesViews.as_view() , name='precio_historico_examen_list'),
+    path('precioHistoricoExamen/busqueda/<str:criterio>/<str:campo>', PrecioHistoricoExamenesViews.as_view() , name='precio_historico_examen_process'),
+    path('precioHistoricoExamen/id/<int:id>', PrecioHistoricoExamenesViews.as_view() , name='precio_historico_examen_process_id'), 
+    
+    path('precioHistoricoTratamiento/', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_list'),
+    path('precioHistoricoTratamiento/busqueda/<str:criterio>/<str:campo>', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_process'),
+    path('precioHistoricoTratamiento/id/<int:id>', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_process_id'), 
     
 ]

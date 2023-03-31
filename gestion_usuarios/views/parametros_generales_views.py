@@ -50,27 +50,31 @@ class Parametros_GeneralesViews(View):
         elif len(jd['nombre']) < 2:
             parametrosgenerales  = {'message': "El nombre debe tener mas de 2 caracteres."}
         elif not validar_cadena_espacios(jd['nombre']):
-            parametrosgenerales  = {'message': "No se permiten mas de un espacio consecutivo."}
+            parametrosgenerales  = {'message': "No se permiten mas de un espacio consecutivo.[nombre]"}
         elif validar_cadena_repeticion(jd['nombre']):
-            parametrosgenerales  = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
-        elif len(jd['nombre']) > 20:
-            parametrosgenerales  = {'message': "El nombre debe tener menos de 20 caracteres."}
+            parametrosgenerales  = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[nombre]"}
+        elif len(jd['nombre']) > 50:
+            parametrosgenerales  = {'message': "El nombre debe tener menos de 50 caracteres."}
         elif len(jd['descripcion']) <= 0:
                 parametrosgenerales = {'message': "La descripción esta vacía."}
         elif len(jd['descripcion']) < 4:
                 parametrosgenerales = {'message': "La descripción debe tener mas de 4 caracteres."}
         elif not validar_cadena_espacios(jd['descripcion']):
-                parametrosgenerales = {'message': "No se permiten mas de un espacio consecutivo."}
+                parametrosgenerales = {'message': "No se permiten mas de un espacio consecutivo.[descripción]"}
         elif validar_cadena_repeticion(jd['descripcion']):
-                parametrosgenerales = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
+                parametrosgenerales = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[descripción]"}     
         elif len(jd['descripcion']) > 50:
                 parametrosgenerales = {'message': "La descripción debe tener menos de 50 caracteres."}
-        elif jd['valor'] <= 0:
-            parametrosgenerales  = {'message': "El valor debe ser mayor a 0."}
-        elif (validar_valor_repetido(jd['valor'])):
-            parametrosgenerales  = {'message': "El valor ya esta en uso."}
-        elif jd['valor'] > 1:
-            parametrosgenerales  = {'message': "El valor es muy alto."}
+        elif len(jd['valor']) <= 0:
+            parametrosgenerales = {'message': "El valor esta vacía."}
+        elif len(jd['valor']) < 4:
+                parametrosgenerales = {'message': "El valor debe tener mas de 4 caracteres."}
+        elif not validar_cadena_espacios(jd['valor']):
+                parametrosgenerales = {'message': "No se permiten mas de un espacio consecutivo.[valor]"}
+        elif validar_cadena_repeticion(jd['valor']):
+                parametrosgenerales = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[valor]"}     
+        elif len(jd['valor']) > 50:
+                parametrosgenerales = {'message': "El valor debe tener menos de 50 caracteres."}
         else:
             
             parametrosgenerales = {'message': "Registro Exitoso."}
@@ -108,11 +112,17 @@ class Parametros_GeneralesViews(View):
                 parametrosgenerales = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}     
             elif len(jd['descripcion']) > 50:
                 parametrosgenerales = {'message': "La descripción debe tener menos de 50 caracteres."}
-                
-            elif jd['valor'] <= 0:
-                parametrosgenerales  = {'message': "El valor debe ser mayor a 0."}
-            elif jd['valor'] > 1:
-                parametrosgenerales  = {'message': "El valor es muy alto."}
+            elif len(jd['valor']) <= 0:
+                parametrosgenerales = {'message': "El valor esta vacía."}
+            elif len(jd['valor']) < 4:
+                    parametrosgenerales = {'message': "El valor debe tener mas de 4 caracteres."}
+            elif not validar_cadena_espacios(jd['valor']):
+                    parametrosgenerales = {'message': "No se permiten mas de un espacio consecutivo.[valor]"}
+            elif validar_cadena_repeticion(jd['valor']):
+                    parametrosgenerales = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[valor]"}     
+            elif len(jd['valor']) > 50:
+                    parametrosgenerales = {'message': "El valor debe tener menos de 50 caracteres."}
+
             else:
                 parametrosgenerales = {'message': "Registro Exitoso."}
                 parametrogeneral.nombre = jd['nombre']

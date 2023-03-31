@@ -18,7 +18,7 @@ class DiagnosticoView(View):
 
 
     def get(self, request, campo="",criterio=""):
-        try:
+        #try:
             if (len(campo)> 0 and len(criterio)> 0):
                 if criterio == "id":
                     diagnosticos = Diagnostico.objects.filter(id=campo).values()
@@ -26,11 +26,11 @@ class DiagnosticoView(View):
                         diagnosticos_values = []
                         for diagnostico in diagnosticos:
                             diagnostico_dict = {
-                                'id': diagnosticos['id'],
-                                'descripcion': diagnosticos['descripcion'],
+                                'id': diagnostico['id'],
+                                'descripcion': diagnostico['descripcion'],
                                 'idEnfermedades':{}
                             }
-                            enfermedades = DiagnosticoDetalle.objects.filter(idDiagnosticos = diagnostico['id']).select_related('idEnfermedad')
+                            enfermedades = DiagnosticoDetalle.objects.filter(idDiagnostico = diagnostico['id']).select_related('idEnfermedad')
                             for enfermedad in enfermedades:
                                 enfermedad_dict = {
                                     'id': enfermedad.idEnfermedad.id,
@@ -38,15 +38,15 @@ class DiagnosticoView(View):
                                 }
                                 diagnostico_dict['idEnfermedades'][enfermedad.idEnfermedad.id] = enfermedad_dict
                             diagnosticos_values.append(diagnostico_dict)
-                            context = {
-                                'message': "Consulta exitosa",
-                                'enfermedades': diagnosticos_values
-                            }
-                            return JsonResponse(context)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'diagnosticos': diagnosticos_values
+                        }
+                        return JsonResponse(context)
                     else:
                         context = {
                             'message': "No se encontraron los datos",
-                            'enfermedades': diagnosticos_values
+                            'diagnosticos': diagnosticos_values
                         }
                         return JsonResponse(context)
                 elif criterio == "descripcion":
@@ -96,10 +96,10 @@ class DiagnosticoView(View):
                             }
                             diagnostico_dict['idEnfermedades'][enfermedad.idEnfermedad.id] = enfermedad_dict
                         diagnosticos_values.append(diagnostico_dict)
-                        context = {
-                            'message': "Consulta exitosa",
-                            'diagnosticos': diagnosticos_values
-                        }
+                    context = {
+                        'message': "Consulta exitosa",
+                        'diagnosticos': diagnosticos_values
+                    }
                     return JsonResponse(context)
                 else:
                     context = {
@@ -107,17 +107,8 @@ class DiagnosticoView(View):
                         'diagnosticos': diagnosticos_values
                     }
                     return JsonResponse(context)
-            return JsonResponse(diagnosticos)
-        except TypeError as e:
-            context = {
-                'message': f"El registro no existe. Excepcion: {e}",
-            }
             return JsonResponse(context)
-        except Exception as a:
-            context = {
-                'message': f"Error. Excepcion: {a}",
-            }
-            return JsonResponse(context)
+
 
 
 

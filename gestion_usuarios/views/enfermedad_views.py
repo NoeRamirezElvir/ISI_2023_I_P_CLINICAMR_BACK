@@ -36,11 +36,11 @@ class EnfermedadView(View):
                                 }
                                 enfermedad_dict['idSintomas'][sintoma.idSintoma.id] = sintoma_dict
                             enfermedades_values.append(enfermedad_dict)
-                            context = {
-                                'message': "Consulta exitosa",
-                                'enfermedades': enfermedades_values
-                            }
-                            return JsonResponse(context)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'enfermedades': enfermedades_values
+                        }
+                        return JsonResponse(context)
                     else:
                         context = {
                             'message': "No se encontraron los datos",
@@ -94,18 +94,19 @@ class EnfermedadView(View):
                             }
                             enfermedad_dict['idSintomas'][sintoma.idSintoma.id] = sintoma_dict
                         enfermedades_values.append(enfermedad_dict)
-                        context = {
-                            'message': "Consulta exitosa",
-                            'enfermedades': enfermedades_values
-                        }
+                    context = {
+                        'message': "Consulta exitosa",
+                        'enfermedades': enfermedades_values
+                    }
                     return JsonResponse(context)
                 else:
+                    enfermedades_values = []
                     context = {
                         'message': "No se encontraron los datos",
                         'enfermedades': enfermedades_values
                     }
                     return JsonResponse(context)
-            return JsonResponse(enfermedades)
+            return JsonResponse(context)
         except TypeError as e:
             context = {
                 'message': f"El registro no existe. Excepcion: {e}",
@@ -163,18 +164,36 @@ class EnfermedadView(View):
                 mensaje_put = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 50:
                 mensaje_put = {'message': "El nombre debe tener menos de 50 caracteres."}
+            elif jd['idSintomas'] == []:
+                mensaje_put = {'message': "No hay sintomas relacionados o estan vacíos."}
             elif len(jd['idSintomas']) < 0:
                 mensaje_put = {'message': "No hay sintomas relacionados o estan vacíos."}
             else:
-                for sintoma in jd['idSintomas']:
-                    idsintoma = instanciar_sintoma(sintoma['id'])
-                    enfermedad = instanciar_enfermedad(enfermedad_actualizar.nombre)
-                    if sintoma['delete'] == 1:
-                        reg_del = EnfermedadDetalle.objects.filter(idEnfermedad=enfermedad, idSintoma = idsintoma)
+                sintomas = EnfermedadDetalle.objects.filter(idEnfermedad=id).values('idSintoma')
+                ids_sintomas = [{'id': sintoma['idSintoma']} for sintoma in sintomas]
+                ids_actualizar = [{'id': sintoma['id']} for sintoma in jd['idSintomas']]
+
+                # obtener los IDs que están en idSintomas pero no en ids_lista
+                ids_faltantes = [sintoma['id'] for sintoma in ids_actualizar if sintoma not in ids_sintomas]
+
+                # obtener los IDs que están en ids_lista pero no en idSintomas
+                ids_extra = [sintoma['id'] for sintoma in ids_sintomas if sintoma not in ids_actualizar]
+
+                # verificar si la lista de IDs faltantes no está vacía
+                if len(ids_faltantes) > 0:
+                    # imprimir un mensaje para cada ID faltante
+                    for id_faltante in ids_faltantes:
+                        #Crea un detalle por cada id que no se encuentre en la lista de detalles pero si en la nueva lista
+                        EnfermedadDetalle.objects.create(idEnfermedad=enfermedad_actualizar, idSintoma = instanciar_sintoma(id_faltante))
+                # verificar si la lista de IDs extra no está vacía
+                if len(ids_extra) > 0:
+                    # imprimir un mensaje para cada ID extra
+                    for id_extra in ids_extra:
+                        #Borra los detalles que se encuentran en la lista de detalles pero que no estan en la nueva lista
+                        reg_del = EnfermedadDetalle.objects.filter(idEnfermedad=enfermedad_actualizar, idSintoma = instanciar_sintoma(id_extra))
                         reg_del.delete()
-                    else:
-                        if validar_detalle_existente(enfermedad.id, idsintoma.id):
-                            EnfermedadDetalle.objects.create(idEnfermedad=enfermedad, idSintoma = idsintoma)
+
+
                 enfermedad_actualizar.nombre = jd['nombre']
                 enfermedad_actualizar.save()
                 mensaje_put = {'message': "La actualización fue exitosa."}

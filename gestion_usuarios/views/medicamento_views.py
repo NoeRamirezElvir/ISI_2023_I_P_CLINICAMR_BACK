@@ -144,8 +144,8 @@ class MedicamentosViews(View):
                 mensaje_post = {'message': "El precio debe tener menos de 10 digitos."}
             elif round(Decimal(jd['precioVenta'])) > 99999999.99:
                 mensaje_post = {'message': "El precio es muy alto."}
-            elif round(Decimal(jd['precioVenta']), 2) > round(Decimal(jd['precioVenta']), 2):
-                mensaje_post = {'message': "El precio debe ser mayo al costo de compra."}
+            elif round(Decimal(jd['precioVenta']), 2) < round(Decimal(jd['costoCompra']), 2):
+                mensaje_post = {'message': "El precio debe ser mayor al costo de compra."}
             else:
                 #Se crea el objeto Medicamento
                 costoCompra = Decimal(jd['costoCompra'])
@@ -273,8 +273,8 @@ class MedicamentosViews(View):
                     mensaje_put = {'message': "El precio debe tener menos de 10 digitos."}
                 elif round(Decimal(jd['precioVenta'])) > 99999999.99:
                     mensaje_put = {'message': "El precio es muy alto."}
-                elif round(Decimal(jd['precioVenta']), 2) > round(Decimal(jd['precioVenta']), 2):
-                    mensaje_put = {'message': "El precio debe ser mayo al costo de compra."}
+                elif round(Decimal(jd['precioVenta']), 2) < round(Decimal(jd['costoCompra']), 2):
+                    mensaje_put = {'message': "El precio debe ser mayor al costo de compra."}
 
                 else:
                     nombre_temp=medicamento_actualizar.nombre

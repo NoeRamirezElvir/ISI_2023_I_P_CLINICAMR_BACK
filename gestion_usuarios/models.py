@@ -158,26 +158,47 @@ class Consulta(models.Model):
 class ParametrosGenerales(models.Model):
         nombre =models.CharField(max_length=50)
         descripcion = models.CharField(max_length=50)
-        valor = models.DecimalField(max_digits=4, decimal_places=2)
-
+        valor = models.CharField(max_length=100)
 
 class ConsultaDetalle(models.Model):
         idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
         idSintoma = models.ForeignKey(Sintoma, on_delete=models.PROTECT)
         idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)
 
-
 class DiagnosticoDetalle(models.Model):
         idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
         idDiagnostico = models.ForeignKey(Diagnostico, on_delete=models.PROTECT)
-
 
 class Tratamiento(models.Model):
         idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
         idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT)
         fecha = models.DateField()
+        diasTratamiento = models.PositiveIntegerField()
+        estado = models.CharField(max_length=50)
 
 class Resultados(models.Model):
         idTratamiento = models.ForeignKey(Tratamiento, on_delete=models.PROTECT)        
         fecha = models.DateField()
         observacion = models.CharField(max_length=100)
+
+class Examen(models.Model):
+        idMuestra = models.ForeignKey(Muestra, on_delete=models.PROTECT)
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        fecha = models.DateTimeField(auto_now_add=True)
+        fechaProgramada = models.DateTimeField()
+        observacion = models.CharField(max_length=100)
+        idLaboratorio = models.ForeignKey(Laboratorios, on_delete=models.PROTECT)
+
+class PrecioHistoricoExamen(models.Model):
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        fechaInicio = models.DateTimeField()
+        fechaFinal = models.DateTimeField(null=True, blank=True)
+        activo  = models.PositiveSmallIntegerField()
+        precio = models.DecimalField(max_digits=8, decimal_places=2)
+
+class PrecioHistoricoTratamiento(models.Model):
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        fechaInicio = models.DateTimeField()
+        fechaFinal = models.DateTimeField(null=True, blank=True)
+        activo  = models.PositiveSmallIntegerField()
+        precio = models.DecimalField(max_digits=8, decimal_places=2)

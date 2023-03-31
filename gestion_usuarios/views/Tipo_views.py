@@ -1,3 +1,4 @@
+from datetime import datetime, timedelta
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -19,50 +20,113 @@ class TiposView(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if criterio == "id":
-                tipo = list(Tipo.objects.filter(id=campo).values())
-                if len(tipo) > 0:
-                    tipo = tipo
-                    tipo = {'message': "Consulta exitosa", 'tipo': tipo}
-                else:
-                    tipo = {'message': "No se encontraron los datos", 'tipo': []} 
-                    return JsonResponse(tipo)
-                
-            elif criterio == "nombre":
-                tipo = list(Tipo.objects.filter(nombre=campo).values())
-                if len(tipo) > 0:
-                    tipo = tipo
-                    tipo = {'message': "Consulta exitosa", 'tipo': tipo}
-                else:
-                    tipo = {'message': "No se encontraron los datos", 'tipo': []} 
-                    return JsonResponse(tipo)
-            elif criterio == "subtipo":
-                idSubtipo = Subtipo.objects.filter(nombre=campo).last()
-                if idSubtipo is not None:
-                    tipos = list(Tipo.objects.filter(idsubtipo=idSubtipo.id).values())
+                tipos = Tipo.objects.filter(id=campo).select_related('idsubtipo')
+                if tipos is not None:
+                    tipos_values = []
+                    for tipo in tipos:
+                        tipo_dict = {
+                            'id': tipo.id,
+                            'nombre': tipo.nombre,
+                            'descripcion': tipo.descripcion,
+                            'precio': tipo.precio,
+                            'idsubtipo': {
+                                'id': tipo.idsubtipo.id,
+                                'nombre': tipo.idsubtipo.nombre
+                            }
+                        }
+                        tipos_values.append(tipo_dict)
                     context = {
-                        'message': "Consulta Exitosa",
-                        'tipos': tipos
+                        'message': "Consulta exitosa",
+                        'tipos': tipos_values
                     }
                     return JsonResponse(context)
                 else:
                     context = {
                         'message': "No se encontraron los datos",
-                        'historicos': []
+                        'tipos': []
                     }
                     return JsonResponse(context)
+            elif criterio == "nombre":
+                tipos = Tipo.objects.filter(nombre=campo).select_related('idsubtipo')
+                if tipos is not None:
+                    tipos_values = []
+                    for tipo in tipos:
+                        tipo_dict = {
+                            'id': tipo.id,
+                            'nombre': tipo.nombre,
+                            'descripcion': tipo.descripcion,
+                            'precio': tipo.precio,
+                            'idsubtipo': {
+                                'id': tipo.idsubtipo.id,
+                                'nombre': tipo.idsubtipo.nombre
+                            }
+                        }
+                        tipos_values.append(tipo_dict)
+                    context = {
+                        'message': "Consulta exitosa",
+                        'tipos': tipos_values
+                    }
+                    return JsonResponse(context)
+                else:
+                    context = {
+                        'message': "No se encontraron los datos",
+                        'tipos': []
+                    }
+                    return JsonResponse(context)
+            elif criterio == "subtipo":
+                tipos = Tipo.objects.filter(idsubtipo__nombre=campo)
+                if tipos is not None:
+                    tipos_values = []
+                    for tipo in tipos:
+                        tipo_dict = {
+                            'id': tipo.id,
+                            'nombre': tipo.nombre,
+                            'descripcion': tipo.descripcion,
+                            'precio': tipo.precio,
+                            'idsubtipo': {
+                                'id': tipo.idsubtipo.id,
+                                'nombre': tipo.idsubtipo.nombre
+                            }
+                        }
+                        tipos_values.append(tipo_dict)
+                    context = {
+                        'message': "Consulta exitosa",
+                        'tipos': tipos_values
+                    }
+                    return JsonResponse(context)
+                else:
+                    context = {
+                        'message': "No se encontraron los datos",
+                        'tipos': []
+                    }
+                    return JsonResponse(context)
+        else:
+            tipos = Tipo.objects.select_related('idsubtipo')
+            if tipos is not None:
+                tipos_values = []
+                for tipo in tipos:
+                    tipo_dict = {
+                        'id': tipo.id,
+                        'nombre': tipo.nombre,
+                        'descripcion': tipo.descripcion,
+                        'precio': tipo.precio,
+                        'idsubtipo': {
+                            'id': tipo.idsubtipo.id,
+                            'nombre': tipo.idsubtipo.nombre
+                        }
+                    }
+                    tipos_values.append(tipo_dict)
+                context = {
+                    'message': "Consulta exitosa",
+                    'tipos': tipos_values
+                }
+                return JsonResponse(context)
             else:
                 context = {
-                        'message': "No se encontraron los datos",
-                        'historicos': []
-                    }
+                    'message': "No se encontraron los datos",
+                    'tipos': []
+                }
                 return JsonResponse(context)
-        else:
-            tipo = list(Tipo.objects.values())
-            if len(tipo) > 0:
-                tipo = {'message': "Consulta exitosa", 'tipo': tipo}
-            else:
-                tipo = {'message': "No se encontraron los datos", 'tipo': []} 
-        return JsonResponse(tipo)
 
 #Agregar un registro de tipo
     def post(self, request):
@@ -80,32 +144,56 @@ class TiposView(View):
             tipo = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 50:
             tipo = {'message': "El nombre debe tener menos de 50 caracteres."}
-        
         elif len(jd['descripcion']) <= 0:
             tipo = {'message': "La descripción esta vacía."}
         elif len(jd['descripcion']) < 4:
             tipo = {'message': "La descripción debe tener mas de 4 caracteres."}
         elif len(jd['descripcion']) > 50:
             tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
-        elif (jd['idsubtipo']) <= 0:
-            tipo = {'message': "El tipo esta vacío."}
-        elif validar_id_subtipo(jd['idsubtipo']):
-            tipo = {'message': "El id de subtipo no existe."}
-        elif Decimal(jd['precio']) <= 0:
-                tipo = {'message': "El precio debe ser mayor a 0."}
-        elif len(str(jd['precio'])) > 11:
-            tipo = {'message': "El precio debe tener menos de 10 digitos."}
-        elif round(Decimal(jd['precio'])) > 99999999.99:
-            tipo = {'message': "El precio es muy alto."}
-        elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
-            tipo = {'message': "El precio debe ser mayo al costo de compra."}
-        
-        
+        elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
+            tipo = {'message': "Seleccione un subtipo existente."}
+        elif 'precio' not in jd or jd['precio'] is None or jd['precio'].strip() == '':
+            tipo = {'message': "El precio esta vacío, nulo, blanco o no existe."}
         else:
-            precios= Decimal(jd['precio'])
-            
-            Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(jd['idsubtipo'],precio=precios))
             tipo = {'message':"Registro Exitoso."}
+            subtipo = instanciar_subtipo(int(jd['idsubtipo']))
+            if subtipo.nombre.lower() == 'examen'.lower():
+                if Decimal(jd['precio']) > 0:
+                    precios= Decimal(jd['precio'])
+                    if len(str(jd['precio'])) > 11:
+                        tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                    elif round(Decimal(jd['precio'])) > 99999999.99:
+                        tipo = {'message': "El precio es muy alto."}
+                    elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
+                        tipo = {'message': "El precio debe ser mayor al costo de compra."}
+                    else:
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        PrecioHistoricoExamen.objects.create(idTipo=id_tipo,
+                                                            fechaInicio=datetime.now(),
+                                                            activo=1,
+                                                            precio=jd['precio'])
+                else:
+                    tipo = {'message': "El precio debe ser mayor a 0."}
+                
+            elif subtipo.nombre.lower() == 'tratamiento'.lower():
+                precios= Decimal(jd['precio'])
+                if Decimal(jd['precio']) > 0:
+                    if len(str(jd['precio'])) > 11:
+                        tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                    elif round(Decimal(jd['precio'])) > 99999999.99:
+                        tipo = {'message': "El precio es muy alto."}
+                    elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
+                        tipo = {'message': "El precio debe ser mayor al costo de compra."}
+                    else:
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        PrecioHistoricoTratamiento.objects.create(idTipo=id_tipo,
+                                                            fechaInicio=datetime.now(),
+                                                            activo=1,
+                                                            precio=jd['precio'])
+                else:
+                    tipo = {'message': "El precio debe ser mayor a 0."}
+            else:
+                Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=0.00)
         return JsonResponse(tipo)
 
 #Actualizar un registro de tipo
@@ -130,25 +218,67 @@ class TiposView(View):
                 tipo = {'message': "La descripción debe tener mas de 4 caracteres."}
             elif len(jd['descripcion']) > 50:
                 tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
-            elif Decimal(jd['precio']) <= 0:
-                tipo = {'message': "El precio debe ser mayor a 0."}
-            elif len(str(jd['precio'])) > 11:
-                tipo = {'message': "El precio debe tener menos de 10 digitos."}
-            elif round(Decimal(jd['precio'])) > 99999999.99:
-                tipo = {'message': "El precio es muy alto."}
-            elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
-                tipo = {'message': "El precio debe ser mayo al costo de compra."}
-            
-            
+            elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
+                tipo = {'message': "Seleccione un subtipo existente."}
+            elif 'precio' not in jd or jd['precio'] is None or jd['precio'].strip() == '':
+                tipo = {'message': "El precio esta vacío, nulo, blanco o no existe."}
             else:
-                tipo = {'message': "Registro Exitoso."}
-                tipos.idsubtipo = instanciar_subtipo(jd['idsubtipo'])
+                tipo = {'message': "La actualización fue exitosa."}
+                tipo_temp = tipos
+                tipos.idsubtipo = instanciar_subtipo(int(jd['idsubtipo']))
                 tipos.nombre = jd['nombre']
                 tipos.descripcion = jd['descripcion']
-                tipos.precio = Decimal(jd['precio'])    
+                tipos.precio = Decimal(jd['precio'])
+                subtipo = instanciar_subtipo(int(jd['idsubtipo']))
+                if subtipo.nombre.lower() == 'examen'.lower():
+                    if Decimal(jd['precio']) > 0:
+                        if len(str(jd['precio'])) > 11:
+                            tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                        elif round(Decimal(jd['precio'])) > 99999999.99:
+                            tipo = {'message': "El precio es muy alto."}
+                        else:
+                            precio_historico_examen =  PrecioHistoricoExamen.objects.filter(idTipo=id).last()
+                            if precio_historico_examen is not None:
+                                if not round(Decimal(precio_historico_examen.precio), 2) == round(Decimal(tipos.precio), 2):
+                                    precio_historico_examen.fechaFinal = fecha_final()
+                                    precio_historico_examen.save()
+                                    PrecioHistoricoExamen.objects.create(idTipo=tipo_temp,
+                                                                        fechaInicio=datetime.now(),
+                                                                        activo=1,
+                                                                        precio=jd['precio'])
+                            else:
+                                PrecioHistoricoExamen.objects.create(idTipo=tipo_temp,
+                                                                    fechaInicio=datetime.now(),
+                                                                    activo=1,
+                                                                    precio=jd['precio'])
+                    else:
+                        tipo = {'message': "El precio debe ser mayor a 0."}
+                elif subtipo.nombre.lower() == 'tratamiento'.lower():
+                    if Decimal(jd['precio']) > 0:
+                        if len(str(jd['precio'])) > 11:
+                            tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                        elif round(Decimal(jd['precio'])) > 99999999.99:
+                            tipo = {'message': "El precio es muy alto."}
+                        else:
+                            precio_historico_tratamiento =  PrecioHistoricoTratamiento.objects.filter(idTipo=id).last()
+                            if precio_historico_tratamiento is not None:
+                                if not round(Decimal(precio_historico_tratamiento.precio), 2) == round(Decimal(tipos.precio), 2):
+                                    precio_historico_tratamiento.fechaFinal = fecha_final()
+                                    precio_historico_tratamiento.save()
+                                    PrecioHistoricoTratamiento.objects.create(idTipo=tipo_temp,
+                                                                        fechaInicio=datetime.now(),
+                                                                        activo=1,
+                                                                        precio=jd['precio'])
+                            else:
+                                PrecioHistoricoTratamiento.objects.create(idTipo=tipo_temp,
+                                                                    fechaInicio=datetime.now(),
+                                                                    activo=1,
+                                                                    precio=jd['precio'])
+                    else:
+                        tipo = {'message': "El precio debe ser mayor a 0."}
                 tipos.save()
-                tipo = {'message': "La actualización fue exitosa."}
         return JsonResponse(tipo)
+        
         
         
 #Eliminar un registro de tipo
@@ -158,9 +288,15 @@ class TiposView(View):
             Tipo.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro", 'tipo': []}
+            datos = {'message':"No se encontraró el registro", 'tipos': []}
         return JsonResponse(datos)
-    
+
+
+
+def fecha_final():
+    fecha_menos_un_dia=datetime.today()+timedelta(days=-1)
+    return fecha_menos_un_dia
+
 def validar_tipo_repetido(nombre): 
     if (nombre):
         registros = Tipo.objects.filter(nombre=nombre)

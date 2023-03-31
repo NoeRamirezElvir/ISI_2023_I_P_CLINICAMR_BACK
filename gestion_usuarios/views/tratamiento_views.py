@@ -19,18 +19,23 @@ class tratamientosViews(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if criterio == "id":
-                tratamientos = Tratamiento.objects.filter(id=campo).select_related('idPaciente')
+                tratamientos = Tratamiento.objects.filter(id=campo).select_related('idPaciente','idTipo')
                 if tratamientos is not None:
                     tratamientos_values = []
                     for tratamiento in tratamientos:
                         paciente = tratamiento.idPaciente
                         tratamiento_dict = {
                             'id': tratamiento.id,
-                            'idTipo': tratamiento.idTipo.id,
                             'fecha': tratamiento.fecha,
+                            'diasTratamiento':tratamiento.diasTratamiento,
+                            'estado': tratamiento.estado,
                             'idPaciente': {
                                 'id': paciente.id,
                                 'nombre': paciente.nombre
+                            },
+                            'idTipo': {
+                                'id': tratamiento.idTipo.id,
+                                'nombre': tratamiento.idTipo.nombre
                             }
                         }
                         tratamientos_values.append(tratamiento_dict)
@@ -49,19 +54,24 @@ class tratamientosViews(View):
                 idPaciente = Paciente.objects.filter(nombre=campo)
                 if idPaciente is not None:
                     for paciente in idPaciente:
-                        reg = Tratamiento.objects.filter(idPaciente=paciente.id).select_related('idPaciente')
+                        reg = Tratamiento.objects.filter(idPaciente=paciente.id).select_related('idPaciente','idTipo')
                         if reg is not None:
                             tratamientos_values = []
                             for tratamiento in reg:
                                 paciente = tratamiento.idPaciente
                                 tratamiento_dict = {
                                     'id': tratamiento.id,
-                                    'idTipo': tratamiento.idTipo.id,
                                     'fecha': tratamiento.fecha,
+                                    'diasTratamiento':tratamiento.diasTratamiento,
+                                    'estado': tratamiento.estado,
                                     'idPaciente': {
                                         'id': paciente.id,
                                         'nombre': paciente.nombre
-                                    }
+                                    },
+                                    'idTipo': {
+                                            'id': tratamiento.idTipo.id,
+                                            'nombre': tratamiento.idTipo.nombre
+                                        }
                                 }
                                 tratamientos_values.append(tratamiento_dict)
                             context = {
@@ -87,19 +97,24 @@ class tratamientosViews(View):
                 }
             return JsonResponse(context)
         else:
-            reg = Tratamiento.objects.select_related('idPaciente')
+            reg = Tratamiento.objects.select_related('idPaciente','idTipo')
             if reg is not None:
                 tratamientos_values = []
                 for tratamiento in reg:
                     paciente = tratamiento.idPaciente
                     tratamiento_dict = {
                         'id': tratamiento.id,
-                        'idTipo': tratamiento.idTipo.id,
                         'fecha': tratamiento.fecha,
+                        'diasTratamiento':tratamiento.diasTratamiento,
+                        'estado': tratamiento.estado,
                         'idPaciente': {
                             'id': paciente.id,
                             'nombre': paciente.nombre
-                        }
+                        },
+                        'idTipo': {
+                                'id': tratamiento.idTipo.id,
+                                'nombre': tratamiento.idTipo.nombre
+                            }
                     }
                     tratamientos_values.append(tratamiento_dict)
                 context = {
@@ -120,8 +135,16 @@ class tratamientosViews(View):
         rsp_fecha = datetime.datetime.fromisoformat(jd['fecha'])
         if validar_id_paciente(jd['idPaciente']):    
             tratamientos = {'message': "El paciente no existe"}
-        if validar_id_tipo(jd['idTipo']):    
+        elif jd['idPaciente'] == [] or jd['idPaciente'] == 0:
             tratamientos = {'message': "El paciente no existe"}
+        elif validar_id_tipo(jd['idTipo']):    
+            tratamientos = {'message': "El paciente no existe"}
+        elif jd['idTipo'] == [] or jd['idTipo'] == 0:
+            tratamientos = {'message': "El tipo no existe"}
+        elif jd['diasTratamiento'] < 1:
+            tratamientos = {'message': "El tratamiento debe durar al menos de 1 dia."}
+        elif len(str(jd['diasTratamiento'])) > 3:
+            tratamientos = {'message': "Ingrese un valor correcto en los dias de tratamiento.[ejemplo: 3]"}
         elif (rsp_fecha) is None:
             tratamientos = {'message': "La fecha esta vacía"}
         elif isinstance(rsp_fecha, str):
@@ -130,9 +153,24 @@ class tratamientosViews(View):
             tratamientos = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
         elif (rsp_fecha.year) > 2030:
             tratamientos = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
+        elif len(jd['estado']) <= 0:
+             tratamientos = {'message': "El estado esta vacío"}
+        elif len(jd['estado']) < 3 :
+            tratamientos = {'message': "El estado debe tener mas de 3 caracteres"}
+        elif len(jd['estado']) > 50:
+            tratamientos = {'message': "El estado debe tener menos de 50 caracteres"}
+        elif validar_cadena_repeticion(jd['estado']):
+            tratamientos = {'message': "No se permiten mas de 2 caracteres consecutivos del mismo tipo.[estado]"}
+        elif not validar_cadena_espacios(jd['estado']):
+            tratamientos = {'message': "No se permiten mas de 2 espacios consecutivos.[estado]"}
         else:
             tratamientos = {'message': "Registro Exitoso."}
-            Tratamiento.objects.create(idPaciente=instanciar_paciente(jd['idPaciente']), idTipo=instanciar_tipo(jd['idTipo']),fecha=jd['fecha'])
+            Tratamiento.objects.create(idPaciente=instanciar_paciente(jd['idPaciente']),
+                                        idTipo=instanciar_tipo(jd['idTipo']),
+                                        fecha=jd['fecha'],
+                                        diasTratamiento=int(jd['diasTratamiento']),
+                                        estado = jd['estado']
+                                        )
             tratamientos = {'message':"Registro Exitoso."}
         return JsonResponse(tratamientos)
 
@@ -145,8 +183,16 @@ class tratamientosViews(View):
             tratamiento=Tratamiento.objects.get(id=id)
             if validar_id_paciente(jd['idPaciente']):    
                 tratamientos = {'message': "El paciente no existe"}
-            if validar_id_tipo(jd['idTipo']):    
+            elif jd['idPaciente'] == [] or jd['idPaciente'] == 0:
                 tratamientos = {'message': "El paciente no existe"}
+            elif validar_id_tipo(jd['idTipo']):    
+                tratamientos = {'message': "El paciente no existe"}
+            elif jd['idTipo'] == [] or jd['idTipo'] == 0:
+                tratamientos = {'message': "El tipo no existe"}
+            elif jd['diasTratamiento'] < 1:
+                tratamientos = {'message': "El tratamiento debe durar al menos de 1 dia."}
+            elif len(str(jd['diasTratamiento'])) > 3:
+                tratamientos = {'message': "Ingrese un valor correcto en los dias de tratamiento.[ejemplo: 3]"}
             elif (rsp_fecha) is None:
                 tratamientos = {'message': "La fecha esta vacía"}
             elif isinstance(rsp_fecha, str):
@@ -155,10 +201,22 @@ class tratamientosViews(View):
                 tratamientos = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
             elif (rsp_fecha.year) > 2030:
                 tratamientos = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
+            elif len(jd['estado']) <= 0:
+                tratamientos = {'message': "El estado esta vacío"}
+            elif len(jd['estado']) < 3 :
+                tratamientos = {'message': "El estado debe tener mas de 3 caracteres"}
+            elif len(jd['estado']) > 50:
+                tratamientos = {'message': "El estado debe tener menos de 50 caracteres"}
+            elif validar_cadena_repeticion(jd['estado']):
+                tratamientos = {'message': "No se permiten mas de 2 caracteres consecutivos del mismo tipo.[estado]"}
+            elif not validar_cadena_espacios(jd['estado']):
+                tratamientos = {'message': "No se permiten mas de 2 espacios consecutivos.[estado]"}
             else:
                 tratamiento.idPaciente = instanciar_paciente(jd['idPaciente'])
                 tratamiento.idTipo = instanciar_tipo(jd['idTipo'])
                 tratamiento.fecha = jd['fecha']
+                tratamiento.diasTratamiento = int(jd['diasTratamiento'])
+                tratamiento.estado = jd['estado']
                 tratamiento.save()
                 tratamientos = {'message': "La actualización fue exitosa."}
         return JsonResponse(tratamientos)

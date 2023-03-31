@@ -57,13 +57,11 @@ class subtipoView(View):
             subtipo = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 50:
             subtipo = {'message': "El nombre debe tener menos de 50 caracteres."}
-        
         elif jd['activo'] < 0:
             subtipo = {'message': "Activo debe ser positivo."}
         elif jd['activo'] > 1:
             subtipo = {'message': "Activo debe unicamente puede ser 0 o 1."}
         else:
-            subtipo = {'message': "Registro Exitoso."}
             Subtipo.objects.create(nombre=jd['nombre'], activo=jd['activo'])
             subtipo = {'message':"Registro Exitoso."}
         return JsonResponse(subtipo)
@@ -84,7 +82,6 @@ class subtipoView(View):
                 subtipo = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 50:
                 subtipo = {'message': "El nombre debe tener menos de 50 caracteres."}
-            
             elif jd['activo'] < 0:
                 subtipo = {'message': "Activo debe ser positivo."}
             elif jd['activo'] < 0:
@@ -92,7 +89,6 @@ class subtipoView(View):
             else:
                 subtipo = {'message': "Registro Exitoso."}
                 subtipos.nombre = jd['nombre']
-                
                 subtipos.activo = jd['activo']
                 subtipos.save()
                 subtipo = {'message': "La actualización fue exitosa."}

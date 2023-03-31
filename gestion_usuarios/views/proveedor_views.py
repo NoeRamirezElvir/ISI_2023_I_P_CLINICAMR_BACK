@@ -52,18 +52,14 @@ class ProveedorView(View):
 
             if len(jd['nombre']) <= 0:
                 mensaje_post = {'message': "El nombre esta vacío."}
-            elif len(jd['nombre']) < 4:
-                mensaje_post = {'message': "El nombre debe tener mas de 4 caracteres."}
+            elif len(jd['nombre']) < 3:
+                mensaje_post = {'message': "El nombre debe tener mas de 3 caracteres."}
             elif not validar_cadena_espacios(jd['nombre']):
                 mensaje_post = {'message': "No se permiten mas de un espacio consecutivo.[nombre]"}
             elif validar_cadena_repeticion(jd['nombre']):
                 mensaje_post = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[nombre]"}
             elif len(jd['nombre']) > 50:
                 mensaje_post = {'message': "El nombre debe tener menos de 50 caracteres."}
-            elif str(jd['telefono']).isalpha():
-                mensaje_post = {'message': "El teléfono solo puede contener numeros."}
-            elif len(str(jd['telefono'])) <= 0:
-                mensaje_post = {'message': "El teléfono esta vacío."}
             elif not len(str(jd['telefono'])) == 8:
                 mensaje_post = {'message': "El teléfono debe tener 8 digitos."}
             elif (str(jd['telefono']))[0] == '1':
@@ -119,18 +115,14 @@ class ProveedorView(View):
                 proveedor_actualizar=Proveedor.objects.get(id=id)
                 if len(jd['nombre']) <= 0:
                     mensaje_put = {'message': "El nombre esta vacío."}
-                elif len(jd['nombre']) < 4:
-                    mensaje_put = {'message': "El nombre debe tener mas de 4 caracteres."}
+                elif len(jd['nombre']) < 3:
+                    mensaje_put = {'message': "El nombre debe tener mas de 3 caracteres."}
                 elif not validar_cadena_espacios(jd['nombre']):
                     mensaje_put = {'message': "No se permiten mas de un espacio consecutivo.[nombre]"}
                 elif validar_cadena_repeticion(jd['nombre']):
                     mensaje_put = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[nombre]"}
                 elif len(jd['nombre']) > 50:
                     mensaje_put = {'message': "El nombre debe tener menos de 50 caracteres."}
-                elif str(jd['telefono']).isalpha():
-                    mensaje_put = {'message': "El teléfono solo puede contener numeros."}
-                elif len(str(jd['telefono'])) <= 0:
-                    mensaje_put = {'message': "El teléfono esta vacío."}
                 elif not len(str(jd['telefono'])) == 8:
                     mensaje_put = {'message': "El teléfono debe tener 8 digitos."}
                 elif (str(jd['telefono']))[0] == '1':
@@ -143,8 +135,6 @@ class ProveedorView(View):
                     mensaje_put = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
                 elif (str(jd['telefono']))[0] == '0':
                     mensaje_put = {'message': "El teléfono debe comenzar con 2, 3, 7, 8, 9."}
-                elif (validar_telefono_repetido(jd['telefono'])):
-                    mensaje_put = {'message': "El telefono ya esta en uso."}
                 elif len(jd['correo']) <= 0:
                     mensaje_put = {'message': "El correo esta vacío."}
                 elif len(jd['correo']) < 5:
@@ -153,8 +143,6 @@ class ProveedorView(View):
                     mensaje_put = {'message': "El correo debe tener menos de 30 caracteres."}
                 elif validar_correo(jd['correo']):
                     mensaje_put = {'message': "El correo debe tener un formato válido, Ejemplo: ejemplo.correo@ejemplo.com"}
-                elif (validar_correo_repetido(jd['correo'])):
-                    mensaje_put = {'message': "El correo ya esta en uso."}
                 elif len(jd['direccion']) <= 0:
                     mensaje_put = {'message': "La dirección esta vacía."}
                 elif len(jd['direccion']) < 5:

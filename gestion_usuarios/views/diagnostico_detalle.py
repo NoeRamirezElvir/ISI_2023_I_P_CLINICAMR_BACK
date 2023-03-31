@@ -29,8 +29,8 @@ class DiagnosticoDetalleView(View):
                             'nombre':detalle.idEnfermedad.nombre
                             },
                             'idDiagnostico':{
-                            'id':detalle.idDiagnostico.id,
-                            'nombre':detalle.idDiagnostico.descripcion
+                                'id':detalle.idDiagnostico.id,
+                                'descripcion':detalle.idDiagnostico.descripcion
                             }
                         }
                         detalle_values.append(detalle_dict)
@@ -57,7 +57,7 @@ class DiagnosticoDetalleView(View):
                                     },
                                     'idDiagnostico': {
                                         'id': sin.id,
-                                        'nombre': sin.descripcion
+                                        'descripcion': sin.descripcion
                                     }
                                 }
                                 detalles_values.append(historico_dict)
@@ -95,8 +95,8 @@ class DiagnosticoDetalleView(View):
                         'nombre':detalle.idEnfermedad.nombre
                         },
                         'idDiagnostico':{
-                        'id':detalle.idDiagnostico.id,
-                        'nombre':detalle.idDiagnostico.descripcion
+                            'id':detalle.idDiagnostico.id,
+                            'descripcion':detalle.idDiagnostico.descripcion
                         }
                     }
                     detalle_values.append(detalle_dict)
