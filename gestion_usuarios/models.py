@@ -151,8 +151,8 @@ class Diagnostico(models.Model):
         descripcion = models.CharField(max_length=100)
 
 class Consulta(models.Model):
-        idCita = models.ForeignKey(TipoMuestra, on_delete=models.PROTECT)
-        idEmpleado = models.ForeignKey(Paciente, on_delete=models.PROTECT)
+        idCita = models.ForeignKey(Cita, on_delete=models.PROTECT)
+        idEmpleado = models.ForeignKey(Empleado, on_delete=models.PROTECT)
         fecha = models.DateField()
 
 class ParametrosGenerales(models.Model):
@@ -202,3 +202,24 @@ class PrecioHistoricoTratamiento(models.Model):
         fechaFinal = models.DateTimeField(null=True, blank=True)
         activo  = models.PositiveSmallIntegerField()
         precio = models.DecimalField(max_digits=8, decimal_places=2)
+
+
+class AutorizacionPaciente(models.Model):
+        motivos = models.CharField(max_length=50)
+        confirmacion = models.PositiveSmallIntegerField()
+
+class TrasladoPaciente(models.Model):
+        idAutorizacionPaciente=models.ForeignKey(AutorizacionPaciente, on_delete=models.PROTECT)
+        idPaciente=models.ForeignKey(Paciente, on_delete=models.PROTECT)
+        idEmpleado=models.ForeignKey(Empleado, on_delete=models.PROTECT)
+        nombre = models.CharField(max_length=50)
+        direccion = models.CharField(max_length=50)
+        telefono = models.CharField(max_length=15)
+
+
+class Expediente(models.Model):
+        idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT)        
+        fecha = models.DateField()
+        observacion = models.CharField(max_length=100)
+        activo = models.PositiveSmallIntegerField()
+

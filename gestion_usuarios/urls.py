@@ -31,6 +31,11 @@ from .views.tratamiento_views import *
 from .views.Resultado_views import *
 from .views.precio_historico_examen_views import *
 from .views.precio_historico_tratamiento_views import *
+from .views.autorizacion_paciente_views import *
+from .views.traslado_paciente_views import *
+from .views.expediente_views import *
+from .views.consulta_views import *
+from .views.examen_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -137,5 +142,31 @@ urlpatterns = [
     path('precioHistoricoTratamiento/', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_list'),
     path('precioHistoricoTratamiento/busqueda/<str:criterio>/<str:campo>', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_process'),
     path('precioHistoricoTratamiento/id/<int:id>', PrecioHistoricoTratamientosViews.as_view() , name='precio_historico_tratamiento_process_id'), 
-    
+
+
+    path('autorizar/', autorizarView.as_view() , name='autorizar_list'),
+    path('autorizar/busqueda/<str:criterio>/<str:campo>', autorizarView.as_view() , name='autorizar_process'),
+    path('autorizar/id/<int:id>', autorizarView.as_view() , name='autorizar_process_id'),        
+
+
+    path('traslados/', tratamientosViews.as_view() , name='traslados_list'),
+    path('traslados/busqueda/<str:criterio>/<str:campo>', tratamientosViews.as_view() , name='traslados_process'),
+    path('traslados/id/<int:id>', tratamientosViews.as_view() , name='traslados_process_id'),  
+
+    path('expediente/', ExpedientesViews.as_view() , name='expediente_list'),
+    path('expediente/busqueda/<str:criterio>/<str:campo>', ExpedientesViews.as_view() , name='expediente_process'),
+    path('expediente/id/<int:id>', ExpedientesViews.as_view() , name='expediente_process_id'),       
+
+    path('consultas/', ConsultaViews.as_view() , name='consultas_list'),
+    path('consultas/busqueda/<str:criterio>/<str:campo>', ConsultaViews.as_view() , name='consultas_process'),
+    path('consultas/id/<int:id>', ConsultaViews.as_view() , name='consultas_process_id'),         
+
+    path('examen/', examenViews.as_view() , name='examen_list'),
+    path('examen/busqueda/<str:criterio>/<str:campo>', examenViews.as_view() , name='examen_process'),
+    path('examen/id/<int:id>', examenViews.as_view() , name='examen_process_id'),         
+
+
+
 ]
+
+
