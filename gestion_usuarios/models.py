@@ -152,8 +152,10 @@ class Diagnostico(models.Model):
 
 class Consulta(models.Model):
         idCita = models.ForeignKey(Cita, on_delete=models.PROTECT)
-        idEmpleado = models.ForeignKey(Empleado, on_delete=models.PROTECT)
-        fecha = models.DateField()
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        fecha = models.DateField(auto_now_add=True)
+        recomendaciones = models.CharField(max_length=100)
+        informacionAdicional = models.CharField(max_length=100)
 
 class ParametrosGenerales(models.Model):
         nombre =models.CharField(max_length=50)
@@ -161,9 +163,8 @@ class ParametrosGenerales(models.Model):
         valor = models.CharField(max_length=100)
 
 class ConsultaDetalle(models.Model):
-        idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
-        idSintoma = models.ForeignKey(Sintoma, on_delete=models.PROTECT)
-        idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)
+        idDiagnostico = models.ForeignKey(Diagnostico, on_delete=models.PROTECT)
+        idConsulta = models.ForeignKey(Consulta, on_delete=models.PROTECT)
 
 class DiagnosticoDetalle(models.Model):
         idEnfermedad = models.ForeignKey(Enfermedad, on_delete=models.PROTECT)
@@ -203,6 +204,12 @@ class PrecioHistoricoTratamiento(models.Model):
         activo  = models.PositiveSmallIntegerField()
         precio = models.DecimalField(max_digits=8, decimal_places=2)
 
+class PrecioHistoricoConsulta(models.Model):
+        idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
+        fechaInicio = models.DateTimeField()
+        fechaFinal = models.DateTimeField(null=True, blank=True)
+        activo  = models.PositiveSmallIntegerField()
+        precio = models.DecimalField(max_digits=8, decimal_places=2)
 
 class AutorizacionPaciente(models.Model):
         motivos = models.CharField(max_length=50)
@@ -223,3 +230,41 @@ class Expediente(models.Model):
         observacion = models.CharField(max_length=100)
         activo = models.PositiveSmallIntegerField()
 
+class CorrelativoSar(models.Model):
+        cai = models.CharField(max_length=100)
+        rangoInicial = models.PositiveIntegerField()
+        rangoFinal = models.PositiveIntegerField()
+        consecutivo = models.PositiveIntegerField()
+        fechaLimiteEmision = models.DateField()
+        fechaInicio = models.DateField()
+
+class Recaudo(models.Model):
+        idCorrelativo = models.ForeignKey(CorrelativoSar, on_delete=models.PROTECT)
+        noFactura = models.CharField(max_length=19)
+        idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, null=True)
+        fechaFacturacion = models.DateField(auto_now_add=True)
+        idEmpleado = models.ForeignKey(Empleado, on_delete=models.PROTECT)
+        idMetodoPago = models.ForeignKey(MetodoDePago, on_delete=models.PROTECT)
+        efectivo = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+        tarjeta = models.CharField(max_length=25, null=True, blank=True)
+        fechaEntrega = models.DateField(null=True, blank=True)
+
+        def __str__(self):
+                if self.idPaciente is not None:
+                        return str(self.idPaciente)
+                else:
+                        return "Usuario final"
+
+class RecaudoDetalleMedicamento(models.Model):
+        idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)
+        idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)
+        cantidad = models.PositiveSmallIntegerField()
+        descuento = models.DecimalField(max_digits=4, decimal_places=2)
+
+class RecaudoDetalleTratamiento(models.Model):
+        idTratamiento = models.ForeignKey(Tratamiento, on_delete=models.PROTECT)
+        idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)
+
+class RecaudoDetalleExamen(models.Model):
+        idExamen = models.ForeignKey(Examen, on_delete=models.PROTECT)
+        idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)

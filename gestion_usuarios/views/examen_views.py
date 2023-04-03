@@ -1,7 +1,7 @@
 import datetime
 from django.http.response import JsonResponse
 from django.views import View
-from datetime import datetime, time
+from datetime import date, datetime, time
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
 import json
@@ -29,34 +29,27 @@ class examenViews(View):
                             'fecha': examen.fecha,
                             'fechaProgramada': examen.fechaProgramada,
                             'observacion': examen.observacion,
-
                             'idMuestra':{
-
+                                'id':examen.idMuestra.id,
                                 'idPaciente': {
                                 'id': examen.idMuestra.idPaciente.id,
-                                'nombre': examen.idMuestra.idPaciente.nombre,
-                                'documeto': examen.idMuestra.idPaciente.documento,
-                                
-                                },
-                                
-                                'idTipo': {
-                                'id': examen.idTipo.id,
-                                'nombre': examen.idTipo.nombre,
-                                'documeto': examen.idTipo.idsubtipo.nombre,
-                                'precio': examen.idTipo.precio
-                                
-                                },
-
-                                'idLaboratorio': {
+                                'nombre': examen.idMuestra.idPaciente.nombre +" "+ examen.idMuestra.idPaciente.apellido,
+                                'documento': examen.idMuestra.idPaciente.documento,                              
+                                }        
+                            },   
+                            'idTipo': {
+                            'id': examen.idTipo.id,
+                            'tipo':examen.idMuestra.idTipoMuestra.nombre,
+                            'nombre': examen.idTipo.nombre,
+                            'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'precio': examen.idTipo.precio
+                            
+                            },
+                            'idLaboratorio': {
                                 'id': examen.idLaboratorio.id,
                                 'nombre': examen.idLaboratorio.nombre,
-        
-                                }         
                             }    
-                        }
-                        
-                        
-                        
+                        } 
                         examenes_values.append(examen_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -68,12 +61,9 @@ class examenViews(View):
                         'message': "No se encontraron los datos",
                         'examenes': []
                     }
-                    return JsonResponse(context)
-                
-                
-            elif criterio == "nombre":
-                
-                examenes = Examen.objects.filter(idMuestra__idTipo__idLaboratorio__nombre=campo)
+                    return JsonResponse(context)  
+            elif criterio == "documento":
+                examenes = Examen.objects.filter(idMuestra__idPaciente__documento=campo)
                 if examenes is not None:
                     examenes_values = []
                     for examen in examenes:
@@ -82,32 +72,27 @@ class examenViews(View):
                             'fecha': examen.fecha,
                             'fechaProgramada': examen.fechaProgramada,
                             'observacion': examen.observacion,
-
                             'idMuestra':{
-
+                                'id':examen.idMuestra.id,
+                                'tipo':examen.idMuestra.idTipoMuestra.nombre,
                                 'idPaciente': {
                                 'id': examen.idMuestra.idPaciente.id,
-                                'nombre': examen.idMuestra.idPaciente.nombre,
-                                'documeto': examen.idMuestra.idPaciente.documento,
-                                
-                                },
-                                
-                                'idTipo': {
-                                'id': examen.idTipo.id,
-                                'nombre': examen.idTipo.nombre,
-                                'documeto': examen.idTipo.idsubtipo.nombre,
-                                'precio': examen.idTipo.precio
-                                
-                                },
-
-                                'idLaboratorio': {
+                                'nombre': examen.idMuestra.idPaciente.nombre +" "+ examen.idMuestra.idPaciente.apellido,
+                                'documento': examen.idMuestra.idPaciente.documento,                              
+                                }        
+                            },   
+                            'idTipo': {
+                            'id': examen.idTipo.id,
+                            'nombre': examen.idTipo.nombre,
+                            'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'precio': examen.idTipo.precio
+                            
+                            },
+                            'idLaboratorio': {
                                 'id': examen.idLaboratorio.id,
                                 'nombre': examen.idLaboratorio.nombre,
-        
-                                }         
-                            }    
-                        }
-                        
+                            }     
+                        }                       
                         examenes_values.append(examen_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -119,7 +104,50 @@ class examenViews(View):
                         'message': "No se encontraron los datos",
                         'examenes': []
                     }
-                    return JsonResponse(context)          
+                    return JsonResponse(context)     
+            elif criterio == "nombre":
+                examenes = Examen.objects.filter(idMuestra__idPaciente__nombre=campo)
+                if examenes is not None:
+                    examenes_values = []
+                    for examen in examenes:
+                        examen_dict = {
+                            'id': examen.id,
+                            'fecha': examen.fecha,
+                            'fechaProgramada': examen.fechaProgramada,
+                            'observacion': examen.observacion,
+                            'idMuestra':{
+                                'id':examen.idMuestra.id,
+                                'tipo':examen.idMuestra.idTipoMuestra.nombre,
+                                'idPaciente': {
+                                'id': examen.idMuestra.idPaciente.id,
+                                'nombre': examen.idMuestra.idPaciente.nombre +" "+ examen.idMuestra.idPaciente.apellido,
+                                'documento': examen.idMuestra.idPaciente.documento,                              
+                                }        
+                            },   
+                            'idTipo': {
+                            'id': examen.idTipo.id,
+                            'nombre': examen.idTipo.nombre,
+                            'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'precio': examen.idTipo.precio
+                            
+                            },
+                            'idLaboratorio': {
+                                'id': examen.idLaboratorio.id,
+                                'nombre': examen.idLaboratorio.nombre,
+                            }     
+                        }                       
+                        examenes_values.append(examen_dict)
+                    context = {
+                        'message': "Consulta exitosa",
+                        'examenes': examenes_values
+                    }
+                    return JsonResponse(context)
+                else:
+                    context = {
+                        'message': "No se encontraron los datos",
+                        'examenes': []
+                    }
+                    return JsonResponse(context)     
         else:                
             examenes = Examen.objects.select_related('idMuestra','idTipo','idLaboratorio')
             if examenes is not None:
@@ -130,33 +158,26 @@ class examenViews(View):
                             'fecha': examen.fecha,
                             'fechaProgramada': examen.fechaProgramada,
                             'observacion': examen.observacion,
-
                             'idMuestra':{
-
+                                'id':examen.idMuestra.id,
                                 'idPaciente': {
                                 'id': examen.idMuestra.idPaciente.id,
-                                'nombre': examen.idMuestra.idPaciente.nombre,
-                                'documeto': examen.idMuestra.idPaciente.documento,
-                                
-                                },
-                                
-                                'idTipo': {
-                                'id': examen.idTipo.id,
-                                'nombre': examen.idTipo.nombre,
-                                'documeto': examen.idTipo.idsubtipo.nombre,
-                                'precio': examen.idTipo.precio
-                                
-                                },
-
-                                'idLaboratorio': {
+                                'nombre': examen.idMuestra.idPaciente.nombre +" "+ examen.idMuestra.idPaciente.apellido,
+                                'documento': examen.idMuestra.idPaciente.documento,                              
+                                }        
+                            },   
+                            'idTipo': {
+                            'id': examen.idTipo.id,
+                            'nombre': examen.idTipo.nombre,
+                            'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'precio': examen.idTipo.precio
+                            
+                            },
+                            'idLaboratorio': {
                                 'id': examen.idLaboratorio.id,
                                 'nombre': examen.idLaboratorio.nombre,
-        
-                                }         
-                            }    
-                        }
-                        
-                        
+                            }     
+                        }           
                     examenes_values.append(examen_dict)
                 context = {
                     'message': "Consulta exitosa",
@@ -174,28 +195,14 @@ class examenViews(View):
     def post(self, request):
         
         jd=json.loads(request.body)
-        rsp_fecha = datetime.fromisoformat(jd['fecha'])
         rsp_fechaProgramada = datetime.fromisoformat(jd['fechaProgramada'])
         if validar_id_muestra(jd['idMuestra']):    
             examenes = {'message': "La muestra no existe"}
         elif validar_id_tipo(jd['idTipo']):    
-            examenes = {'message': "El Tipo no existe"}
+            examenes = {'message': "El tipo no existe"}
         elif validar_id_laboratorio(jd['idLaboratorio']):    
             examenes = {'message': "El laboratorio no existe"}
 
-        elif (rsp_fecha) is None:
-            examenes = {'message': "La fecha actual esta vacía"}
-        elif isinstance(rsp_fecha, str):
-            examenes = {'message': "La fecha actual esta vacía"}
-        elif (rsp_fecha.year) < 2000:
-            examenes = {'message': "La fecha actual debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fecha.year) > 2030:
-            examenes = {'message': "La fecha actual debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fecha) >= rsp_fechaProgramada:
-            examenes = {'message': "La fecha actual debe ser menor a la fecha programada"}
-        
-        
-            #fechaProgramada
         elif (rsp_fechaProgramada) is None:
             examenes = {'message': "La fecha programada esta vacía"}
         elif isinstance(rsp_fechaProgramada, str):
@@ -204,14 +211,11 @@ class examenViews(View):
             examenes = {'message': "La fecha programada debe estar en el rango de año de 2000 a 2030"}
         elif (rsp_fechaProgramada.year) > 2030:
             examenes = {'message': "La fecha programada debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fechaProgramada) <= rsp_fecha:
-            examenes = {'message': "La fecha programada debe ser mayor a la fecha de registro"}
-        
+        elif (rsp_fechaProgramada) <= datetime.today():
+            examenes = {'message': "La fecha programada debe ser mayor a la fecha de registro"}       
         elif validar_fecha_programada_repetida(rsp_fechaProgramada):
             examenes = {'message': "Ya hay una cita programada en la misma fecha"}
-            
 
-        
         elif len(jd['observacion']) <= 0:
             examenes = {'message': "La observación esta vacía."}
         elif len(jd['observacion']) < 5:
@@ -222,14 +226,11 @@ class examenViews(View):
             examenes = {'message': "No se permiten mas de un espacio consecutivo.[observacion]"}
         elif validar_cadena_repeticion(jd['observacion']):
             examenes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[observacion]"} 
-        
-        
         else:
             examenes = {'message': "Registro Exitoso."}
             Examen.objects.create(idMuestra=instanciar_muestra(jd['idMuestra']),
                                   idTipo=instanciar_tipo(jd['idTipo']),
                                   idLaboratorio=instanciar_laboratorio(jd['idLaboratorio']),
-                                  fecha=jd['fecha'],
                                   fechaProgramada=jd['fechaProgramada'],
                                   observacion=jd['observacion'])
             examenes = {'message':"Registro Exitoso."}
@@ -240,30 +241,14 @@ class examenViews(View):
         jd=json.loads(request.body)
         examenes = list(Examen.objects.filter(id=id).values())
         if len(examenes) > 0:
-            rsp_fecha = datetime.fromisoformat(jd['fecha'])
             rsp_fechaProgramada = datetime.fromisoformat(jd['fechaProgramada'])
             examen=Examen.objects.get(id=id)           
         if validar_id_muestra(jd['idMuestra']):    
             examenes = {'message': "La muestra no existe"}
         elif validar_id_tipo(jd['idTipo']):    
-            examenes = {'message': "El Tipo no existe"}
+            examenes = {'message': "El tipo no existe"}
         elif validar_id_laboratorio(jd['idLaboratorio']):    
             examenes = {'message': "El laboratorio no existe"}
-
-        elif (rsp_fecha) is None:
-            examenes = {'message': "La fecha actual esta vacía"}
-        elif isinstance(rsp_fecha, str):
-            examenes = {'message': "La fecha actual esta vacía"}
-        elif (rsp_fecha.year) < 2000:
-            examenes = {'message': "La fecha actual debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fecha.year) > 2030:
-            examenes = {'message': "La fecha actual debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fecha) >= rsp_fechaProgramada:
-            examenes = {'message': "La fecha actual debe ser menor a la fecha programada"}
-        
-    
-        
-            #fechaProgramada
         elif (rsp_fechaProgramada) is None:
             examenes = {'message': "La fecha programada esta vacía"}
         elif isinstance(rsp_fechaProgramada, str):
@@ -272,14 +257,10 @@ class examenViews(View):
             examenes = {'message': "La fecha programada debe estar en el rango de año de 2000 a 2030"}
         elif (rsp_fechaProgramada.year) > 2030:
             examenes = {'message': "La fecha programada debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fechaProgramada) <= rsp_fecha:
+        elif (rsp_fechaProgramada) <= datetime.today():
             examenes = {'message': "La fecha programada debe ser mayor a la fecha de registro"}
-        
         elif validar_fecha_programada_repetida(rsp_fechaProgramada):
             examenes = {'message': "Ya hay una cita programada en la misma fecha"}
-            #validar tiempo fecha programada
-    
-        
         elif len(jd['observacion']) <= 0:
             examenes = {'message': "La observación esta vacía."}
         elif len(jd['observacion']) < 5:
@@ -290,16 +271,14 @@ class examenViews(View):
             examenes = {'message': "No se permiten mas de un espacio consecutivo.[observacion]"}
         elif validar_cadena_repeticion(jd['observacion']):
             examenes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[observacion]"} 
-        else:
-                
-                examen.idMuestra = instanciar_muestra(jd['idMuestra'])
-                examen.idTipo = instanciar_tipo(jd['idTipo'])
-                examen.idLaboratorio = instanciar_laboratorio(jd['idLaboratorio'])
-                examen.fecha = jd['fecha']
-                examen.observacion = jd['observacion']
-                examen.fechaProgramada = jd['fechaProgramada']
-                examen.save()
-                examenes = {'message': "La actualización fue exitosa."}
+        else:            
+            examen.idMuestra = instanciar_muestra(jd['idMuestra'])
+            examen.idTipo = instanciar_tipo(jd['idTipo'])
+            examen.idLaboratorio = instanciar_laboratorio(jd['idLaboratorio'])
+            examen.observacion = jd['observacion']
+            examen.fechaProgramada = jd['fechaProgramada']
+            examen.save()
+            examenes = {'message': "La actualización fue exitosa."}
         return JsonResponse(examenes)
         
         
@@ -315,12 +294,14 @@ class examenViews(View):
         return JsonResponse(examenes)
 
 def instanciar_muestra(id):
+    id = int(id)
     if (id>0):
         muestra = Muestra.objects.get(id=id)
         if muestra:
             return muestra   
 
 def validar_id_muestra(id):
+    id = int(id)
     if (id>0):
         registro = Muestra.objects.filter(id=id)
         if registro:
@@ -330,12 +311,14 @@ def validar_id_muestra(id):
    
 
 def instanciar_tipo(id):
+    id = int(id)
     if (id>0):
         tipo = Tipo.objects.get(id=id)
         if tipo:
             return tipo   
 
 def validar_id_tipo(id):
+    id = int(id)
     if (id>0):
         registro = Tipo.objects.filter(id=id)
         if registro:
@@ -345,12 +328,14 @@ def validar_id_tipo(id):
         
 
 def instanciar_laboratorio(id):
+    id=int(id)
     if (id>0):
         laboratorio = Laboratorios.objects.get(id=id)
         if laboratorio:
             return laboratorio   
 
 def validar_id_laboratorio(id):
+    id=int(id)
     if (id>0):
         registro = Laboratorios.objects.filter(id=id)
         if registro:
@@ -359,6 +344,7 @@ def validar_id_laboratorio(id):
             return True  
 
 def validar_id_subtipo(id):
+    id=int(id)
     if (id>0):
         subtipo = Subtipo.objects.filter(id=id)
         if subtipo:
@@ -367,7 +353,7 @@ def validar_id_subtipo(id):
             return True
 
 
-def validar_fecha_programada_repetida(fecha): 
+def validar_fecha_programada_repetida(fecha):
     if (fecha):
         registros = Cita.objects.filter(fechaProgramada=fecha)
         if len(registros) > 0:

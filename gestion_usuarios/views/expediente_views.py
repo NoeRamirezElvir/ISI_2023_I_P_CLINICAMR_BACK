@@ -1,4 +1,4 @@
-import datetime
+from datetime import date, datetime
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -29,14 +29,19 @@ class ExpedientesViews(View):
                             'observacion': expediente.observacion,
                             'activo': expediente.activo,
                                 'idPaciente': {
-                                'id': expediente.idPaciente.id,
-                                'nombre': expediente.idPaciente.nombre,
-                                'documeto': expediente.idPaciente.documento
-                                
+                                    'id': expediente.idPaciente.id,
+                                    'nombre': expediente.idPaciente.nombre,
+                                    'apellido': expediente.idPaciente.apellido,
+                                    'documento': expediente.idPaciente.documento,
+                                    'telefono': expediente.idPaciente.telefono
                                 },
-                          
-                            }
-                        
+                            'consultas':{},
+                            'tratamientos':{},
+                            'examenes':{}
+                        }
+                        expediente_dict = buscar_paciente_consultas(expediente_dict, expediente.idPaciente.id)
+                        expediente_dict = buscar_paciente_tratamientos(expediente_dict, expediente.idPaciente.id)
+                        expediente_dict = buscar_paciente_examenes(expediente_dict, expediente.idPaciente.id)
                         expedientes_values.append(expediente_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -51,9 +56,8 @@ class ExpedientesViews(View):
                     return JsonResponse(context)
                 
                 
-            elif criterio == "nombre":
-                
-                expedientes = Expediente.objects.filter(idPaciente__nombre=campo)
+            elif criterio == "documento":
+                expedientes = Expediente.objects.filter(idPaciente__documento=campo)
                 if expedientes is not None:
                     expedientes_values = []
                     for expediente in expedientes:
@@ -61,17 +65,21 @@ class ExpedientesViews(View):
                             'id': expediente.id,
                             'fecha': expediente.fecha,
                             'observacion': expediente.observacion,
-                            'activo': expediente.activo,
-                            
+                            'activo': expediente.activo,       
                                 'idPaciente': {
                                 'id': expediente.idPaciente.id,
                                 'nombre': expediente.idPaciente.nombre,
-                                'documeto': expediente.idPaciente.documento
-                                
-                                
-
-                            }
+                                'apellido': expediente.idPaciente.apellido,
+                                'documento': expediente.idPaciente.documento,
+                                'telefono': expediente.idPaciente.telefono
+                            },
+                            'consultas':{},
+                            'tratamientos':{},
+                            'examenes':{}
                         }
+                        expediente_dict = buscar_paciente_consultas(expediente_dict, expediente.idPaciente.id)
+                        expediente_dict = buscar_paciente_tratamientos(expediente_dict, expediente.idPaciente.id)
+                        expediente_dict = buscar_paciente_examenes(expediente_dict, expediente.idPaciente.id)
                         expedientes_values.append(expediente_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -94,15 +102,20 @@ class ExpedientesViews(View):
                         'fecha': expediente.fecha,
                         'observacion': expediente.observacion,
                         'activo': expediente.activo,
-                        
                             'idPaciente': {
                             'id': expediente.idPaciente.id,
                             'nombre': expediente.idPaciente.nombre,
-                            'documeto': expediente.idPaciente.documento
-                           
-
-                        }
+                            'apellido': expediente.idPaciente.apellido,
+                            'documento': expediente.idPaciente.documento,
+                            'telefono': expediente.idPaciente.telefono
+                        },
+                        'consultas':{},
+                        'tratamientos':{},
+                        'examenes':{}
                     }
+                    expediente_dict = buscar_paciente_consultas(expediente_dict, expediente.idPaciente.id)
+                    expediente_dict = buscar_paciente_tratamientos(expediente_dict, expediente.idPaciente.id)
+                    expediente_dict = buscar_paciente_examenes(expediente_dict, expediente.idPaciente.id)
                     expedientes_values.append(expediente_dict)
                 context = {
                     'message': "Consulta exitosa",
@@ -119,9 +132,10 @@ class ExpedientesViews(View):
 #Agregar un registro de tipo
     def post(self, request):
         jd=json.loads(request.body)
-        rsp_fecha = datetime.datetime.fromisoformat(jd['fecha'])
-        if validar_id_paciente(jd['idPaciente']):    
-            expedientes = {'message': "El tratamiento no existe"}
+        if Expediente.objects.filter(idPaciente=jd['idPaciente']).exists():    
+            expedientes = {'message': "El expediente ya existe"}
+        elif validar_id_paciente(jd['idPaciente']):    
+            expedientes = {'message': "El paciente no existe"}
         elif len(jd['observacion']) <= 0:
             expedientes = {'message': "La observación esta vacía."}
         elif len(jd['observacion']) < 5:
@@ -129,25 +143,15 @@ class ExpedientesViews(View):
         elif len(jd['observacion']) > 50:
             expedientes = {'message': "La observación debe tener menos de 50 caracteres."}
         elif not validar_cadena_espacios(jd['observacion']):
-            expedientes = {'message': "No se permiten mas de un espacio consecutivo.[direccion]"}
+            expedientes = {'message': "No se permiten mas de un espacio consecutivo.[observacion]"}
         elif validar_cadena_repeticion(jd['observacion']):
-            expedientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[direccion]"} 
-        elif (rsp_fecha) is None:
-            expedientes = {'message': "La fecha esta vacía"}
-        elif isinstance(rsp_fecha, str):
-            expedientes = {'message': "La fecha esta vacía"}
-        elif (rsp_fecha.year) < 2000:
-            expedientes = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
-        elif (rsp_fecha.year) > 2030:
-            expedientes = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
+            expedientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[observacion]"} 
         elif jd['activo'] < 0:
-            expedientes = {'message': "confirmacion debe ser positivo."}
+            expedientes = {'message': "Activo debe ser positivo."}
         elif jd['activo'] > 1:
-            expedientes = {'message': "confirmacion debe unicamente puede ser 0 o 1."}
-        
+            expedientes = {'message': "Activo debe unicamente puede ser 0 o 1."}
         else:
-            expedientes = {'message': "Registro Exitoso."}
-            Expediente.objects.create(idPaciente=instanciar_paciente(jd['idPaciente']),fecha=jd['fecha'],observacion=jd['observacion'],activo=jd['activo'])
+            Expediente.objects.create(idPaciente=instanciar_paciente(jd['idPaciente']),fecha=date.today(),observacion=jd['observacion'],activo=jd['activo'])
             expedientes = {'message':"Registro Exitoso."}
         return JsonResponse(expedientes)
 
@@ -156,11 +160,9 @@ class ExpedientesViews(View):
         jd=json.loads(request.body)
         expedientes = list(Expediente.objects.filter(id=id).values())
         if len(expedientes) > 0:
-            rsp_fecha = datetime.datetime.fromisoformat(jd['fecha'])
             expediente=Expediente.objects.get(id=id)
-            
             if validar_id_paciente(jd['idPaciente']):    
-                expedientes = {'message': "El tratamiento no existe"}
+                expedientes = {'message': "El paciente no existe"}
             elif len(jd['observacion']) <= 0:
                 expedientes = {'message': "La observación esta vacía."}
             elif len(jd['observacion']) < 5:
@@ -171,23 +173,12 @@ class ExpedientesViews(View):
                 expedientes = {'message': "No se permiten mas de un espacio consecutivo.[direccion]"}
             elif validar_cadena_repeticion(jd['observacion']):
                 expedientes = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[direccion]"} 
-            elif (rsp_fecha) is None:
-                expedientes = {'message': "La fecha esta vacía"}
-            elif isinstance(rsp_fecha, str):
-                expedientes = {'message': "La fecha esta vacía"}
-            elif (rsp_fecha.year) < 2000:
-                expedientes = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
-            elif (rsp_fecha.year) > 2030:
-                expedientes = {'message': "La fecha debe estar en el rango de año de 2000 a 2030"}
             elif jd['activo'] < 0:
-                expedientes = {'message': "confirmacion debe ser positivo."}
+                expedientes = {'message': "Activo debe ser positivo."}
             elif jd['activo'] > 1:
-                expedientes = {'message': "confirmacion debe unicamente puede ser 0 o 1."}
-            
-            else:
-                
+                expedientes = {'message': "Activo debe unicamente puede ser 0 o 1."}
+            else:  
                 expediente.idPaciente = instanciar_paciente(jd['idPaciente'])
-                expediente.fecha = jd['fecha']
                 expediente.observacion = jd['observacion']
                 expediente.activo = jd['activo']
                 expediente.save()
@@ -221,6 +212,46 @@ def instanciar_paciente(id):
         if paciente:
             return paciente   
 
+def buscar_paciente_consultas(diccionario, id):
+    registros = Consulta.objects.filter(idCita__idPaciente__id=id)
+    if registros:
+        for registro in registros:
+            diagnostico_dict = {
+                'id': registro.id,
+                'informacionAdicional': registro.informacionAdicional
+            }
+            diccionario['consultas'][registro.id] = diagnostico_dict
+        return diccionario
+    else:
+        return diccionario
+
+def buscar_paciente_tratamientos(diccionario, id):
+    registros = Tratamiento.objects.filter(idPaciente__id=id).select_related("idTipo")
+    if registros:
+        for registro in registros:
+            diagnostico_dict = {
+                'id': registro.id,
+                'nombre': registro.idTipo.nombre,
+                'estado': registro.estado
+            }
+            diccionario['tratamientos'][registro.id] = diagnostico_dict
+        return diccionario
+    else:
+        return diccionario    
+
+def buscar_paciente_examenes(diccionario, id):
+    registros = Examen.objects.filter(idMuestra__idPaciente__id=id).select_related("idTipo")
+    if registros:
+        for registro in registros:
+            diagnostico_dict = {
+                'id': registro.id,
+                'nombre': registro.idTipo.nombre,
+                'observacion': registro.observacion
+            }
+            diccionario['examenes'][registro.id] = diagnostico_dict
+        return diccionario
+    else:
+        return diccionario 
 
 
 def validar_cadena_repeticion(cadena):

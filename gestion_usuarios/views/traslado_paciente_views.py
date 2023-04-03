@@ -9,7 +9,7 @@ from ..models import *
 from django.views.decorators.http import require_http_methods
 
 @method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
-class tratamientosViews(View):
+class TrasladosViews(View):
     #Este metodo permite realizar las conultas que necesitan autentificacion. POST PUT DELETE
     @method_decorator(csrf_exempt)
     def dispatch(self, request, *args, **kwargs):

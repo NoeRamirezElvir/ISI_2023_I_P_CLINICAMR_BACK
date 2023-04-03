@@ -152,8 +152,6 @@ class TiposView(View):
             tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
         elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
             tipo = {'message': "Seleccione un subtipo existente."}
-        elif 'precio' not in jd or jd['precio'] is None or jd['precio'].strip() == '':
-            tipo = {'message': "El precio esta vacío, nulo, blanco o no existe."}
         else:
             tipo = {'message':"Registro Exitoso."}
             subtipo = instanciar_subtipo(int(jd['idsubtipo']))
@@ -192,6 +190,23 @@ class TiposView(View):
                                                             precio=jd['precio'])
                 else:
                     tipo = {'message': "El precio debe ser mayor a 0."}
+            elif subtipo.nombre.lower() == 'consulta'.lower():
+                precios= Decimal(jd['precio'])
+                if Decimal(jd['precio']) > 0:
+                    if len(str(jd['precio'])) > 11:
+                        tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                    elif round(Decimal(jd['precio'])) > 99999999.99:
+                        tipo = {'message': "El precio es muy alto."}
+                    elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
+                        tipo = {'message': "El precio debe ser mayor al costo de compra."}
+                    else:
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        PrecioHistoricoConsulta.objects.create(idTipo=id_tipo,
+                                                            fechaInicio=datetime.now(),
+                                                            activo=1,
+                                                            precio=jd['precio'])
+                else:
+                    tipo = {'message': "El precio debe ser mayor a 0."}
             else:
                 Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=0.00)
         return JsonResponse(tipo)
@@ -220,8 +235,6 @@ class TiposView(View):
                 tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
             elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
                 tipo = {'message': "Seleccione un subtipo existente."}
-            elif 'precio' not in jd or jd['precio'] is None or jd['precio'].strip() == '':
-                tipo = {'message': "El precio esta vacío, nulo, blanco o no existe."}
             else:
                 tipo = {'message': "La actualización fue exitosa."}
                 tipo_temp = tipos
@@ -271,6 +284,29 @@ class TiposView(View):
                                                                         precio=jd['precio'])
                             else:
                                 PrecioHistoricoTratamiento.objects.create(idTipo=tipo_temp,
+                                                                    fechaInicio=datetime.now(),
+                                                                    activo=1,
+                                                                    precio=jd['precio'])
+                    else:
+                        tipo = {'message': "El precio debe ser mayor a 0."}
+                elif subtipo.nombre.lower() == 'consulta'.lower():
+                    if Decimal(jd['precio']) > 0:
+                        if len(str(jd['precio'])) > 11:
+                            tipo = {'message': "El precio debe tener menos de 10 digitos."}
+                        elif round(Decimal(jd['precio'])) > 99999999.99:
+                            tipo = {'message': "El precio es muy alto."}
+                        else:
+                            precio_historico_tratamiento =  PrecioHistoricoConsulta.objects.filter(idTipo=id).last()
+                            if precio_historico_tratamiento is not None:
+                                if not round(Decimal(precio_historico_tratamiento.precio), 2) == round(Decimal(tipos.precio), 2):
+                                    precio_historico_tratamiento.fechaFinal = fecha_final()
+                                    precio_historico_tratamiento.save()
+                                    PrecioHistoricoConsulta.objects.create(idTipo=tipo_temp,
+                                                                        fechaInicio=datetime.now(),
+                                                                        activo=1,
+                                                                        precio=jd['precio'])
+                            else:
+                                PrecioHistoricoConsulta.objects.create(idTipo=tipo_temp,
                                                                     fechaInicio=datetime.now(),
                                                                     activo=1,
                                                                     precio=jd['precio'])

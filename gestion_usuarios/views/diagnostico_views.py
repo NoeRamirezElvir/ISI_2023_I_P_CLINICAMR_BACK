@@ -199,7 +199,12 @@ class DiagnosticoView(View):
 #Eliminar un registro de cargos
     def delete(self, request,id):
         diagnostico = list(Diagnostico.objects.filter(id=id).values())
-        if len(diagnostico) > 0:
+        detalles = list(DiagnosticoDetalle.objects.filter(idDiagnostico=id).values())
+        if len(diagnostico) > 0 and len(detalles) > 0:
+            #Se eliminan los detalles
+            for detalle in detalles:
+                DiagnosticoDetalle.objects.filter(id=detalle['id']).delete()
+            #Se elimina el diagnostico
             Diagnostico.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:

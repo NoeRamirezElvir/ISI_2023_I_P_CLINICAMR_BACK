@@ -207,7 +207,7 @@ class EnfermedadView(View):
             Enfermedad.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro", 'enfermedades': []}
+            datos = {'message':"No se encontraron registros", 'enfermedades': []}
         return JsonResponse(datos)
     
 

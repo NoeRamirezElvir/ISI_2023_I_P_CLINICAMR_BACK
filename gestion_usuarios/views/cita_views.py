@@ -19,28 +19,80 @@ class CitasViews(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if criterio == "id":
-                citas = list(Cita.objects.filter(id=campo).values())
+                citas = Cita.objects.filter(id=campo).select_related('idPaciente')
                 if len(citas) > 0:
-                    citas = citas
-                    citas = {'message': "Consulta exitosa", 'citas': citas}
+                    cita_values = []
+                    for cita in citas:
+                        cita_dict={
+                            'id':cita.id,
+                            'fechaActual':cita.fechaActual,
+                            'fechaProgramada':cita.fechaProgramada,
+                            'fechaMaxima':cita.fechaMaxima,
+                            'activa':cita.activa,
+                            'idPaciente':{
+                                'id':cita.idPaciente.id,
+                                'nombre':cita.idPaciente.nombre + " " + cita.idPaciente.apellido,
+                                'documento':cita.idPaciente.documento
+                            }
+                        }
+                        cita_values.append(cita_dict)
+                    context = {'message': "Consulta exitosa", 'citas': cita_values}
+                    return JsonResponse(context)
                 else:
-                    citas = {'message': "No se encontraron los datos", 'citas': []} 
-                    return JsonResponse(citas)
-            elif criterio == "fechaProgramada":
-                citas = list(Cita.objects.filter(fechaProgramada=campo).values())
-                if len(citas) > 0:
-                    citas = citas
-                    citas = {'message': "Consulta exitosa", 'citas': citas}
-                else:
-                    citas = {'message': "No se encontraron los datos", 'citas': []} 
-                    return JsonResponse(citas)
+                    context = {'message': "No se encontraron los datos", 'citas': []} 
+                    return JsonResponse(context)
+            elif criterio == "documento":
+                    citas = Cita.objects.filter(idPaciente__documento=campo).select_related('idPaciente')
+                    if citas is not None:
+                        citas_values = []
+                        for cita in citas:
+                            cita_dict={
+                                'id':cita.id,
+                                'fechaActual':cita.fechaActual,
+                                'fechaProgramada':cita.fechaProgramada,
+                                'fechaMaxima':cita.fechaMaxima,
+                                'activa':cita.activa,
+                                'idPaciente':{
+                                    'id':cita.idPaciente.id,
+                                    'nombre':cita.idPaciente.nombre + " " + cita.idPaciente.apellido,
+                                    'documento':cita.idPaciente.documento
+                                }
+                            }
+                            citas_values.append(cita_dict)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'citas': citas_values
+                        }
+                        return JsonResponse(context)
+                    else:
+                        context = {
+                            'message': "No se encontraron los datos",
+                            'citas': []
+                        }
+                        return JsonResponse(context)
         else:
-            citas = list(Cita.objects.values())
+            citas = Cita.objects.select_related('idPaciente')
             if len(citas) > 0:
-                citas = {'message': "Consulta exitosa", 'citas': citas}
+                cita_values = []
+                for cita in citas:
+                    cita_dict={
+                        'id':cita.id,
+                        'fechaActual':cita.fechaActual,
+                        'fechaProgramada':cita.fechaProgramada,
+                        'fechaMaxima':cita.fechaMaxima,
+                        'activa':cita.activa,
+                        'idPaciente':{
+                            'id':cita.idPaciente.id,
+                            'nombre':cita.idPaciente.nombre + " " + cita.idPaciente.apellido,
+                            'documento':cita.idPaciente.documento
+                        }
+                    }
+                    cita_values.append(cita_dict)
+                context = {'message': "Consulta exitosa", 'citas': cita_values}
+                return JsonResponse(context)
             else:
-                citas = {'message': "No se encontraron los datos", 'citas': []} 
-        return JsonResponse(citas)
+                context = {'message': "No se encontraron los datos", 'citas': []} 
+                return JsonResponse(context)
 #idPaciente fechaActual fechaProgramada fechaMaxima activa
 #Agregar un registro de cargos
     def post(self, request):

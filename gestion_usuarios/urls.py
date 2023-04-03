@@ -36,6 +36,12 @@ from .views.traslado_paciente_views import *
 from .views.expediente_views import *
 from .views.consulta_views import *
 from .views.examen_views import *
+from .views.precio_historico_consulta_views import *
+from .views.consulta_detalle_views import *
+from .views.correlativo_sar_views import *
+from .views.recaudo_detalle_medicamento_views import *
+from .views.recaudo_detalle_tratamiento_views import *
+from .views.recaudo_detalle_examen_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -149,9 +155,9 @@ urlpatterns = [
     path('autorizar/id/<int:id>', autorizarView.as_view() , name='autorizar_process_id'),        
 
 
-    path('traslados/', tratamientosViews.as_view() , name='traslados_list'),
-    path('traslados/busqueda/<str:criterio>/<str:campo>', tratamientosViews.as_view() , name='traslados_process'),
-    path('traslados/id/<int:id>', tratamientosViews.as_view() , name='traslados_process_id'),  
+    path('traslados/', TrasladosViews.as_view() , name='traslados_list'),
+    path('traslados/busqueda/<str:criterio>/<str:campo>', TrasladosViews.as_view() , name='traslados_process'),
+    path('traslados/id/<int:id>', TrasladosViews.as_view() , name='traslados_process_id'),  
 
     path('expediente/', ExpedientesViews.as_view() , name='expediente_list'),
     path('expediente/busqueda/<str:criterio>/<str:campo>', ExpedientesViews.as_view() , name='expediente_process'),
@@ -163,8 +169,31 @@ urlpatterns = [
 
     path('examen/', examenViews.as_view() , name='examen_list'),
     path('examen/busqueda/<str:criterio>/<str:campo>', examenViews.as_view() , name='examen_process'),
-    path('examen/id/<int:id>', examenViews.as_view() , name='examen_process_id'),         
+    path('examen/id/<int:id>', examenViews.as_view() , name='examen_process_id'), 
 
+    path('precioHistoricoConsulta/', PrecioHistoricoConsultasViews.as_view() , name='precio_historico_consulta_list'),
+    path('precioHistoricoConsulta/busqueda/<str:criterio>/<str:campo>', PrecioHistoricoConsultasViews.as_view() , name='precio_historico_consulta_process'),
+    path('precioHistoricoConsulta/id/<int:id>', PrecioHistoricoConsultasViews.as_view() , name='precio_historico_consulta_process_id'), 
+
+    path('consultaDetalle/', ConsultaDetallesViews.as_view() , name='consulta_detalle_list'),
+    path('consultaDetalle/busqueda/<str:criterio>/<str:campo>', ConsultaDetallesViews.as_view() , name='consulta_detalle_process'),
+    path('consultaDetalle/id/<int:id>', ConsultaDetallesViews.as_view() , name='consulta_detalle_process_id'), 
+               
+    path('correlativo/', CorrelativoViews.as_view() , name='correlativo_list'),
+    path('correlativo/busqueda/<str:criterio>/<str:campo>', CorrelativoViews.as_view() , name='correlativo_process'),
+    path('correlativo/id/<int:id>', CorrelativoViews.as_view() , name='correlativo_process_id'), 
+
+    path('recaudoDetalleMedicamento/', RecaudoDetalleMedicamentoView.as_view() , name='recaudo_detalle_medicamento_list'),
+    path('recaudoDetalleMedicamento/busqueda/<str:criterio>/<str:campo>', RecaudoDetalleMedicamentoView.as_view() , name='recaudo_detalle_medicamento_process'),
+    path('recaudoDetalleMedicamento/id/<int:id>', RecaudoDetalleMedicamentoView.as_view() , name='recaudo_detalle_medicamento_process_id'), 
+
+    path('recaudoDetalleTratamiento/', RecaudoDetalleTratamientoView.as_view() , name='recaudo_detalle_tratamiento_list'),
+    path('recaudoDetalleTratamiento/busqueda/<str:criterio>/<str:campo>', RecaudoDetalleTratamientoView.as_view() , name='recaudo_detalle_tratamiento_process'),
+    path('recaudoDetalleTratamiento/id/<int:id>', RecaudoDetalleTratamientoView.as_view() , name='recaudo_detalle_tratamiento_process_id'), 
+
+    path('recaudoDetalleExamen/', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_list'),
+    path('recaudoDetalleExamen/busqueda/<str:criterio>/<str:campo>', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_process'),
+    path('recaudoDetalleExamen/id/<int:id>', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_process_id'), 
 
 
 ]

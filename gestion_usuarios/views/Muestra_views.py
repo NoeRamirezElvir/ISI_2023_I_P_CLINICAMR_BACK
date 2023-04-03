@@ -26,11 +26,16 @@ class MuestrasViews(View):
                         paciente = muestra.idPaciente
                         muestra_dict = {
                             'id': muestra.id,
-                            'idTipoMuestra': muestra.idTipoMuestra.id,
+                            'idTipoMuestra':{
+                                'id':muestra.idTipoMuestra.id,
+                                'nombre':muestra.idTipoMuestra.nombre
+                            },
                             'fecha': muestra.fecha,
                             'idPaciente': {
                                 'id': paciente.id,
-                                'nombre': paciente.nombre
+                                'nombre': paciente.nombre,
+                                'apellido': paciente.apellido,
+                                'documento': paciente.documento
                             }
                         }
                         muestras_values.append(muestra_dict)
@@ -56,11 +61,16 @@ class MuestrasViews(View):
                                 paciente = muestra.idPaciente
                                 muestra_dict = {
                                     'id': muestra.id,
-                                    'idTipoMuestra': muestra.idTipoMuestra.id,
+                                    'idTipoMuestra':{
+                                        'id':muestra.idTipoMuestra.id,
+                                        'nombre':muestra.idTipoMuestra.nombre
+                                    },
                                     'fecha': muestra.fecha,
                                     'idPaciente': {
                                         'id': paciente.id,
-                                        'nombre': paciente.nombre
+                                        'nombre': paciente.nombre,
+                                        'apellido': paciente.apellido,
+                                        'documento': paciente.documento
                                     }
                                 }
                                 muestras_values.append(muestra_dict)
@@ -94,11 +104,16 @@ class MuestrasViews(View):
                     paciente = muestra.idPaciente
                     muestra_dict = {
                         'id': muestra.id,
-                        'idTipoMuestra': muestra.idTipoMuestra.id,
+                        'idTipoMuestra':{
+                            'id':muestra.idTipoMuestra.id,
+                            'nombre':muestra.idTipoMuestra.nombre
+                        },
                         'fecha': muestra.fecha,
                         'idPaciente': {
                             'id': paciente.id,
-                            'nombre': paciente.nombre
+                            'nombre': paciente.nombre,
+                            'apellido': paciente.apellido,
+                            'documento': paciente.documento
                         }
                     }
                     muestras_values.append(muestra_dict)

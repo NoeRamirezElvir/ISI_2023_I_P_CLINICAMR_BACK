@@ -62,7 +62,8 @@ class subtipoView(View):
         elif jd['activo'] > 1:
             subtipo = {'message': "Activo debe unicamente puede ser 0 o 1."}
         else:
-            Subtipo.objects.create(nombre=jd['nombre'], activo=jd['activo'])
+            nombre_minuscula = (jd['nombre']).lower()
+            Subtipo.objects.create(nombre=nombre_minuscula, activo=jd['activo'])
             subtipo = {'message':"Registro Exitoso."}
         return JsonResponse(subtipo)
 
@@ -88,7 +89,7 @@ class subtipoView(View):
                 subtipo = {'message': "Activo debe unicamente puede ser 0 o 1."}
             else:
                 subtipo = {'message': "Registro Exitoso."}
-                subtipos.nombre = jd['nombre']
+                subtipos.nombre = (jd['nombre']).lower()
                 subtipos.activo = jd['activo']
                 subtipos.save()
                 subtipo = {'message': "La actualización fue exitosa."}
