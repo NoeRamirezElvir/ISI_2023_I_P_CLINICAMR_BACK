@@ -1,11 +1,17 @@
+from time import strptime
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+import datetime
+
+
+
 import json
 import re
 from ..models import *
+
+from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
 
 @method_decorator(require_http_methods(['POST','PUT','GET','DELETE']), name='dispatch')
@@ -80,10 +86,15 @@ class EmpleadoViews(View):
             empleados = {'message': "El email debe tener menos de 30 caracteres."}
         elif validar_email(jd['email']):
             empleados = {'message': "El email debe tener un formato válido."}
+
+        elif validar_edad(jd['fechaNacimiento']):
+            empleados = {'message': "El empleado no puede ser menor a 18 años."}
         elif len(str(jd['fechaNacimiento'])) <= 0:
             empleados = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
             empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+
+
         elif str(jd['telefono']).isalpha():
             empleados = {'message': "El teléfono solo puede contener numeros."}
         elif len(str(jd['telefono'])) <= 0:
@@ -126,7 +137,17 @@ class EmpleadoViews(View):
             empleados = {'message': "Activo unicamente puede ser 0 o 1."}
         else:
             empleados = {'message': "Registro Exitoso."}
-            Empleado.objects.create(nombre=jd['nombre'], apellidos=jd['apellidos'],fechaNacimiento=datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d"),email=jd['email'],telefono=str(jd['telefono']),direccion=jd['direccion'],idTipoDocumentos=(instanciar_documento(jd['idTipoDocumentos'])),documento=jd['documento'],idEspecialidadMedico=instanciar_especialidad(jd['idEspecialidadMedico']),idCargoEmpleado=instanciar_cargo(jd['idCargoEmpleado']),activo=jd['activo'])
+            Empleado.objects.create(nombre=jd['nombre'], apellidos=jd['apellidos'],
+                                    fechaNacimiento=datetime(str(jd['fechaNacimiento']), "%Y-%m-%d")("%Y-%m-%d"),
+                                    email=jd['email'],
+                                    telefono=str(jd['telefono']),
+                                    direccion=jd['direccion'],
+                                    idTipoDocumentos=(instanciar_documento(jd['idTipoDocumentos'])),
+                                    documento=jd['documento'],
+                                    idEspecialidadMedico=instanciar_especialidad(jd['idEspecialidadMedico']),
+                                    idCargoEmpleado=instanciar_cargo(jd['idCargoEmpleado']),
+                                    activo=jd['activo'])
+            
             empleados = {'message':"Registro Exitoso."}
         return JsonResponse(empleados)
 
@@ -164,10 +185,16 @@ class EmpleadoViews(View):
                 empleados = {'message': "El email debe tener menos de 30 caracteres."}
             elif validar_email(jd['email']):
                 empleados = {'message': "El email debe tener un formato válido."}
+
+            
+            elif validar_edad(jd['fechaNacimiento']):
+                empleados = {'message': "El empleado es menora 18 años."}
             elif len(str(jd['fechaNacimiento'])) <= 0:
                 empleados = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
                 empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+            
+            
             elif str(jd['telefono']).isalpha():
                 empleados = {'message': "El teléfono solo puede contener numeros."}
             elif len(str(jd['telefono'])) <= 0:
@@ -213,7 +240,7 @@ class EmpleadoViews(View):
                 empleado.email = jd['email']
                 empleado.telefono = str(jd['telefono'])
                 empleado.direccion = jd['direccion']
-                empleado.fechaNacimiento = datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d")
+                empleado.fechaNacimiento = datetime(str(jd['fechaNacimiento']), "%Y-%m-%d").str("%Y-%m-%d")
                 empleado.idTipoDocumentos = instanciar_documento(jd['idTipoDocumentos'])
                 empleado.documento = jd['documento']
                 if jd['idEspecialidadMedico'] > 0:
@@ -290,3 +317,16 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
+
+
+
+
+
+def validar_edad(fechaNacimiento):
+    fecha_actual = datetime.date.today()
+    edad = fecha_actual- fechaNacimiento 
+    if edad < 18:
+        return False
+    else:
+        return True
+        

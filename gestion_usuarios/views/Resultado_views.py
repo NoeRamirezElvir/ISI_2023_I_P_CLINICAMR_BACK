@@ -26,12 +26,13 @@ class resultadosViews(View):
                         resultado_dict = {
                             'id': resultado.id,
                             'observacion': resultado.observacion,
+                            'fecha': resultado.fecha,
 
                             'idTratamiento':{
                                 'idPaciente': {
                                 'id': resultado.idTratamiento.idPaciente.id,
                                 'nombre': resultado.idTratamiento.idPaciente.nombre,
-                                'documeto': resultado.idTratamiento.idPaciente.documento
+                                'documento': resultado.idTratamiento.idPaciente.documento
                                 
                                 },
                                 'idTipo': {
@@ -64,11 +65,13 @@ class resultadosViews(View):
                         resultado_dict = {
                             'id': resultado.id,
                             'observacion': resultado.observacion,
+                            'fecha': resultado.fecha,
+
                             'idTratamiento':{
                                 'idPaciente': {
                                 'id': resultado.idTratamiento.idPaciente.id,
                                 'nombre': resultado.idTratamiento.idPaciente.nombre,
-                                'documeto': resultado.idTratamiento.idPaciente.documento
+                                'documento': resultado.idTratamiento.idPaciente.documento
                                 
                                 },
                                 'idTipo': {
@@ -98,11 +101,13 @@ class resultadosViews(View):
                     resultado_dict = {
                         'id': resultado.id,
                         'observacion': resultado.observacion,
+                        'fecha': resultado.fecha,
+
                         'idTratamiento':{
                             'idPaciente': {
                             'id': resultado.idTratamiento.idPaciente.id,
                             'nombre': resultado.idTratamiento.idPaciente.nombre,
-                            'documeto': resultado.idTratamiento.idPaciente.documento
+                            'documento': resultado.idTratamiento.idPaciente.documento
                             },
                             'idTipo': {
                             'id': resultado.idTratamiento.idTipo.id,

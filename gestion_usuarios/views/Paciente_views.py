@@ -81,6 +81,9 @@ class PacienteViews(View):
             pacientes = {'message': "El correo debe tener menos de 30 caracteres."}
         elif validar_correo(jd['correo']):
             pacientes = {'message': "El correo debe tener un formato válido, Ejem: ejemplo.correo@ejemplo.com"}
+        
+        elif validar_fecha(jd['fechaNacimiento']):
+            pacientes = {'message': "La fecha de Nacimiento no puede ser mayor a la actual"}
         elif len(str(jd['fechaNacimiento'])) <= 0:
             pacientes = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
@@ -152,10 +155,15 @@ class PacienteViews(View):
                 pacientes = {'message': "El correo debe tener menos de 30 caracteres."}
             elif validar_correo(jd['correo']):
                 pacientes = {'message': "El correo debe tener un formato válido, Ejem: ejemplo.correo@ejemplo.com"}
+            
+            elif validar_fecha(jd['fechaNacimiento']):
+                pacientes = {'message': "La fecha de Nacimiento no puede ser mayor a la actual"}
             elif len(str(jd['fechaNacimiento'])) <= 0:
                 pacientes = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
                 pacientes = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+            
+            
             elif str(jd['telefono']).isalpha():
                 pacientes = {'message': "El teléfono solo puede contener numeros."}
             elif len(str(jd['telefono'])) <= 0:
@@ -259,3 +267,11 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
+
+
+def validar_fecha(fecha):
+    fecha_actual = datetime.now().date()
+    if fecha > fecha_actual:
+        return False
+    else:
+        return True

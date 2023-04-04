@@ -313,5 +313,6 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+
     
          

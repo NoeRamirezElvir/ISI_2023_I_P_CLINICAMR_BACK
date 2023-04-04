@@ -23,7 +23,7 @@ class TrasladosViews(View):
                 if traslados is not None:
                     traslados_values = []
                     for traslado in traslados:
-                        traslado = traslado.idPaciente
+                        
                         traslado_dict = {
                             'id': traslado.id,
                             'nombre': traslado.nombre,
@@ -32,11 +32,13 @@ class TrasladosViews(View):
 
                             'idPaciente': {
                                 'id': traslado.idPaciente.id,
-                                'nombre': traslado.idPaciente.nombre
+                                'nombre': traslado.idPaciente.nombre,
+                                'apellido': traslado.idPaciente.apellido,
+                                'documento': traslado.idPaciente.documento
                             },
                             'idAutorizacionPaciente': {
                                 'id': traslado.idAutorizacionPaciente.id,
-                                'nombre': traslado.idAutorizacionPaciente.motivos
+                                'motivos': traslado.idAutorizacionPaciente.motivos
                             },
                             'idEmpleado': {
                                 'id': traslado.idEmpleado.id,
@@ -59,7 +61,7 @@ class TrasladosViews(View):
                 
             elif criterio == "nombre":
                 
-                traslados = TrasladoPaciente.objects.filter(idAutorizacionPaciente__idPaciente__idEmpleado__nombre=campo)
+                traslados = TrasladoPaciente.objects.filter(idPaciente__nombre=campo)
                 if traslados is not None:
                     traslados_values = []
                     for traslado in traslados:
@@ -71,11 +73,13 @@ class TrasladosViews(View):
 
                             'idPaciente': {
                                 'id': traslado.idPaciente.id,
-                                'nombre': traslado.idPaciente.nombre
+                                'nombre': traslado.idPaciente.nombre,
+                                'apellido': traslado.idPaciente.apellido,
+                                'documento': traslado.idPaciente.documento
                             },
                             'idAutorizacionPaciente': {
                                 'id': traslado.idAutorizacionPaciente.id,
-                                'nombre': traslado.idAutorizacionPaciente.motivos
+                                'motivos': traslado.idAutorizacionPaciente.motivos
                             },
                             'idEmpleado': {
                                 'id': traslado.idEmpleado.id,
@@ -101,18 +105,20 @@ class TrasladosViews(View):
                 traslados_values = []
                 for traslado in traslados:
                     traslado_dict = {
-                       '    id': traslado.id,
+                            'id': traslado.id,
                             'nombre': traslado.nombre,
                             'direccion':traslado.direccion,
                             'telefono': traslado.telefono,
 
                             'idPaciente': {
                                 'id': traslado.idPaciente.id,
-                                'nombre': traslado.idPaciente.nombre
+                                'nombre': traslado.idPaciente.nombre,
+                                'apellido': traslado.idPaciente.apellido,
+                                'documento': traslado.idPaciente.documento
                             },
                             'idAutorizacionPaciente': {
                                 'id': traslado.idAutorizacionPaciente.id,
-                                'nombre': traslado.idAutorizacionPaciente.motivos
+                                'motivos': traslado.idAutorizacionPaciente.motivos
                             },
                             'idEmpleado': {
                                 'id': traslado.idEmpleado.id,
