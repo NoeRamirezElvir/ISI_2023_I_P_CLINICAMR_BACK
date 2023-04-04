@@ -150,6 +150,7 @@ class resultadosViews(View):
 
         elif validar_fecha(jd['fecha']):
             resultados = {'message': "la fecha no puede ser mayor a la actual.[fecha]"} 
+       
         
         elif isinstance(rsp_fecha, str):
             resultados = {'message': "La fecha esta vacía"}
@@ -255,9 +256,13 @@ def validar_fecha(fecha):
     
     fecha=datetime.date.fromisoformat(fecha)
     fecha_actual = datetime.date.today()
-    edad= fecha_actual.year - fecha.year
+    fechas= fecha_actual.year - fecha.year
+    fechas -=((fecha_actual.month, fecha_actual.day)< (fecha.month,fecha.day))
     
-    if edad > -1:
+    if fechas > -1:
         return False
     else:
         return True
+    
+
+
