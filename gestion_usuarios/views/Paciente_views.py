@@ -2,7 +2,7 @@ from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
-from datetime import datetime
+import datetime
 import json
 import re
 from ..models import *
@@ -269,9 +269,12 @@ def validar_cadena_espacios(cadena):
     return bool(re.match(patron,cadena))
 
 
-def validar_fecha(fecha):
-    fecha_actual = datetime.now().date()
-    if fecha > fecha_actual:
+def validar_fecha(fechaNacimiento):
+    fecha=datetime.date.fromisoformat(fechaNacimiento)
+    fecha_actual = datetime.date.today()
+    edad= fecha_actual.year - fecha.year
+    edad -=((fecha_actual.month, fecha_actual.day)< (fecha.month,fecha.day))
+    if edad > 18:
         return False
     else:
         return True

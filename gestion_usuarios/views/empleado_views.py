@@ -3,6 +3,8 @@ from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+
+from datetime import  datetime,date,timedelta
 import datetime
 
 
@@ -89,6 +91,8 @@ class EmpleadoViews(View):
 
         elif validar_edad(jd['fechaNacimiento']):
             empleados = {'message': "El empleado no puede ser menor a 18 años."}
+        elif validar_edad_maxima(jd['fechaNacimiento']):
+            empleados = {'message': "El empleado no puede ser mayor a 80 años."}
         elif len(str(jd['fechaNacimiento'])) <= 0:
             empleados = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
@@ -323,9 +327,20 @@ def validar_cadena_espacios(cadena):
 
 
 def validar_edad(fechaNacimiento):
+    fecha=datetime.date.fromisoformat(fechaNacimiento)
     fecha_actual = datetime.date.today()
-    edad = fecha_actual- fechaNacimiento 
-    if edad < 18:
+    edad= fecha_actual.year - fecha.year
+    edad -=((fecha_actual.month, fecha_actual.day)< (fecha.month,fecha.day))
+    if edad > 18:
+        return False
+    else:
+        return True
+   
+
+def validar_edad_maxima(fechaNacimiento):
+    fecha=datetime.date.fromisoformat(fechaNacimiento)
+    edad = (date.today() - fecha) // timedelta(days=365.2425)
+    if edad > 80:
         return False
     else:
         return True
