@@ -147,6 +147,10 @@ class resultadosViews(View):
             resultados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[observacion]"} 
         elif (rsp_fecha) is None:
             resultados = {'message': "La fecha esta vacía"}
+
+        elif validar_fecha(jd['fecha']):
+            resultados = {'message': "la fecha no puede ser mayor a la actual.[fecha]"} 
+        
         elif isinstance(rsp_fecha, str):
             resultados = {'message': "La fecha esta vacía"}
         elif (rsp_fecha.year) < 2000:
@@ -240,3 +244,20 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+
+
+
+           
+           
+ 
+    
+def validar_fecha(fecha):
+    
+    fecha=datetime.date.fromisoformat(fecha)
+    fecha_actual = datetime.date.today()
+    edad= fecha_actual.year - fecha.year
+    
+    if edad > -1:
+        return False
+    else:
+        return True

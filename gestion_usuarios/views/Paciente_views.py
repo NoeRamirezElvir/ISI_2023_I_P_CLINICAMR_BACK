@@ -273,8 +273,13 @@ def validar_fecha(fechaNacimiento):
     fecha=datetime.date.fromisoformat(fechaNacimiento)
     fecha_actual = datetime.date.today()
     edad= fecha_actual.year - fecha.year
-    edad -=((fecha_actual.month, fecha_actual.day)< (fecha.month,fecha.day))
-    if edad > 18:
+    
+    if edad > -1:
         return False
     else:
         return True
+
+
+  
+
+    
