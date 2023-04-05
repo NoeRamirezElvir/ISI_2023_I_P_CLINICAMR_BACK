@@ -195,6 +195,8 @@ class CitasViews(View):
                     citas = {'message': "La fecha actual esta vacía"}
                 elif isinstance(rsp_fechaActual, str):
                     citas = {'message': "La fecha actual esta vacía"}
+                elif (rsp_fechaActual) >= datetime.datetime.today():
+                    citas = {'message': "la fecha actual es incorrecta"}
                 elif (rsp_fechaActual) >= rsp_fechaProgramada:
                     citas = {'message': "La fecha actual debe ser menor a la fecha programada"}
                 elif (rsp_fechaActual) >= rsp_fechaMaxima:
