@@ -2,7 +2,11 @@ from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_exempt
+
+from datetime import datetime 
 import datetime
+
+
 import json
 import re
 from ..models import *
@@ -52,6 +56,7 @@ class PacienteViews(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
+        rsp_fechaNacimiento = datetime.date.fromisoformat(jd['fechaNacimiento'])
         if len(jd['nombre']) <= 0:
             pacientes = {'message': "El nombre esta vacío."}
         elif len(jd['nombre']) < 3:
@@ -81,6 +86,11 @@ class PacienteViews(View):
             pacientes = {'message': "El correo debe tener menos de 30 caracteres."}
         elif validar_correo(jd['correo']):
             pacientes = {'message': "El correo debe tener un formato válido, Ejem: ejemplo.correo@ejemplo.com"}
+        
+        elif (rsp_fechaNacimiento) is None:
+            pacientes = {'message': "La fecha esta vacía"}
+        elif (rsp_fechaNacimiento) > datetime.date.today():
+            pacientes = {'message': "la fecha actual es incorrecta"}
         
         elif validar_fecha(jd['fechaNacimiento']):
             pacientes = {'message': "La fecha de Nacimiento no puede ser mayor a la actual"}
@@ -125,13 +135,21 @@ class PacienteViews(View):
             pacientes = {'message': f"El documento debe cumplir la longitud asignada:{validar_documento(jd['idTipoDocumento'])}"} 
         else:
             pacientes = {'message': "Registro Exitoso."}
-            Paciente.objects.create(nombre=jd['nombre'], apellido=jd['apellido'],fechaNacimiento=datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d"),correo=jd['correo'],telefono=str(jd['telefono']),direccion=jd['direccion'],idTipoDocumento=(instanciar_documento(jd['idTipoDocumento'])),documento=jd['documento'])
+            Paciente.objects.create(nombre=jd['nombre'],
+                                     apellido=jd['apellido'],
+                                     fechaNacimiento=str(jd['fechaNacimiento']),
+                                     correo=jd['correo'],
+                                     telefono=str(jd['telefono']),
+                                     direccion=jd['direccion'],
+                                     idTipoDocumento=(instanciar_documento(jd['idTipoDocumento'])),
+                                     documento=jd['documento'])
             pacientes = {'message':"Registro Exitoso."}
         return JsonResponse(pacientes)
 
 #Actualizar un registro de cargos
     def put(self, request,id):
         jd=json.loads(request.body)
+        rsp_fechaNacimiento = datetime.date.fromisoformat(jd['fechaNacimiento'])
         pacientes = list(Paciente.objects.filter(id=id).values())
         if len(pacientes) > 0:
             paciente=Paciente.objects.get(id=id)
@@ -162,6 +180,10 @@ class PacienteViews(View):
                 pacientes = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
                 pacientes = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+            elif (rsp_fechaNacimiento) is None:
+                pacientes = {'message': "La fecha esta vacía"}
+            elif (rsp_fechaNacimiento) > datetime.date.today():
+                pacientes = {'message': "la fecha actual es incorrecta"}
             
             
             elif str(jd['telefono']).isalpha():
@@ -203,7 +225,7 @@ class PacienteViews(View):
                 paciente.correo = jd['correo']
                 paciente.telefono = str(jd['telefono'])
                 paciente.direccion = jd['direccion']
-                paciente.fechaNacimiento = datetime.strptime(str(jd['fechaNacimiento']), "%Y-%m-%d").strftime("%Y-%m-%d")
+                paciente.fechaNacimiento=str(jd['fechaNacimiento'])
                 paciente.idTipoDocumento = instanciar_documento(jd['idTipoDocumento'])
                 paciente.documento = jd['documento']
                 

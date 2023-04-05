@@ -1,3 +1,5 @@
+
+from datetime import datetime
 import datetime
 from django.http.response import JsonResponse
 from django.views import View
@@ -132,7 +134,9 @@ class resultadosViews(View):
 #Agregar un registro de tipo
     def post(self, request):
         jd=json.loads(request.body)
-        rsp_fecha = datetime.datetime.fromisoformat(jd['fecha'])
+        
+        rsp_fecha = datetime.date.fromisoformat(jd['fecha'])
+        
         if validar_id_tipo(jd['idTratamiento']):    
             resultados = {'message': "El tratamiento no existe"}
         elif len(jd['observacion']) <= 0:
@@ -145,11 +149,15 @@ class resultadosViews(View):
             resultados = {'message': "No se permiten mas de un espacio consecutivo.[observacion]"}
         elif validar_cadena_repeticion(jd['observacion']):
             resultados = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo.[observacion]"} 
+        
         elif (rsp_fecha) is None:
             resultados = {'message': "La fecha esta vacía"}
-
+        elif (rsp_fecha) < datetime.date.today():
+            resultados = {'message': "la fecha actual es incorrecta"}
         elif validar_fecha(jd['fecha']):
-            resultados = {'message': "la fecha no puede ser mayor a la actual.[fecha]"} 
+            resultados = {'message': "la fecha no puede ser mayor a la actual.[fecha]"}    
+        elif validar_fecha_max(jd['fecha']):
+            resultados = {'message': "la fecha no puede ser menor a la actual.[fecha]"} 
        
         
         elif isinstance(rsp_fecha, str):
@@ -258,6 +266,18 @@ def validar_fecha(fecha):
     fecha_actual = datetime.date.today()
     fechas= fecha_actual.year - fecha.year
     fechas -=((fecha_actual.month, fecha_actual.day)< (fecha.month,fecha.day))
+    
+    if fechas > -1:
+        return False
+    else:
+        return True
+    
+def validar_fecha_max(fecha):
+    
+    fecha=datetime.date.fromisoformat(fecha)
+    fecha_actual = datetime.date.today()
+    fechas= fecha_actual.year - fecha.year
+    fechas -=((fecha_actual.month, fecha_actual.day)> (fecha.month,fecha.day))
     
     if fechas > -1:
         return False

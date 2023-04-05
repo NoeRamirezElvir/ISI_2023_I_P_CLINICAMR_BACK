@@ -1,4 +1,4 @@
-from time import strptime
+
 from django.http.response import JsonResponse
 from django.views import View
 from django.utils.decorators import method_decorator
@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 
 from datetime import  datetime,date,timedelta
 import datetime
+from time import strptime
 
 
 
@@ -60,6 +61,7 @@ class EmpleadoViews(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
+        rsp_fechaNacimiento = datetime.date.fromisoformat(jd['fechaNacimiento'])
         if len(jd['nombre']) <= 0:
             empleados = {'message': "El nombre esta vacío."}
         elif len(jd['nombre']) < 3:
@@ -91,12 +93,15 @@ class EmpleadoViews(View):
 
         elif validar_edad(jd['fechaNacimiento']):
             empleados = {'message': "El empleado no puede ser menor a 18 años."}
-        elif validar_edad_maxima(jd['fechaNacimiento']):
-            empleados = {'message': "El empleado no puede ser mayor a 80 años."}
+        
         elif len(str(jd['fechaNacimiento'])) <= 0:
             empleados = {'message': "La fecha de nacimiento esta vacía."}
         elif len(str(jd['fechaNacimiento'])) > 10:
             empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+        elif (rsp_fechaNacimiento) is None:
+            empleados = {'message': "La fecha esta vacía"}
+        elif (rsp_fechaNacimiento) > datetime.date.today():
+            empleados = {'message': "la fecha actual es incorrecta"}
 
 
         elif str(jd['telefono']).isalpha():
@@ -142,7 +147,7 @@ class EmpleadoViews(View):
         else:
             empleados = {'message': "Registro Exitoso."}
             Empleado.objects.create(nombre=jd['nombre'], apellidos=jd['apellidos'],
-                                    fechaNacimiento=datetime(str(jd['fechaNacimiento']), "%Y-%m-%d")("%Y-%m-%d"),
+                                    fechaNacimiento=(jd['fechaNacimiento']),
                                     email=jd['email'],
                                     telefono=str(jd['telefono']),
                                     direccion=jd['direccion'],
@@ -158,7 +163,9 @@ class EmpleadoViews(View):
 #Actualizar un registro de cargos
     def put(self, request,id):
         jd=json.loads(request.body)
+        
         empleados = list(Empleado.objects.filter(id=id).values())
+        rsp_fechaNacimiento = datetime.date.fromisoformat(jd['fechaNacimiento'])
         if len(empleados) > 0:
             empleado=Empleado.objects.get(id=id)
             if len(jd['nombre']) <= 0:
@@ -197,6 +204,11 @@ class EmpleadoViews(View):
                 empleados = {'message': "La fecha de nacimiento esta vacía."}
             elif len(str(jd['fechaNacimiento'])) > 10:
                 empleados = {'message': "La fecha de nacimiento debe tener menos de 10 caracteres."}
+            elif (rsp_fechaNacimiento) is None:
+                empleados = {'message': "La fecha esta vacía"}
+            elif (rsp_fechaNacimiento) > datetime.date.today():
+                empleados = {'message': "la fecha actual es incorrecta"}
+
             
             
             elif str(jd['telefono']).isalpha():
@@ -244,7 +256,7 @@ class EmpleadoViews(View):
                 empleado.email = jd['email']
                 empleado.telefono = str(jd['telefono'])
                 empleado.direccion = jd['direccion']
-                empleado.fechaNacimiento = datetime(str(jd['fechaNacimiento']), "%Y-%m-%d").str("%Y-%m-%d")
+                empleado.fechaNacimiento = str(jd['fechaNacimiento'])
                 empleado.idTipoDocumentos = instanciar_documento(jd['idTipoDocumentos'])
                 empleado.documento = jd['documento']
                 if jd['idEspecialidadMedico'] > 0:
