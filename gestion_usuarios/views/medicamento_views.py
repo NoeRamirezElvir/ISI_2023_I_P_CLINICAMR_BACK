@@ -22,27 +22,125 @@ class MedicamentosViews(View):
         try:
             if (len(campo)> 0 and len(criterio)> 0):
                 if criterio == "id":
-                    medicamentos = list(Medicamento.objects.filter(id=campo).values())
-                    if len(medicamentos) > 0:
-                        medicamentos = medicamentos
-                        medicamentos = {'message': "Consulta exitosa", 'medicamentos': medicamentos}
+                    medicamentos = Medicamento.objects.filter(id=campo).select_related('idImpuesto','idTipo','idProveedor')
+                    if medicamentos is not None:
+                        medicamentos_values = []
+                        for medicamento in medicamentos:
+                            medicamento_dict = {
+                                'id': medicamento.id,
+                                'nombre': medicamento.nombre,
+                                'fechaRegistro': medicamento.fechaRegistro,
+                                'activo': medicamento.activo,
+                                'stockActual': medicamento.stockActual,
+                                'stockMinimo': medicamento.stockMinimo,
+                                'stockMaximo': medicamento.stockMaximo,
+                                'costoCompra': medicamento.costoCompra,
+                                'precioVenta': medicamento.precioVenta,
+                                'idTipo': {
+                                    'id': medicamento.idTipo.id,
+                                    'nombre': medicamento.idTipo.nombre
+                                },
+                                'idProveedor': {
+                                    'id': medicamento.idProveedor.id,
+                                    'nombre': medicamento.idProveedor.nombre
+                                },
+                                'idImpuesto': {
+                                    'id': medicamento.idImpuesto.id,
+                                    'nombre': medicamento.idImpuesto.valor
+                                }
+                            }
+                            medicamentos_values.append(medicamento_dict)
+                            context = {
+                                'message': "Consulta exitosa",
+                                'medicamentos': medicamentos_values
+                            }
+                            return JsonResponse(context)
                     else:
-                        medicamentos = {'message': "No se encontraron los datos", 'medicamentos': []} 
-                        return JsonResponse(medicamentos)
+                        context = {
+                            'message': "No se encontraron los datos",
+                            'medicamentos': []
+                        }
+                        return JsonResponse(context)
                 elif criterio == "nombre":
-                    medicamentos = list(Medicamento.objects.filter(nombre=campo).values())
-                    if len(medicamentos) > 0:
-                        medicamentos = medicamentos
-                        medicamentos = {'message': "Consulta exitosa", 'medicamentos': medicamentos}
+                    medicamentos = Medicamento.objects.filter(nombre=campo).select_related('idImpuesto','idTipo','idProveedor')
+                    if medicamentos is not None:
+                        medicamentos_values = []
+                        for medicamento in medicamentos:
+                            medicamento_dict = {
+                                'id': medicamento.id,
+                                'nombre': medicamento.nombre,
+                                'fechaRegistro': medicamento.fechaRegistro,
+                                'activo': medicamento.activo,
+                                'stockActual': medicamento.stockActual,
+                                'stockMinimo': medicamento.stockMinimo,
+                                'stockMaximo': medicamento.stockMaximo,
+                                'costoCompra': medicamento.costoCompra,
+                                'precioVenta': medicamento.precioVenta,
+                                'idTipo': {
+                                    'id': medicamento.idTipo.id,
+                                    'nombre': medicamento.idTipo.nombre
+                                },
+                                'idProveedor': {
+                                    'id': medicamento.idProveedor.id,
+                                    'nombre': medicamento.idProveedor.nombre
+                                },
+                                'idImpuesto': {
+                                    'id': medicamento.idImpuesto.id,
+                                    'nombre': medicamento.idImpuesto.valor
+                                }
+                            }
+                            medicamentos_values.append(medicamento_dict)
+                            context = {
+                                'message': "Consulta exitosa",
+                                'medicamentos': medicamentos_values
+                            }
+                            return JsonResponse(context)
                     else:
-                        medicamentos = {'message': "No se encontraron los datos", 'medicamentos': []} 
-                        return JsonResponse(medicamentos)
+                        context = {
+                            'message': "No se encontraron los datos",
+                            'medicamentos': []
+                        }
+                        return JsonResponse(context)
             else:
-                medicamentos = list(Medicamento.objects.values())
-                if len(medicamentos) > 0:
-                    medicamentos = {'message': "Consulta exitosa", 'medicamentos': medicamentos}
+                medicamentos = Medicamento.objects.select_related('idImpuesto','idTipo','idProveedor')
+                if medicamentos is not None:
+                    medicamentos_values = []
+                    for medicamento in medicamentos:
+                        medicamento_dict = {
+                            'id': medicamento.id,
+                            'nombre': medicamento.nombre,
+                            'fechaRegistro': medicamento.fechaRegistro,
+                            'activo': medicamento.activo,
+                            'stockActual': medicamento.stockActual,
+                            'stockMinimo': medicamento.stockMinimo,
+                            'stockMaximo': medicamento.stockMaximo,
+                            'costoCompra': medicamento.costoCompra,
+                            'precioVenta': medicamento.precioVenta,
+                            'idTipo': {
+                                'id': medicamento.idTipo.id,
+                                'nombre': medicamento.idTipo.nombre
+                            },
+                            'idProveedor': {
+                                'id': medicamento.idProveedor.id,
+                                'nombre': medicamento.idProveedor.nombre
+                            },
+                            'idImpuesto': {
+                                'id': medicamento.idImpuesto.id,
+                                'nombre': medicamento.idImpuesto.valor
+                            }
+                        }
+                        medicamentos_values.append(medicamento_dict)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'medicamentos': medicamentos_values
+                        }
+                        return JsonResponse(context)
                 else:
-                    medicamentos = {'message': "No se encontraron los datos", 'medicamentos': []} 
+                    context = {
+                        'message': "No se encontraron los datos",
+                        'medicamentos': []
+                    }
+                    return JsonResponse(context)
             return JsonResponse(medicamentos)
         except Exception as e:
             mensaje_delete = {'message': f"Error: {e}"}

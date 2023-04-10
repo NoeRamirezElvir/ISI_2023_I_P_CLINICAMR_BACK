@@ -31,11 +31,13 @@ class tratamientosViews(View):
                             'estado': tratamiento.estado,
                             'idPaciente': {
                                 'id': paciente.id,
-                                'nombre': paciente.nombre
+                                'nombre': paciente.nombre  +' '+ paciente.apellido,
+                                'documento': paciente.documento
                             },
                             'idTipo': {
                                 'id': tratamiento.idTipo.id,
-                                'nombre': tratamiento.idTipo.nombre
+                                'nombre': tratamiento.idTipo.nombre,
+                                'precio': tratamiento.idTipo.precio
                             }
                         }
                         tratamientos_values.append(tratamiento_dict)
@@ -66,11 +68,13 @@ class tratamientosViews(View):
                                     'estado': tratamiento.estado,
                                     'idPaciente': {
                                         'id': paciente.id,
-                                        'nombre': paciente.nombre
+                                        'nombre': paciente.nombre  +' '+ paciente.apellido,
+                                        'documento': paciente.documento
                                     },
                                     'idTipo': {
                                             'id': tratamiento.idTipo.id,
-                                            'nombre': tratamiento.idTipo.nombre
+                                            'nombre': tratamiento.idTipo.nombre,
+                                            'precio': tratamiento.idTipo.precio
                                         }
                                 }
                                 tratamientos_values.append(tratamiento_dict)
@@ -109,11 +113,13 @@ class tratamientosViews(View):
                         'estado': tratamiento.estado,
                         'idPaciente': {
                             'id': paciente.id,
-                            'nombre': paciente.nombre
+                            'nombre': paciente.nombre  +' '+ paciente.apellido,
+                            'documento': paciente.documento
                         },
                         'idTipo': {
                                 'id': tratamiento.idTipo.id,
-                                'nombre': tratamiento.idTipo.nombre
+                                'nombre': tratamiento.idTipo.nombre,
+                                'precio': tratamiento.idTipo.precio
                             }
                     }
                     tratamientos_values.append(tratamiento_dict)
