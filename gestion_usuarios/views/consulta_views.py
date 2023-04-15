@@ -43,6 +43,7 @@ class ConsultaViews(View):
                                 'id':consulta.idTipo.id,
                                 'nombre':consulta.idTipo.nombre,
                                 'precio':consulta.idTipo.precio,
+                                'impuesto':consulta.idTipo.idImpuesto.valor,
                                 'subtipo':consulta.idTipo.idsubtipo.nombre
                             },
                             'idDiagnostico':{}                        
@@ -92,6 +93,7 @@ class ConsultaViews(View):
                                 'id':consulta.idTipo.id,
                                 'nombre':consulta.idTipo.nombre,
                                 'precio':consulta.idTipo.precio,
+                                'impuesto':consulta.idTipo.idImpuesto.valor,
                                 'subtipo':consulta.idTipo.idsubtipo.nombre
                             },
                             'idDiagnostico':{}                        
@@ -140,6 +142,7 @@ class ConsultaViews(View):
                             'id':consulta.idTipo.id,
                             'nombre':consulta.idTipo.nombre,
                             'precio':consulta.idTipo.precio,
+                            'impuesto':consulta.idTipo.idImpuesto.valor,
                             'subtipo':consulta.idTipo.idsubtipo.nombre
                         },
                         'idDiagnostico':{}                        

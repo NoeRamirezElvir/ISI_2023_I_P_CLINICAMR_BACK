@@ -45,6 +45,7 @@ from .views.recaudo_detalle_examen_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
+    path('login/id/<int:id>', LoginViews.as_view() , name='login_sesion_view'),
     path('cargos/', CargosView.as_view() , name='cargo_list'),
     path('cargos/busqueda/<str:criterio>/<str:campo>', CargosView.as_view() , name='cargos_process'),
     path('cargos/id/<int:id>', CargosView.as_view() , name='cargos_process_id'),

@@ -269,7 +269,17 @@ class CitasViews(View):
         return JsonResponse(datos)
 
 
-        
+def formato_fecha(fecha):
+    rsp_fechaActual = datetime.fromisoformat(fecha)
+
+    # Crear una cadena de texto en formato ISO
+    fecha_formateada = rsp_fechaActual.strftime('%d-%m-%yT%H:%M:%S')
+
+    # Crear un nuevo objeto datetime a partir de la cadena formateada
+    fecha_datetime = datetime.strptime(fecha_formateada, '%d-%m-%yT%H:%M:%S')
+
+    return fecha_datetime
+
 def instanciar_paciente(id):
     if (id>0):
         paciente = Paciente.objects.get(id=id)

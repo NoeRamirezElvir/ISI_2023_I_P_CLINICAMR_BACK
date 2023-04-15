@@ -33,17 +33,26 @@ class LoginViews(View):
                     mensaje = {'mensaje':"Inicio Exitoso"}
                     usuario[0].intentos = 0
                     usuario[0].activo = 1
+                    usuario[0].sesion = 1
                 else:
                     mensaje = {'mensaje':"Contraseña Incorrecta"}
                     usuario[0].intentos += 1
                     if usuario[0].intentos == 3:
                         mensaje = {'mensaje':"El usuario ha sido bloqueado, contacte al administrador"}
                         usuario[0].bloqueado = 1
-                        usuario[0].activo = 0             
+                        usuario[0].activo = 0 
+                        usuario[0].sesion = 0            
         else:
             mensaje = {'mensaje':"No se encontro el usuario"}
         if usuario:
             usuario[0].save()
+        return JsonResponse(mensaje)
+    
+    def put(self, request,id):
+        usuario = Usuario.objects.get(id=id)
+        usuario.sesion = 0
+        usuario.save()
+        mensaje = {'mensaje':"Exito"}
         return JsonResponse(mensaje)
 
 def verificar_password(password, encript):

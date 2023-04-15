@@ -35,6 +35,14 @@ class UsuarioViews(View):
                 else:
                     usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
                     return JsonResponse(usuariosr)
+            elif criterio == "sesion":
+                usuariosr = list(Usuario.objects.filter(sesion=campo).values())
+                if len(usuariosr) > 0:
+                    usuariosr = usuariosr
+                    usuariosr = {'message': "Consulta exitosa", 'usuariosr': usuariosr}
+                else:
+                    usuariosr = {'message': "No se encontraron los datos", 'usuariosr': []} 
+                    return JsonResponse(usuariosr)
         else:
             usuariosr = list(Usuario.objects.values())
             if len(usuariosr) > 0:

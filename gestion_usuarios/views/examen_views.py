@@ -42,6 +42,7 @@ class examenViews(View):
                             'tipo':examen.idMuestra.idTipoMuestra.nombre,
                             'nombre': examen.idTipo.nombre,
                             'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'impuesto':examen.idTipo.idImpuesto.valor,
                             'precio': examen.idTipo.precio
                             
                             },
@@ -85,6 +86,7 @@ class examenViews(View):
                             'id': examen.idTipo.id,
                             'nombre': examen.idTipo.nombre,
                             'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'impuesto':examen.idTipo.idImpuesto.valor,
                             'precio': examen.idTipo.precio
                             
                             },
@@ -128,6 +130,7 @@ class examenViews(View):
                             'id': examen.idTipo.id,
                             'nombre': examen.idTipo.nombre,
                             'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'impuesto':examen.idTipo.idImpuesto.valor,
                             'precio': examen.idTipo.precio
                             
                             },
@@ -170,6 +173,7 @@ class examenViews(View):
                             'id': examen.idTipo.id,
                             'nombre': examen.idTipo.nombre,
                             'subtipo': examen.idTipo.idsubtipo.nombre,
+                            'impuesto':examen.idTipo.idImpuesto.valor,
                             'precio': examen.idTipo.precio
                             
                             },

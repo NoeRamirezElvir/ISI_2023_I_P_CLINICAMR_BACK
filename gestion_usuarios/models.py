@@ -45,6 +45,7 @@ class Usuario(models.Model):
         fechaCreacion = models.DateTimeField()
         fechaModificacion = models.DateTimeField(auto_now=True)
         intentos = models.PositiveSmallIntegerField(null=True, blank=True,default=0)
+        sesion = models.PositiveSmallIntegerField(null=True,  blank=True,default=0)
 #Paciente
 class Paciente(models.Model):
         nombre = models.CharField(max_length=40)
@@ -91,6 +92,7 @@ class Tipo(models.Model):
         nombre = models.CharField(max_length=40)
         descripcion = models.CharField(max_length=40)
         precio = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
+        idImpuesto  = models.ForeignKey(Impuesto, on_delete=models.PROTECT, null=True, blank=True)
 #Falta
 class Proveedor(models.Model):
         nombre = models.CharField(max_length=50)
@@ -108,7 +110,7 @@ class Medicamento(models.Model):
         stockMinimo = models.PositiveIntegerField()
         stockMaximo = models.PositiveIntegerField()
         idProveedor = models.ForeignKey(Proveedor,on_delete=models.PROTECT)
-        idImpuesto  = models.ForeignKey(Impuesto, on_delete=models.PROTECT)
+        idImpuesto  = models.ForeignKey(Impuesto, on_delete=models.PROTECT, null=True, blank=True)
         costoCompra = models.DecimalField(max_digits=8, decimal_places=2)
         precioVenta = models.DecimalField(max_digits=8, decimal_places=2)
 #Falta
@@ -222,7 +224,6 @@ class TrasladoPaciente(models.Model):
         nombre = models.CharField(max_length=50)
         direccion = models.CharField(max_length=50)
         telefono = models.CharField(max_length=15)
-
 
 class Expediente(models.Model):
         idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT)        

@@ -37,6 +37,7 @@ class tratamientosViews(View):
                             'idTipo': {
                                 'id': tratamiento.idTipo.id,
                                 'nombre': tratamiento.idTipo.nombre,
+                                'impuesto':tratamiento.idTipo.idImpuesto.valor,
                                 'precio': tratamiento.idTipo.precio
                             }
                         }
@@ -74,6 +75,7 @@ class tratamientosViews(View):
                                     'idTipo': {
                                             'id': tratamiento.idTipo.id,
                                             'nombre': tratamiento.idTipo.nombre,
+                                            'impuesto':tratamiento.idTipo.idImpuesto.valor,
                                             'precio': tratamiento.idTipo.precio
                                         }
                                 }
@@ -119,6 +121,7 @@ class tratamientosViews(View):
                         'idTipo': {
                                 'id': tratamiento.idTipo.id,
                                 'nombre': tratamiento.idTipo.nombre,
+                                'impuesto':tratamiento.idTipo.idImpuesto.valor,
                                 'precio': tratamiento.idTipo.precio
                             }
                     }

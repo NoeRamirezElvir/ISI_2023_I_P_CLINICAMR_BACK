@@ -56,8 +56,8 @@ class CorrelativoViews(View):
             mensaje_post = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo[cai]."}
         elif not validar_cadena_espacios(jd['cai']):
             mensaje_post = {'message': "No se permiten espacios[cai]."}
-        elif len(jd['cai']) > 25:
-            mensaje_post = {'message': "El cai debe tener menos de 25 digitos."}
+        elif len(jd['cai']) > 50:
+            mensaje_post = {'message': "El cai debe tener menos de 50 digitos."}
 
         elif (jd['rangoInicial']) < 0:
             mensaje_post = {'message': "El rango inicial debe ser mayor a cero."}
@@ -106,8 +106,8 @@ class CorrelativoViews(View):
                 mensaje_put = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo[cai]."}
             elif not validar_cadena_espacios(jd['cai']):
                 mensaje_put = {'message': "No se permiten espacios[cai]."}
-            elif len(jd['cai']) > 25:
-                mensaje_put = {'message': "El cai debe tener menos de 25 digitos."}
+            elif len(jd['cai']) > 50:
+                mensaje_put = {'message': "El cai debe tener menos de 50 digitos."}
 
             elif (jd['rangoInicial']) < 0:
                 mensaje_put = {'message': "El rango inicial debe ser mayor a cero."}

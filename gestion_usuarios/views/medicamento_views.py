@@ -50,11 +50,11 @@ class MedicamentosViews(View):
                                 }
                             }
                             medicamentos_values.append(medicamento_dict)
-                            context = {
-                                'message': "Consulta exitosa",
-                                'medicamentos': medicamentos_values
-                            }
-                            return JsonResponse(context)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'medicamentos': medicamentos_values
+                        }
+                        return JsonResponse(context)
                     else:
                         context = {
                             'message': "No se encontraron los datos",
@@ -90,11 +90,11 @@ class MedicamentosViews(View):
                                 }
                             }
                             medicamentos_values.append(medicamento_dict)
-                            context = {
-                                'message': "Consulta exitosa",
-                                'medicamentos': medicamentos_values
-                            }
-                            return JsonResponse(context)
+                        context = {
+                            'message': "Consulta exitosa",
+                            'medicamentos': medicamentos_values
+                        }
+                        return JsonResponse(context)
                     else:
                         context = {
                             'message': "No se encontraron los datos",
@@ -130,11 +130,11 @@ class MedicamentosViews(View):
                             }
                         }
                         medicamentos_values.append(medicamento_dict)
-                        context = {
-                            'message': "Consulta exitosa",
-                            'medicamentos': medicamentos_values
-                        }
-                        return JsonResponse(context)
+                    context = {
+                        'message': "Consulta exitosa",
+                        'medicamentos': medicamentos_values
+                    }
+                    return JsonResponse(context)
                 else:
                     context = {
                         'message': "No se encontraron los datos",

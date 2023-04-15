@@ -20,7 +20,7 @@ class TiposView(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if criterio == "id":
-                tipos = Tipo.objects.filter(id=campo).select_related('idsubtipo')
+                tipos = Tipo.objects.filter(id=campo).select_related('idsubtipo','idImpuesto')
                 if tipos is not None:
                     tipos_values = []
                     for tipo in tipos:
@@ -32,8 +32,15 @@ class TiposView(View):
                             'idsubtipo': {
                                 'id': tipo.idsubtipo.id,
                                 'nombre': tipo.idsubtipo.nombre
-                            }
+                            },
+                            'idImpuesto': []
                         }
+                        if tipo.idImpuesto is not None:
+                            tipo_dict['idImpuesto'] = {
+                                'id': tipo.idImpuesto.id,
+                                'nombre': tipo.idImpuesto.nombre,
+                                'valor': tipo.idImpuesto.valor
+                            }
                         tipos_values.append(tipo_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -47,7 +54,7 @@ class TiposView(View):
                     }
                     return JsonResponse(context)
             elif criterio == "nombre":
-                tipos = Tipo.objects.filter(nombre=campo).select_related('idsubtipo')
+                tipos = Tipo.objects.filter(nombre=campo).select_related('idsubtipo','idImpuesto')
                 if tipos is not None:
                     tipos_values = []
                     for tipo in tipos:
@@ -59,8 +66,15 @@ class TiposView(View):
                             'idsubtipo': {
                                 'id': tipo.idsubtipo.id,
                                 'nombre': tipo.idsubtipo.nombre
-                            }
+                            },
+                            'idImpuesto': []
                         }
+                        if tipo.idImpuesto is not None:
+                            tipo_dict['idImpuesto'] = {
+                                'id': tipo.idImpuesto.id,
+                                'nombre': tipo.idImpuesto.nombre,
+                                'valor': tipo.idImpuesto.valor
+                            }
                         tipos_values.append(tipo_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -74,7 +88,7 @@ class TiposView(View):
                     }
                     return JsonResponse(context)
             elif criterio == "subtipo":
-                tipos = Tipo.objects.filter(idsubtipo__nombre=campo)
+                tipos = Tipo.objects.filter(idsubtipo__nombre=campo).select_related('idImpuesto')
                 if tipos is not None:
                     tipos_values = []
                     for tipo in tipos:
@@ -86,8 +100,15 @@ class TiposView(View):
                             'idsubtipo': {
                                 'id': tipo.idsubtipo.id,
                                 'nombre': tipo.idsubtipo.nombre
-                            }
+                            },
+                            'idImpuesto': []
                         }
+                        if tipo.idImpuesto is not None:
+                            tipo_dict['idImpuesto'] = {
+                                'id': tipo.idImpuesto.id,
+                                'nombre': tipo.idImpuesto.nombre,
+                                'valor': tipo.idImpuesto.valor
+                            }
                         tipos_values.append(tipo_dict)
                     context = {
                         'message': "Consulta exitosa",
@@ -101,7 +122,7 @@ class TiposView(View):
                     }
                     return JsonResponse(context)
         else:
-            tipos = Tipo.objects.select_related('idsubtipo')
+            tipos = Tipo.objects.select_related('idsubtipo','idImpuesto')
             if tipos is not None:
                 tipos_values = []
                 for tipo in tipos:
@@ -113,8 +134,15 @@ class TiposView(View):
                         'idsubtipo': {
                             'id': tipo.idsubtipo.id,
                             'nombre': tipo.idsubtipo.nombre
-                        }
+                        },
+                        'idImpuesto': []
                     }
+                    if tipo.idImpuesto is not None:
+                        tipo_dict['idImpuesto'] = {
+                            'id': tipo.idImpuesto.id,
+                            'nombre': tipo.idImpuesto.nombre,
+                            'valor': tipo.idImpuesto.valor
+                        }
                     tipos_values.append(tipo_dict)
                 context = {
                     'message': "Consulta exitosa",
@@ -152,6 +180,8 @@ class TiposView(View):
             tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
         elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
             tipo = {'message': "Seleccione un subtipo existente."}
+        elif validar_tipo_impuesto(int(jd['idsubtipo'])) and (jd['idImpuesto'] == [] or jd['idImpuesto'] == 0):
+            tipo = {'message': "Seleccione un impuesto existente."}
         else:
             tipo = {'message':"Registro Exitoso."}
             subtipo = instanciar_subtipo(int(jd['idsubtipo']))
@@ -165,7 +195,7 @@ class TiposView(View):
                     elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
                         tipo = {'message': "El precio debe ser mayor al costo de compra."}
                     else:
-                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),idImpuesto=instanciar_impuesto(int(jd['idImpuesto'])),precio=precios)
                         PrecioHistoricoExamen.objects.create(idTipo=id_tipo,
                                                             fechaInicio=datetime.now(),
                                                             activo=1,
@@ -183,7 +213,7 @@ class TiposView(View):
                     elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
                         tipo = {'message': "El precio debe ser mayor al costo de compra."}
                     else:
-                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),idImpuesto=instanciar_impuesto(int(jd['idImpuesto'])),precio=precios)
                         PrecioHistoricoTratamiento.objects.create(idTipo=id_tipo,
                                                             fechaInicio=datetime.now(),
                                                             activo=1,
@@ -200,7 +230,7 @@ class TiposView(View):
                     elif round(Decimal(jd['precio']), 2) > round(Decimal(jd['precio']), 2):
                         tipo = {'message': "El precio debe ser mayor al costo de compra."}
                     else:
-                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),precio=precios)
+                        id_tipo = Tipo.objects.create(nombre=jd['nombre'], descripcion=jd['descripcion'],idsubtipo=instanciar_subtipo(int(jd['idsubtipo'])),idImpuesto=instanciar_impuesto(int(jd['idImpuesto'])),precio=precios)
                         PrecioHistoricoConsulta.objects.create(idTipo=id_tipo,
                                                             fechaInicio=datetime.now(),
                                                             activo=1,
@@ -235,10 +265,13 @@ class TiposView(View):
                 tipo = {'message': "La descripción debe tener menos de 50 caracteres."}
             elif jd['idsubtipo'] == [] or jd['idsubtipo'] == 0:
                 tipo = {'message': "Seleccione un subtipo existente."}
+            elif validar_tipo_impuesto(int(jd['idsubtipo'])) and (jd['idImpuesto'] == [] or jd['idImpuesto'] == 0):
+                tipo = {'message': "Seleccione un impuesto existente."}
             else:
                 tipo = {'message': "La actualización fue exitosa."}
                 tipo_temp = tipos
                 tipos.idsubtipo = instanciar_subtipo(int(jd['idsubtipo']))
+                tipos.idImpuesto = instanciar_impuesto(int(jd['idImpuesto']))
                 tipos.nombre = jd['nombre']
                 tipos.descripcion = jd['descripcion']
                 tipos.precio = Decimal(jd['precio'])
@@ -342,6 +375,18 @@ def validar_tipo_repetido(nombre):
             return False
     return False
 
+def validar_tipo_impuesto(id): 
+    subtipo = instanciar_subtipo(id)
+    print(subtipo.nombre)
+    if (subtipo.nombre).lower() == 'examen':
+        return True
+    elif (subtipo.nombre).lower() == 'tratamiento':
+        return True
+    elif (subtipo.nombre).lower() == 'consulta':
+        return True
+    else:
+        return False
+
 def validar_tipo_repedio_subtipo(nombre, idsubtipo):
     if (nombre and nombre):
         tipos = Tipo.objects.filter(nombre=nombre)
@@ -368,6 +413,12 @@ def validar_id_subtipo(id):
             return False
         else:
             return True
+
+def instanciar_impuesto(id):
+    if (id>0):
+        impuesto = Impuesto.objects.get(id=id)
+        if impuesto:
+            return impuesto
 
 def validar_cadena_repeticion(cadena):
     patron = r'([a-zA-Z])\1\1'
