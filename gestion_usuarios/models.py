@@ -241,14 +241,17 @@ class CorrelativoSar(models.Model):
 
 class Recaudo(models.Model):
         idCorrelativo = models.ForeignKey(CorrelativoSar, on_delete=models.PROTECT)
-        noFactura = models.CharField(max_length=19)
+        noFactura = models.CharField(max_length=50)
         idPaciente = models.ForeignKey(Paciente, on_delete=models.PROTECT, null=True)
-        fechaFacturacion = models.DateField(auto_now_add=True)
+        fechaFacturacion = models.CharField(max_length=25, null=True, blank=True)
         idEmpleado = models.ForeignKey(Empleado, on_delete=models.PROTECT)
         idMetodoPago = models.ForeignKey(MetodoDePago, on_delete=models.PROTECT)
+        idConsulta = models.ForeignKey(Consulta, on_delete=models.PROTECT, null=True, blank=True)
         efectivo = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True)
         tarjeta = models.CharField(max_length=25, null=True, blank=True)
         fechaEntrega = models.DateField(null=True, blank=True)
+        estado = models.CharField(max_length=20, default='Pendiente')
+        activa = models.PositiveSmallIntegerField(default=1)
 
         def __str__(self):
                 if self.idPaciente is not None:
@@ -260,7 +263,6 @@ class RecaudoDetalleMedicamento(models.Model):
         idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)
         idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)
         cantidad = models.PositiveSmallIntegerField()
-        descuento = models.DecimalField(max_digits=4, decimal_places=2)
 
 class RecaudoDetalleTratamiento(models.Model):
         idTratamiento = models.ForeignKey(Tratamiento, on_delete=models.PROTECT)

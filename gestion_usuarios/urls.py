@@ -42,6 +42,7 @@ from .views.correlativo_sar_views import *
 from .views.recaudo_detalle_medicamento_views import *
 from .views.recaudo_detalle_tratamiento_views import *
 from .views.recaudo_detalle_examen_views import *
+from .views.recaudo_views import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -195,6 +196,10 @@ urlpatterns = [
     path('recaudoDetalleExamen/', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_list'),
     path('recaudoDetalleExamen/busqueda/<str:criterio>/<str:campo>', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_process'),
     path('recaudoDetalleExamen/id/<int:id>', RecaudoDetalleExamenView.as_view() , name='recaudo_detalle_examen_process_id'), 
+
+    path('recaudo/', RecaudoView.as_view() , name='recaudo_list'),
+    path('recaudo/busqueda/<str:criterio>/<str:campo>', RecaudoView.as_view() , name='recaudo_process'),
+    path('recaudo/id/<int:id>', RecaudoView.as_view() , name='recaudo_process_id'), 
 
 
 ]

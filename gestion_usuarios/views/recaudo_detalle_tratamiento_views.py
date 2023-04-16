@@ -33,7 +33,8 @@ class RecaudoDetalleTratamientoView(View):
                             },
                             'idRecaudo':{
                                 'id':detalle.idRecaudo.id,
-                                'cliente':detalle.idRecaudo.idPaciente.documento
+                                'noFactura':detalle.idRecaudo.noFactura,
+                                'estado':detalle.idRecaudo.estado
                             }
                         }
                         detalle_values.append(detalle_dict)
@@ -42,51 +43,32 @@ class RecaudoDetalleTratamientoView(View):
                 else:
                     context = {'message': "No se encontraron los datos", 'detalles': []} 
                     return JsonResponse(context)
-            elif criterio == "nombre":
-                enfermedades = Enfermedad.objects.filter(nombre=campo)
-                if enfermedades is not None:
-                    for enfermedad in enfermedades:
-                        detalles = RecaudoDetalleTratamiento.objects.filter(idTratamiento=enfermedad.id).select_related('idTratamiento__idTipo','idRecaudo')
-                        if detalles is not None:
-                            detalle_values = []
-                            for detalle in detalles:
-                                detalle_dict={
-                                    'id':detalle.id,
-                                    'idTratamiento':{
-                                        'id':detalle.idTratamiento.id,
-                                        'tipo':{
-                                            'id':detalle.idTratamiento.idTipo.id,
-                                            'nombre':detalle.idTratamiento.idTipo.nombre
-                                        }
-                                    },
-                                    'idRecaudo':{
-                                        'id':detalle.idRecaudo.id,
-                                        'cliente':detalle.idRecaudo.idPaciente.documento
-                                    }
+            elif criterio == "numeroFactura":
+                detalles = RecaudoDetalleTratamiento.objects.filter(idRecaudo__noFactura=campo).select_related('idTratamiento__idTipo','idRecaudo')
+                if len(detalles) > 0:
+                    detalle_values = []
+                    for detalle in detalles:
+                        detalle_dict={
+                            'id':detalle.id,
+                            'idTratamiento':{
+                                'id':detalle.idTratamiento.id,
+                                'tipo':{
+                                    'id':detalle.idTratamiento.idTipo.id,
+                                    'nombre':detalle.idTratamiento.idTipo.nombre
                                 }
-                                detalle_values.append(detalle_dict)
-                            context = {
-                                'message': "Consulta exitosa",
-                                'detalles': detalle_values
+                            },
+                            'idRecaudo':{
+                                'id':detalle.idRecaudo.id,
+                                'noFactura':detalle.idRecaudo.noFactura,
+                                'estado':detalle.idRecaudo.estado
                             }
-                            return JsonResponse(context)
-                        else:
-                            context = {
-                                'message': "No se encontraron los datos",
-                                'detalles': []
-                            }
-                            return JsonResponse(context)
-                else:
-                    context = {
-                        'message': "No se encontraron los datos",
-                        'detalles': []
-                    }
+                        }
+                        detalle_values.append(detalle_dict)
+                    context = {'message': "Consulta exitosa", 'detalles': detalle_values}
                     return JsonResponse(context)
-            context = {
-                    'message': "No se encontraron los datos",
-                    'detalles': []
-                }
-            return JsonResponse(context)
+                else:
+                    context = {'message': "No se encontraron los datos", 'detalles': []} 
+                    return JsonResponse(context)
         else:
             detalles = RecaudoDetalleTratamiento.objects.select_related('idTratamiento__idTipo','idRecaudo')
             if len(detalles) > 0:
@@ -103,7 +85,8 @@ class RecaudoDetalleTratamientoView(View):
                         },
                         'idRecaudo':{
                             'id':detalle.idRecaudo.id,
-                            'cliente':detalle.idRecaudo.idPaciente.documento
+                            'noFactura':detalle.idRecaudo.noFactura,
+                            'estado':detalle.idRecaudo.estado
                         }
                     }
                     detalle_values.append(detalle_dict)
