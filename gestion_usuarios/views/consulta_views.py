@@ -56,7 +56,6 @@ class ConsultaViews(View):
                                 }
                                 consulta_dict['idDiagnostico'][diagnostico.idDiagnostico.id] = diagnostico_dict
                         consultas_values.append(consulta_dict)
-                        consultas_values.append(consulta_dict)
                     context = {
                         'message': "Consulta exitosa",
                         'consultas': consultas_values

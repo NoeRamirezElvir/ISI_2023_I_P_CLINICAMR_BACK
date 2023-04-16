@@ -280,8 +280,48 @@ class RecaudoView(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if 2 <= 0:
-            mensaje_post = {'message': "El nombre esta vacío."}
+        if jd['estado'].isdigit():
+            mensaje_post = {'message': "Seleccione correctamente el estado de la factura"}
+        elif int(jd['idConsulta']) == 0 and jd['medicamentos'] == [] and jd['tratamientos'] == [] and jd['examenes'] == []:
+            mensaje_post = {'message': "No hay detalles relacionados"}
+        elif int(jd['idMetodo']) == 0:
+            mensaje_post = {'message': "Seleccione un metodo de pago"}
+        elif int(jd['idMetodo']) == 1 and (jd['numeroTarjeta'] is None or jd['numeroTarjeta'] == ''):
+            mensaje_post = {'message': "El número de tarjeta está vacío"}
+        elif int(jd['idMetodo']) == 1 and not (jd['numeroTarjeta']).isdigit():
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos"}
+        elif int(jd['idMetodo']) == 1 and not validar_cadena_tarjeta(jd['numeroTarjeta']):
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos2"}
+        elif int(jd['idMetodo']) == 1 and len(jd['numeroTarjeta']) < 13:
+            mensaje_post = {'message': "El número de tarjeta es muy corto"}
+        elif int(jd['idMetodo']) == 1 and len(jd['numeroTarjeta']) > 19:
+            mensaje_post = {'message': "El número de tarjeta es muy largo"}
+        elif int(jd['idMetodo']) == 1 and (jd['montoTarjeta'] is None or jd['montoTarjeta'] == ''):
+            mensaje_post = {'message': "El monto de la tarjeta está vacío"}
+        elif int(jd['idMetodo']) == 2 and (jd['montoEfectivo'] is None or jd['montoEfectivo'] == ''):
+            mensaje_post = {'message': "El efectivo está vacío"}
+        elif int(jd['idMetodo']) == 2 and round(Decimal(jd['montoEfectivo']),2) < 0:
+            mensaje_post = {'message': "El efectivo debe ser positivo"}
+        elif int(jd['idMetodo']) == 2 and round(Decimal(jd['montoEfectivo']),2) < round(Decimal(jd['total']),2):
+            mensaje_post = {'message': "El efectivo debe ser mayor o igual al total"}
+        elif int(jd['idMetodo']) == 2 and round(Decimal(jd['montoEfectivo']),2) > 999999999:
+            mensaje_post = {'message': "El efectivo es muy grande"}
+        elif int(jd['idMetodo']) == 3 and (jd['numeroTarjeta'] is None or jd['numeroTarjeta'] == '') and (jd['montoEfectivo'] is None or jd['montoEfectivo'] == ''):
+            mensaje_post = {'message': "El Numero de tarjeta o Monto efectivo esta vacío"}
+        elif int(jd['idMetodo']) == 3 and not (jd['numeroTarjeta']).isdigit():
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos"}
+        elif int(jd['idMetodo']) == 3 and not validar_cadena_tarjeta(jd['numeroTarjeta']):
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos2"}
+        elif int(jd['idMetodo']) == 3 and len(jd['numeroTarjeta']) < 13:
+            mensaje_post = {'message': "El número de tarjeta es muy corto"}
+        elif int(jd['idMetodo']) == 3 and len(jd['numeroTarjeta']) > 19:
+            mensaje_post = {'message': "El número de tarjeta es muy largo"}
+        elif int(jd['idMetodo']) == 3 and round(Decimal(jd['montoEfectivo']),2) < 0:
+            mensaje_post = {'message': "El efectivo debe ser positivo"}
+        elif int(jd['idMetodo']) == 3 and round(Decimal(jd['montoEfectivo']),2) >= round(Decimal(jd['total']),2):
+            mensaje_post = {'message': "El efectivo debe ser menor total"}
+        elif int(jd['idMetodo']) == 3 and round(Decimal(jd['montoEfectivo']),2) > 999999999:
+            mensaje_post = {'message': "El efectivo es muy grande"}
         else:
             if jd['montoEfectivo']:
                 efectivo = round(Decimal(jd['montoEfectivo']),2)
@@ -304,8 +344,14 @@ class RecaudoView(View):
             correlativo = instanciar_correlativo(int(jd['correlativo']))
             consecutivo = correlativo.consecutivo
             con = str(consecutivo + 1).zfill(4)
-            numeroFactura = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision } { con }'
+            numeroFactura = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision.day }-{ correlativo.fechaLimiteEmision.month }-{ correlativo.fechaLimiteEmision.year } { con }'
+            datos_pdf = {}
             if instanciar_paciente(int(jd['idPaciente'])):
+                if instanciar_consulta(int(jd['idConsulta'])):
+                    consulta = instanciar_consulta(int(jd['idConsulta']))
+                else:
+                    consulta = None
+
                 correlativo.consecutivo += 1
                 correlativo.save()
                 recaudo = Recaudo.objects.create(
@@ -316,7 +362,7 @@ class RecaudoView(View):
                     fechaEntrega = fecha,
                     idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
                     idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                    idConsulta = instanciar_consulta(int(jd['idConsulta'])),
+                    idConsulta = consulta,
                     efectivo = efectivo,
                     tarjeta = jd['numeroTarjeta'],
                     estado = jd['estado'],
@@ -334,7 +380,39 @@ class RecaudoView(View):
                     for item in jd['examenes']:
                         registro = instanciar_examen(int(item['id']))
                         RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
+
+                nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                empleado = instanciar_empleado(int(jd['idEmpleado']))
+                metodo = instanciar_metodo(int(jd['idMetodo']))
+                cliente = instanciar_paciente(int(jd['idPaciente']))
+                    
+                datos_pdf = {
+                    'nombreEmpresa':nombreEmpresa.valor,
+                    'direccionEmpresa':direccionEmpresa.valor,
+                    'telefonoEmpresa':telefonoEmpresa.valor,
+                    'correoEmpresa':correoEmpresa.valor,
+                    'caiEmpresa':correlativo.cai,
+                    'numeroFactura':numeroFactura,
+                    'fechaFactura':recaudo.fechaFacturacion,
+                    'fechaLimite':correlativo.fechaLimiteEmision,
+                    'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                    'nombreCliente':cliente.nombre + " " + cliente.apellido,
+                    'documentoCliente':cliente.documento,
+                    'telefonoCliente':cliente.telefono,
+                    'correoCliente':cliente.correo,
+                    'direccionCliente':cliente.direccion,
+                    'metodoPago':metodo.nombre
+                }
             else:
+                if instanciar_consulta(int(jd['idConsulta'])):
+                    consulta = instanciar_consulta(int(jd['idConsulta']))
+                else:
+                    consulta = None
+
+
                 correlativo.consecutivo += 1
                 correlativo.save()
                 recaudo = Recaudo.objects.create(
@@ -344,7 +422,7 @@ class RecaudoView(View):
                     fechaEntrega = fecha,
                     idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
                     idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                    idConsulta = instanciar_consulta(int(jd['idConsulta'])),
+                    idConsulta = consulta,
                     efectivo = efectivo,
                     tarjeta = jd['numeroTarjeta'],
                     estado = jd['estado'],
@@ -362,7 +440,33 @@ class RecaudoView(View):
                     for item in jd['examenes']:
                         registro = instanciar_examen(int(item['id']))
                         RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
-            mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura }
+
+
+                nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                empleado = instanciar_empleado(int(jd['idEmpleado']))
+                metodo = instanciar_metodo(int(jd['idMetodo']))
+                    
+                datos_pdf = {
+                    'nombreEmpresa':nombreEmpresa.valor,
+                    'direccionEmpresa':direccionEmpresa.valor,
+                    'telefonoEmpresa':telefonoEmpresa.valor,
+                    'correoEmpresa':correoEmpresa.valor,
+                    'caiEmpresa':correlativo.cai,
+                    'numeroFactura':numeroFactura,
+                    'fechaFactura':recaudo.fechaFacturacion,
+                    'fechaLimite':correlativo.fechaLimiteEmision,
+                    'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                    'nombreCliente':'Consumidor Final',
+                    'documentoCliente':'N/A',
+                    'telefonoCliente':'N/A',
+                    'correoCliente':'N/A',
+                    'direccionCliente':'N/A',
+                    'metodoPago':metodo.nombre
+                }
+            mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
         return JsonResponse(mensaje_post)
 
 #Actualizar un registro de cargos
@@ -401,8 +505,8 @@ def buscar_paciente(diccionario, id):
 def instanciar_correlativo(id):
     if (id > 0):
         item = CorrelativoSar.objects.filter(id=id).last()
-    if item:
-        return item
+        if item:
+            return item
     
 def instanciar_paciente(id):
     if (id > 0):
@@ -431,10 +535,10 @@ def instanciar_metodo(id):
 def instanciar_consulta(id):
     if (id > 0):
         item = Consulta.objects.filter(id=id).last()
-    if item:
-        return item
-    else:
-        return None
+        if item:
+            return item
+        else:
+            return None
     
 def instanciar_medicamento(id):
     if (id > 0):
@@ -460,6 +564,10 @@ def instanciar_examen(id):
     else:
         return None
 
+def validar_cadena_tarjeta(cadena):
+    patron = r'^[0-9]{13,19}$'
+    return bool(re.search(patron, cadena))
+
 def validar_cadena_repeticion(cadena):
     patron = r'([a-zA-Z])\1\1'
     return bool(re.search(patron, cadena))
@@ -467,3 +575,4 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
+
