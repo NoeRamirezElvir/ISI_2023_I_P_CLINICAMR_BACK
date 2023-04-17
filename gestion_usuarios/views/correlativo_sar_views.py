@@ -34,6 +34,14 @@ class CorrelativoViews(View):
                 else:
                     correlativo = {'message': "No se encontraron los datos", 'correlativo': []} 
                 return JsonResponse(correlativo)
+            elif criterio == "activo":
+                correlativo = list(CorrelativoSar.objects.filter(activo=campo).values())
+                if len(correlativo) > 0:
+                    correlativo = correlativo
+                    correlativo = {'message': "Consulta exitosa", 'correlativo': correlativo}
+                else:
+                    correlativo = {'message': "No se encontraron los datos", 'correlativo': []} 
+                return JsonResponse(correlativo)
         else:
             correlativo = list(CorrelativoSar.objects.values())
             if len(correlativo) > 0:
@@ -77,12 +85,14 @@ class CorrelativoViews(View):
             mensaje_post = {'message': "La fecha limite esta vacía"}
         elif (rsp_fechaLimite) == date.today():
             mensaje_post = {'message': "La fecha limite no puede ser igual a la fecha fecha actual"}
+        elif (rsp_fechaLimite) < date.today():
+            mensaje_post = {'message': "La fecha limite debe ser mayor a la actual"}
 
         else:
             CorrelativoSar.objects.create(cai=(jd['cai']).strip(),
                                           rangoInicial=jd['rangoInicial'],
                                           rangoFinal=jd['rangoFinal'],
-                                          consecutivo=0,
+                                          consecutivo=jd['rangoInicial'],
                                           fechaInicio = date.today(),
                                           fechaLimiteEmision=jd['fechaLimiteEmision'],
                                           )
@@ -127,12 +137,20 @@ class CorrelativoViews(View):
                 mensaje_put = {'message': "La fecha limite esta vacía"}
             elif (rsp_fechaLimite) == date.today():
                 mensaje_put = {'message': "La fecha limite no puede ser igual a la fecha fecha actual"}
+            elif (rsp_fechaLimite) < date.today():
+                mensaje_put = {'message': "La fecha limite debe ser mayor a la actual"}
+            elif(int(jd['consecutivo']) < jd['rangoInicial']):
+                mensaje_put = {'message': "El consecutivo debe ser mayor o igual al rango inicial"}
+            elif(int(jd['consecutivo']) > jd['rangoFinal']):
+                mensaje_put = {'message': "El consecutivo debe ser menor o igual al rango final"}
             else:
+                correlativo_actualizar.consecutivo=int(jd['consecutivo'])
+                correlativo_actualizar.activo = 1
                 correlativo_actualizar.cai=(jd['cai']).strip()
                 correlativo_actualizar.rangoInicial=jd['rangoInicial']
                 correlativo_actualizar.rangoFinal=jd['rangoFinal']
-                correlativo_actualizar.fechaInicio = date.today()
                 correlativo_actualizar.fechaLimiteEmision=jd['fechaLimiteEmision']
+
                 correlativo_actualizar.save()
                 mensaje_put = {'message': "La actualización fue exitosa."}
         return JsonResponse(mensaje_put)

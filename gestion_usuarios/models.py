@@ -238,6 +238,7 @@ class CorrelativoSar(models.Model):
         consecutivo = models.PositiveIntegerField()
         fechaLimiteEmision = models.DateField()
         fechaInicio = models.DateField()
+        activo = models.PositiveSmallIntegerField(null=True, blank=True, default=1)
 
 class Recaudo(models.Model):
         idCorrelativo = models.ForeignKey(CorrelativoSar, on_delete=models.PROTECT)

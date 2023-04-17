@@ -44,11 +44,6 @@ class RecaudoView(View):
                                     'fechaInicio': recaudo.idCorrelativo.fechaInicio
                                 },
                                 'idConsulta':{
-                                    'id':recaudo.idConsulta.id,
-                                    'precio':recaudo.idConsulta.idTipo.precio,
-                                    'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
-                                    'tipo':recaudo.idConsulta.idTipo.nombre,
-                                    'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
                                 },
                                 'idPaciente':{},
                                 'idEmpleado':{
@@ -64,6 +59,15 @@ class RecaudoView(View):
                                 'tratamientos':{},
                                 'examenes':{}
                             }
+                            if(recaudo.idConsulta):
+                                consulta_dict = {
+                                    'id':recaudo.idConsulta.id,
+                                    'precio':recaudo.idConsulta.idTipo.precio,
+                                    'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
+                                    'tipo':recaudo.idConsulta.idTipo.nombre,
+                                    'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
+                                }
+                                recaudo_dict['idConsulta'] = consulta_dict
                             if (recaudo.idPaciente):
                                 recaudo_dict = buscar_paciente(recaudo_dict,recaudo.idPaciente.id)
                             else:
@@ -128,11 +132,6 @@ class RecaudoView(View):
                                     'fechaInicio': recaudo.idCorrelativo.fechaInicio
                                 },
                                 'idConsulta':{
-                                    'id':recaudo.idConsulta.id,
-                                    'precio':recaudo.idConsulta.idTipo.precio,
-                                    'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
-                                    'tipo':recaudo.idConsulta.idTipo.nombre,
-                                    'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
                                 },
                                 'idPaciente':{},
                                 'idEmpleado':{
@@ -148,6 +147,15 @@ class RecaudoView(View):
                                 'tratamientos':{},
                                 'examenes':{}
                             }
+                            if(recaudo.idConsulta):
+                                consulta_dict = {
+                                    'id':recaudo.idConsulta.id,
+                                    'precio':recaudo.idConsulta.idTipo.precio,
+                                    'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
+                                    'tipo':recaudo.idConsulta.idTipo.nombre,
+                                    'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
+                                }
+                                recaudo_dict['idConsulta'] = consulta_dict
                             if (recaudo.idPaciente):
                                 recaudo_dict = buscar_paciente(recaudo_dict,recaudo.idPaciente.id)
                             else:
@@ -212,11 +220,6 @@ class RecaudoView(View):
                                 'fechaInicio': recaudo.idCorrelativo.fechaInicio
                             },
                             'idConsulta':{
-                                'id':recaudo.idConsulta.id,
-                                'precio':recaudo.idConsulta.idTipo.precio,
-                                'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
-                                'tipo':recaudo.idConsulta.idTipo.nombre,
-                                'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
                             },
                             'idPaciente':{},
                             'idEmpleado':{
@@ -232,6 +235,15 @@ class RecaudoView(View):
                             'tratamientos':{},
                             'examenes':{}
                         }
+                        if(recaudo.idConsulta):
+                            consulta_dict = {
+                                'id':recaudo.idConsulta.id,
+                                'precio':recaudo.idConsulta.idTipo.precio,
+                                'impuesto':recaudo.idConsulta.idTipo.idImpuesto.valor,
+                                'tipo':recaudo.idConsulta.idTipo.nombre,
+                                'paciente':recaudo.idConsulta.idCita.idPaciente.documento,
+                            }
+                            recaudo_dict['idConsulta'] = consulta_dict
                         if (recaudo.idPaciente):
                             recaudo_dict = buscar_paciente(recaudo_dict,recaudo.idPaciente.id)
                         else:
@@ -284,6 +296,8 @@ class RecaudoView(View):
             mensaje_post = {'message': "Seleccione correctamente el estado de la factura"}
         elif int(jd['idConsulta']) == 0 and jd['medicamentos'] == [] and jd['tratamientos'] == [] and jd['examenes'] == []:
             mensaje_post = {'message': "No hay detalles relacionados"}
+        elif int(jd['correlativo']) == 0:
+            mensaje_post = {'message': "Seleccione el correlativo del SAR"}
         elif int(jd['idMetodo']) == 0:
             mensaje_post = {'message': "Seleccione un metodo de pago"}
         elif int(jd['idMetodo']) == 1 and (jd['numeroTarjeta'] is None or jd['numeroTarjeta'] == ''):
@@ -291,7 +305,7 @@ class RecaudoView(View):
         elif int(jd['idMetodo']) == 1 and not (jd['numeroTarjeta']).isdigit():
             mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos"}
         elif int(jd['idMetodo']) == 1 and not validar_cadena_tarjeta(jd['numeroTarjeta']):
-            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos2"}
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos, min:16 y max:19"}
         elif int(jd['idMetodo']) == 1 and len(jd['numeroTarjeta']) < 13:
             mensaje_post = {'message': "El número de tarjeta es muy corto"}
         elif int(jd['idMetodo']) == 1 and len(jd['numeroTarjeta']) > 19:
@@ -311,7 +325,7 @@ class RecaudoView(View):
         elif int(jd['idMetodo']) == 3 and not (jd['numeroTarjeta']).isdigit():
             mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos"}
         elif int(jd['idMetodo']) == 3 and not validar_cadena_tarjeta(jd['numeroTarjeta']):
-            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos2"}
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos, min:16 y max:19"}
         elif int(jd['idMetodo']) == 3 and len(jd['numeroTarjeta']) < 13:
             mensaje_post = {'message': "El número de tarjeta es muy corto"}
         elif int(jd['idMetodo']) == 3 and len(jd['numeroTarjeta']) > 19:
@@ -343,130 +357,162 @@ class RecaudoView(View):
 
             correlativo = instanciar_correlativo(int(jd['correlativo']))
             consecutivo = correlativo.consecutivo
-            con = str(consecutivo + 1).zfill(4)
-            numeroFactura = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision.day }-{ correlativo.fechaLimiteEmision.month }-{ correlativo.fechaLimiteEmision.year } { con }'
-            datos_pdf = {}
-            if instanciar_paciente(int(jd['idPaciente'])):
-                if instanciar_consulta(int(jd['idConsulta'])):
-                    consulta = instanciar_consulta(int(jd['idConsulta']))
-                else:
-                    consulta = None
-
-                correlativo.consecutivo += 1
+            if(correlativo.activo == 0):
+                mensaje_post = {'message': "El correlativo ha sido desactivado por motivos de seguridad"}
+            elif not(correlativo.fechaLimiteEmision > date.today()):
+                mensaje_post = {'message': "La fecha limite de emision del correlativo ha vencido, ha sido desactivado"}
+                correlativo.activo = 0
                 correlativo.save()
-                recaudo = Recaudo.objects.create(
-                    idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
-                    noFactura = numeroFactura,
-                    idPaciente = instanciar_paciente(int(jd['idPaciente'])),
-                    fechaFacturacion = jd['fechaActual'],
-                    fechaEntrega = fecha,
-                    idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
-                    idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                    idConsulta = consulta,
-                    efectivo = efectivo,
-                    tarjeta = jd['numeroTarjeta'],
-                    estado = jd['estado'],
-                    activa = activa
-                )
-                if jd['medicamentos']:
-                    for item in jd['medicamentos']:
-                        registro = instanciar_medicamento(int(item['id']))
-                        RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
-                if jd['tratamientos']:
-                    for item in jd['tratamientos']:
-                        registro = instanciar_tratamiento(int(item['id']))
-                        RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
-                if jd['examenes']:
-                    for item in jd['examenes']:
-                        registro = instanciar_examen(int(item['id']))
-                        RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
-
-                nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
-                direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
-                telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
-                correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
-                empleado = instanciar_empleado(int(jd['idEmpleado']))
-                metodo = instanciar_metodo(int(jd['idMetodo']))
-                cliente = instanciar_paciente(int(jd['idPaciente']))
-                    
-                datos_pdf = {
-                    'nombreEmpresa':nombreEmpresa.valor,
-                    'direccionEmpresa':direccionEmpresa.valor,
-                    'telefonoEmpresa':telefonoEmpresa.valor,
-                    'correoEmpresa':correoEmpresa.valor,
-                    'caiEmpresa':correlativo.cai,
-                    'numeroFactura':numeroFactura,
-                    'fechaFactura':recaudo.fechaFacturacion,
-                    'fechaLimite':correlativo.fechaLimiteEmision,
-                    'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
-                    'nombreCliente':cliente.nombre + " " + cliente.apellido,
-                    'documentoCliente':cliente.documento,
-                    'telefonoCliente':cliente.telefono,
-                    'correoCliente':cliente.correo,
-                    'direccionCliente':cliente.direccion,
-                    'metodoPago':metodo.nombre
-                }
+            elif (correlativo.consecutivo > correlativo.rangoFinal):
+                mensaje_post = {'message': "El consecutivo de la factura superó el rango límite de facturación, ha sido desactivado"}
+                correlativo.activo = 0
+                correlativo.save()
             else:
-                if instanciar_consulta(int(jd['idConsulta'])):
-                    consulta = instanciar_consulta(int(jd['idConsulta']))
+                con = str(consecutivo).zfill(6)
+                rInicio = str(correlativo.rangoInicial).zfill(6)
+                rFinal = str(correlativo.rangoFinal).zfill(6)
+                numeroFactura = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision.day }-{ correlativo.fechaLimiteEmision.month }-{ correlativo.fechaLimiteEmision.year } { con }'
+                rangoInicialF = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision.day }-{ correlativo.fechaLimiteEmision.month }-{ correlativo.fechaLimiteEmision.year } { rInicio }'
+                rangoFinalF = f'{correlativo.rangoFinal} { correlativo.fechaLimiteEmision.day }-{ correlativo.fechaLimiteEmision.month }-{ correlativo.fechaLimiteEmision.year } { rFinal }'
+                datos_pdf = {}
+                if instanciar_paciente(int(jd['idPaciente'])):
+                    if instanciar_consulta(int(jd['idConsulta'])):
+                        consulta = instanciar_consulta(int(jd['idConsulta']))
+                    else:
+                        consulta = None
+
+
+                    recaudo = Recaudo.objects.create(
+                        idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
+                        noFactura = numeroFactura,
+                        idPaciente = instanciar_paciente(int(jd['idPaciente'])),
+                        fechaFacturacion = jd['fechaActual'],
+                        fechaEntrega = fecha,
+                        idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
+                        idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
+                        idConsulta = consulta,
+                        efectivo = efectivo,
+                        tarjeta = jd['numeroTarjeta'],
+                        estado = jd['estado'],
+                        activa = activa
+                    )
+                    if jd['medicamentos']:
+                        for item in jd['medicamentos']:
+                            registro = instanciar_medicamento(int(item['id']))
+                            RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
+                    if jd['tratamientos']:
+                        for item in jd['tratamientos']:
+                            registro = instanciar_tratamiento(int(item['id']))
+                            RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
+                    if jd['examenes']:
+                        for item in jd['examenes']:
+                            registro = instanciar_examen(int(item['id']))
+                            RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
+
+                    correlativo.consecutivo += 1           
+                    correlativo.save() 
+
+                    nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                    direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                    telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                    correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                    empleado = instanciar_empleado(int(jd['idEmpleado']))
+                    metodo = instanciar_metodo(int(jd['idMetodo']))
+                    cliente = instanciar_paciente(int(jd['idPaciente']))
+                        
+                    datos_pdf = {
+                        'nombreEmpresa':nombreEmpresa.valor,
+                        'direccionEmpresa':direccionEmpresa.valor,
+                        'telefonoEmpresa':telefonoEmpresa.valor,
+                        'correoEmpresa':correoEmpresa.valor,
+                        'caiEmpresa':correlativo.cai,
+                        'numeroFactura':numeroFactura,
+                        'fechaFactura':recaudo.fechaFacturacion,
+                        'fechaLimite':correlativo.fechaLimiteEmision,
+                        'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                        'nombreCliente':cliente.nombre + " " + cliente.apellido,
+                        'documentoCliente':cliente.documento,
+                        'telefonoCliente':cliente.telefono,
+                        'correoCliente':cliente.correo,
+                        'direccionCliente':cliente.direccion,
+                        'metodoPago':metodo.nombre,
+                        'rangoInicial':rangoInicialF,
+                        'rangoFinal':rangoFinalF
+                    }
+                    mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
                 else:
-                    consulta = None
-
-
-                correlativo.consecutivo += 1
-                correlativo.save()
-                recaudo = Recaudo.objects.create(
-                    idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
-                    noFactura = numeroFactura,
-                    fechaFacturacion = jd['fechaActual'],
-                    fechaEntrega = fecha,
-                    idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
-                    idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                    idConsulta = consulta,
-                    efectivo = efectivo,
-                    tarjeta = jd['numeroTarjeta'],
-                    estado = jd['estado'],
-                    activa = activa
-                )
-                if jd['medicamentos']:
-                    for item in jd['medicamentos']:
-                        registro = instanciar_medicamento(int(item['id']))
-                        RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
-                if jd['tratamientos']:
-                    for item in jd['tratamientos']:
-                        registro = instanciar_tratamiento(int(item['id']))
-                        RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
-                if jd['examenes']:
-                    for item in jd['examenes']:
-                        registro = instanciar_examen(int(item['id']))
-                        RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
-
-
-                nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
-                direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
-                telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
-                correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
-                empleado = instanciar_empleado(int(jd['idEmpleado']))
-                metodo = instanciar_metodo(int(jd['idMetodo']))
+                    if instanciar_consulta(int(jd['idConsulta'])):
+                        consulta = instanciar_consulta(int(jd['idConsulta']))
+                    else:
+                        consulta = None
                     
-                datos_pdf = {
-                    'nombreEmpresa':nombreEmpresa.valor,
-                    'direccionEmpresa':direccionEmpresa.valor,
-                    'telefonoEmpresa':telefonoEmpresa.valor,
-                    'correoEmpresa':correoEmpresa.valor,
-                    'caiEmpresa':correlativo.cai,
-                    'numeroFactura':numeroFactura,
-                    'fechaFactura':recaudo.fechaFacturacion,
-                    'fechaLimite':correlativo.fechaLimiteEmision,
-                    'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
-                    'nombreCliente':'Consumidor Final',
-                    'documentoCliente':'N/A',
-                    'telefonoCliente':'N/A',
-                    'correoCliente':'N/A',
-                    'direccionCliente':'N/A',
-                    'metodoPago':metodo.nombre
-                }
-            mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
+                    if(correlativo.activo == 0):
+                        mensaje_post = {'message': "El correlativo ha sido desactivado por motivos de seguridad"}
+                    elif not(correlativo.fechaLimiteEmision > date.today()):
+                        mensaje_post = {'message': "La fecha limite de emision del correlativo ha vencido, ha sido desactivado"}
+                        correlativo.activo = 0
+                        correlativo.save()
+                    elif (correlativo.consecutivo > correlativo.rangoFinal):
+                        mensaje_post = {'message': "El consecutivo de la factura superó el rango límite de facturación, ha sido desactivado"}
+                        correlativo.activo = 0
+                        correlativo.save()
+                    else:
+                        recaudo = Recaudo.objects.create(
+                            idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
+                            noFactura = numeroFactura,
+                            fechaFacturacion = jd['fechaActual'],
+                            fechaEntrega = fecha,
+                            idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
+                            idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
+                            idConsulta = consulta,
+                            efectivo = efectivo,
+                            tarjeta = jd['numeroTarjeta'],
+                            estado = jd['estado'],
+                            activa = activa
+                        )
+                        if jd['medicamentos']:
+                            for item in jd['medicamentos']:
+                                registro = instanciar_medicamento(int(item['id']))
+                                RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
+                        if jd['tratamientos']:
+                            for item in jd['tratamientos']:
+                                registro = instanciar_tratamiento(int(item['id']))
+                                RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
+                        if jd['examenes']:
+                            for item in jd['examenes']:
+                                registro = instanciar_examen(int(item['id']))
+                                RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
+
+                        correlativo.consecutivo += 1
+                        correlativo.save()
+
+                        nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                        direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                        telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                        correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                        empleado = instanciar_empleado(int(jd['idEmpleado']))
+                        metodo = instanciar_metodo(int(jd['idMetodo']))
+                            
+                        datos_pdf = {
+                            'nombreEmpresa':nombreEmpresa.valor,
+                            'direccionEmpresa':direccionEmpresa.valor,
+                            'telefonoEmpresa':telefonoEmpresa.valor,
+                            'correoEmpresa':correoEmpresa.valor,
+                            'caiEmpresa':correlativo.cai,
+                            'numeroFactura':numeroFactura,
+                            'fechaFactura':recaudo.fechaFacturacion,
+                            'fechaLimite':correlativo.fechaLimiteEmision,
+                            'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                            'nombreCliente':'Consumidor Final',
+                            'documentoCliente':'N/A',
+                            'telefonoCliente':'N/A',
+                            'correoCliente':'N/A',
+                            'direccionCliente':'N/A',
+                            'metodoPago':metodo.nombre,
+                            'rangoInicial':rangoInicialF,
+                            'rangoFinal':rangoFinalF
+                        }
+                        mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
         return JsonResponse(mensaje_post)
 
 #Actualizar un registro de cargos
