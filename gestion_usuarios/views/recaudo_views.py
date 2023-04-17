@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from decimal import Decimal
 from django.http.response import JsonResponse
 from django.views import View
@@ -31,7 +31,7 @@ class RecaudoView(View):
                                 'fechaFacturacion': recaudo.fechaFacturacion,
                                 'efectivo': recaudo.efectivo,
                                 'tarjeta': recaudo.tarjeta,
-                                'fechaEntrega': recaudo.fechaEntrega,
+                                'fechaEntrega': formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
                                 'idCorrelativo':{
@@ -119,7 +119,7 @@ class RecaudoView(View):
                                 'fechaFacturacion': recaudo.fechaFacturacion,
                                 'efectivo': recaudo.efectivo,
                                 'tarjeta': recaudo.tarjeta,
-                                'fechaEntrega': recaudo.fechaEntrega,
+                                'fechaEntrega':formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
                                 'idCorrelativo':{
@@ -197,7 +197,7 @@ class RecaudoView(View):
                         }
                         return JsonResponse(context)
             else:
-                recaudos = Recaudo.objects.select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta')
+                recaudos = Recaudo.objects.select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta').order_by('-id')
                 if recaudos is not None:
                     recaudos_values = []
                     for recaudo in recaudos:
@@ -205,9 +205,9 @@ class RecaudoView(View):
                             'id': recaudo.id,
                             'noFactura': recaudo.noFactura,
                             'fechaFacturacion': recaudo.fechaFacturacion,
+                            'fechaEntrega': formato_fecha(recaudo.fechaEntrega), 
                             'efectivo': recaudo.efectivo,
                             'tarjeta': recaudo.tarjeta,
-                            'fechaEntrega': recaudo.fechaEntrega,
                             'estado': recaudo.estado,
                             'activa': recaudo.activa,
                             'idCorrelativo':{
@@ -292,18 +292,20 @@ class RecaudoView(View):
 #Agregar un registro de cargos
     def post(self, request):
         jd=json.loads(request.body)
-        if jd['estado'].isdigit():
-            mensaje_post = {'message': "Seleccione correctamente el estado de la factura"}
-        elif int(jd['idConsulta']) == 0 and jd['medicamentos'] == [] and jd['tratamientos'] == [] and jd['examenes'] == []:
-            mensaje_post = {'message': "No hay detalles relacionados"}
+
+        estados_permitidos = ['Pendiente', 'Enviada', 'Pagada', 'Vencida', 'Anulada']
+        if jd['estado'] not in estados_permitidos:
+            mensaje_post = {'message': "Seleccione un estado existente."}
         elif int(jd['correlativo']) == 0:
             mensaje_post = {'message': "Seleccione el correlativo del SAR"}
+        elif int(jd['idConsulta']) == 0 and jd['medicamentos'] == [] and jd['tratamientos'] == [] and jd['examenes'] == []:
+            mensaje_post = {'message': "No hay detalles relacionados"}
         elif int(jd['idMetodo']) == 0:
             mensaje_post = {'message': "Seleccione un metodo de pago"}
         elif int(jd['idMetodo']) == 1 and (jd['numeroTarjeta'] is None or jd['numeroTarjeta'] == ''):
             mensaje_post = {'message': "El número de tarjeta está vacío"}
         elif int(jd['idMetodo']) == 1 and not (jd['numeroTarjeta']).isdigit():
-            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos"}
+            mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos(Sin espacios o caracteres especiales)"}
         elif int(jd['idMetodo']) == 1 and not validar_cadena_tarjeta(jd['numeroTarjeta']):
             mensaje_post = {'message': "El número de tarjeta solo puede contener dígitos, min:16 y max:19"}
         elif int(jd['idMetodo']) == 1 and len(jd['numeroTarjeta']) < 13:
@@ -381,148 +383,227 @@ class RecaudoView(View):
                     else:
                         consulta = None
 
+                    condicion = 0
+                    nombres = ''
+                    for item in jd['medicamentos']:
+                        registro = instanciar_medicamento(int(item['id']))
+                        if (registro.stockActual - registro.stockMinimo) < int(item['cantidad']):
+                            condicion += 1
+                            nombres += item['nombre'] + ", "
+                    if condicion != 0:
+                        mensaje_post = {'message': f"Compruebe la cantidad de los productos en base al stock minimo y actual Productos:[{nombres}]"}
+                    else:
+                        if(correlativo.activo == 0):
+                            mensaje_post = {'message': "El correlativo ha sido desactivado por motivos de seguridad"}
+                        elif (correlativo.fechaLimiteEmision <= date.today()):
+                            mensaje_post = {'message': "La fecha limite de emision del correlativo ha vencido, ha sido desactivado"}
+                            correlativo.activo = 0
+                            correlativo.save()
+                        elif (correlativo.consecutivo > correlativo.rangoFinal):
+                            mensaje_post = {'message': "El consecutivo de la factura superó el rango límite de facturación, ha sido desactivado"}
+                            correlativo.activo = 0
+                            correlativo.save()
+                        else:
+                            recaudo = Recaudo.objects.create(
+                                idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
+                                noFactura = numeroFactura,
+                                idPaciente = instanciar_paciente(int(jd['idPaciente'])),
+                                fechaFacturacion = jd['fechaActual'],
+                                fechaEntrega = fecha,
+                                idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
+                                idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
+                                idConsulta = consulta,
+                                efectivo = efectivo,
+                                tarjeta = jd['numeroTarjeta'],
+                                estado = jd['estado'],
+                                activa = activa
+                            )
+                            if jd['medicamentos']:
+                                for item in jd['medicamentos']:
+                                    registro = instanciar_medicamento(int(item['id']))
+                                    registro.stockActual -= int(item['cantidad'])
+                                    registro.save()
+                                    RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
 
-                    recaudo = Recaudo.objects.create(
-                        idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
-                        noFactura = numeroFactura,
-                        idPaciente = instanciar_paciente(int(jd['idPaciente'])),
-                        fechaFacturacion = jd['fechaActual'],
-                        fechaEntrega = fecha,
-                        idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
-                        idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                        idConsulta = consulta,
-                        efectivo = efectivo,
-                        tarjeta = jd['numeroTarjeta'],
-                        estado = jd['estado'],
-                        activa = activa
-                    )
-                    if jd['medicamentos']:
-                        for item in jd['medicamentos']:
-                            registro = instanciar_medicamento(int(item['id']))
-                            RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
-                    if jd['tratamientos']:
-                        for item in jd['tratamientos']:
-                            registro = instanciar_tratamiento(int(item['id']))
-                            RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
-                    if jd['examenes']:
-                        for item in jd['examenes']:
-                            registro = instanciar_examen(int(item['id']))
-                            RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
+                            if jd['tratamientos']:
+                                for item in jd['tratamientos']:
+                                    registro = instanciar_tratamiento(int(item['id']))
+                                    RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
+                            if jd['examenes']:
+                                for item in jd['examenes']:
+                                    registro = instanciar_examen(int(item['id']))
+                                    RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
 
-                    correlativo.consecutivo += 1           
-                    correlativo.save() 
+                            correlativo.consecutivo += 1           
+                            correlativo.save() 
 
-                    nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
-                    direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
-                    telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
-                    correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
-                    empleado = instanciar_empleado(int(jd['idEmpleado']))
-                    metodo = instanciar_metodo(int(jd['idMetodo']))
-                    cliente = instanciar_paciente(int(jd['idPaciente']))
-                        
-                    datos_pdf = {
-                        'nombreEmpresa':nombreEmpresa.valor,
-                        'direccionEmpresa':direccionEmpresa.valor,
-                        'telefonoEmpresa':telefonoEmpresa.valor,
-                        'correoEmpresa':correoEmpresa.valor,
-                        'caiEmpresa':correlativo.cai,
-                        'numeroFactura':numeroFactura,
-                        'fechaFactura':recaudo.fechaFacturacion,
-                        'fechaLimite':correlativo.fechaLimiteEmision,
-                        'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
-                        'nombreCliente':cliente.nombre + " " + cliente.apellido,
-                        'documentoCliente':cliente.documento,
-                        'telefonoCliente':cliente.telefono,
-                        'correoCliente':cliente.correo,
-                        'direccionCliente':cliente.direccion,
-                        'metodoPago':metodo.nombre,
-                        'rangoInicial':rangoInicialF,
-                        'rangoFinal':rangoFinalF
-                    }
-                    mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
+                            nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                            direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                            telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                            correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                            empleado = instanciar_empleado(int(jd['idEmpleado']))
+                            metodo = instanciar_metodo(int(jd['idMetodo']))
+                            cliente = instanciar_paciente(int(jd['idPaciente']))
+                                
+                            datos_pdf = {
+                                'nombreEmpresa':nombreEmpresa.valor,
+                                'direccionEmpresa':direccionEmpresa.valor,
+                                'telefonoEmpresa':telefonoEmpresa.valor,
+                                'correoEmpresa':correoEmpresa.valor,
+                                'caiEmpresa':correlativo.cai,
+                                'numeroFactura':numeroFactura,
+                                'fechaFactura':recaudo.fechaFacturacion,
+                                'fechaLimite':correlativo.fechaLimiteEmision,
+                                'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                                'nombreCliente':cliente.nombre + " " + cliente.apellido,
+                                'documentoCliente':cliente.documento,
+                                'telefonoCliente':cliente.telefono,
+                                'correoCliente':cliente.correo,
+                                'direccionCliente':cliente.direccion,
+                                'metodoPago':metodo.nombre,
+                                'rangoInicial':rangoInicialF,
+                                'rangoFinal':rangoFinalF
+                            }
+                            mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
                 else:
                     if instanciar_consulta(int(jd['idConsulta'])):
                         consulta = instanciar_consulta(int(jd['idConsulta']))
                     else:
                         consulta = None
-                    
-                    if(correlativo.activo == 0):
-                        mensaje_post = {'message': "El correlativo ha sido desactivado por motivos de seguridad"}
-                    elif not(correlativo.fechaLimiteEmision > date.today()):
-                        mensaje_post = {'message': "La fecha limite de emision del correlativo ha vencido, ha sido desactivado"}
-                        correlativo.activo = 0
-                        correlativo.save()
-                    elif (correlativo.consecutivo > correlativo.rangoFinal):
-                        mensaje_post = {'message': "El consecutivo de la factura superó el rango límite de facturación, ha sido desactivado"}
-                        correlativo.activo = 0
-                        correlativo.save()
+
+                    condicion = 0
+                    nombres = ''
+                    for item in jd['medicamentos']:
+                        registro = instanciar_medicamento(int(item['id']))
+                        if (registro.stockActual - registro.stockMinimo) < int(item['cantidad']):
+                            condicion += 1
+                            nombres += item['nombre'] + ", "
+                    if condicion != 0:
+                        mensaje_post = {'message': f"Compruebe la cantidad de los productos en base al stock minimo y actual Productos:[{nombres}]"}
                     else:
-                        recaudo = Recaudo.objects.create(
-                            idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
-                            noFactura = numeroFactura,
-                            fechaFacturacion = jd['fechaActual'],
-                            fechaEntrega = fecha,
-                            idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
-                            idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
-                            idConsulta = consulta,
-                            efectivo = efectivo,
-                            tarjeta = jd['numeroTarjeta'],
-                            estado = jd['estado'],
-                            activa = activa
-                        )
-                        if jd['medicamentos']:
-                            for item in jd['medicamentos']:
-                                registro = instanciar_medicamento(int(item['id']))
-                                RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
-                        if jd['tratamientos']:
-                            for item in jd['tratamientos']:
-                                registro = instanciar_tratamiento(int(item['id']))
-                                RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
-                        if jd['examenes']:
-                            for item in jd['examenes']:
-                                registro = instanciar_examen(int(item['id']))
-                                RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
+                        if(correlativo.activo == 0):
+                            mensaje_post = {'message': "El correlativo ha sido desactivado por motivos de seguridad"}
+                        elif (correlativo.fechaLimiteEmision <= date.today()):
+                            mensaje_post = {'message': "La fecha limite de emision del correlativo ha vencido, ha sido desactivado"}
+                            correlativo.activo = 0
+                            correlativo.save()
+                        elif (correlativo.consecutivo > correlativo.rangoFinal):
+                            mensaje_post = {'message': "El consecutivo de la factura superó el rango límite de facturación, ha sido desactivado"}
+                            correlativo.activo = 0
+                            correlativo.save()
+                        else:
+                            recaudo = Recaudo.objects.create(
+                                idCorrelativo = instanciar_correlativo(int(jd['correlativo'])),
+                                noFactura = numeroFactura,
+                                fechaFacturacion = jd['fechaActual'],
+                                fechaEntrega = fecha,
+                                idEmpleado = instanciar_empleado(int(jd['idEmpleado'])),
+                                idMetodoPago = instanciar_metodo(int(jd['idMetodo'])),
+                                idConsulta = consulta,
+                                efectivo = efectivo,
+                                tarjeta = jd['numeroTarjeta'],
+                                estado = jd['estado'],
+                                activa = activa
+                            )
+                            if jd['medicamentos']:
+                                for item in jd['medicamentos']:
+                                    registro = instanciar_medicamento(int(item['id']))
+                                    registro.stockActual -= int(item['cantidad'])
+                                    registro.save()
+                                    RecaudoDetalleMedicamento.objects.create(idRecaudo=recaudo, idMedicamento = registro, cantidad=int(item['cantidad']))
+                            if jd['tratamientos']:
+                                for item in jd['tratamientos']:
+                                    registro = instanciar_tratamiento(int(item['id']))
+                                    RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
+                            if jd['examenes']:
+                                for item in jd['examenes']:
+                                    registro = instanciar_examen(int(item['id']))
+                                    RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
 
-                        correlativo.consecutivo += 1
-                        correlativo.save()
+                            correlativo.consecutivo += 1
+                            correlativo.save()
 
-                        nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
-                        direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
-                        telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
-                        correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
-                        empleado = instanciar_empleado(int(jd['idEmpleado']))
-                        metodo = instanciar_metodo(int(jd['idMetodo']))
-                            
-                        datos_pdf = {
-                            'nombreEmpresa':nombreEmpresa.valor,
-                            'direccionEmpresa':direccionEmpresa.valor,
-                            'telefonoEmpresa':telefonoEmpresa.valor,
-                            'correoEmpresa':correoEmpresa.valor,
-                            'caiEmpresa':correlativo.cai,
-                            'numeroFactura':numeroFactura,
-                            'fechaFactura':recaudo.fechaFacturacion,
-                            'fechaLimite':correlativo.fechaLimiteEmision,
-                            'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
-                            'nombreCliente':'Consumidor Final',
-                            'documentoCliente':'N/A',
-                            'telefonoCliente':'N/A',
-                            'correoCliente':'N/A',
-                            'direccionCliente':'N/A',
-                            'metodoPago':metodo.nombre,
-                            'rangoInicial':rangoInicialF,
-                            'rangoFinal':rangoFinalF
-                        }
-                        mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
+                            nombreEmpresa = ParametrosGenerales.objects.filter(nombre = 'nombre').last()
+                            direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
+                            telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
+                            correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                            empleado = instanciar_empleado(int(jd['idEmpleado']))
+                            metodo = instanciar_metodo(int(jd['idMetodo']))
+                                
+                            datos_pdf = {
+                                'nombreEmpresa':nombreEmpresa.valor,
+                                'direccionEmpresa':direccionEmpresa.valor,
+                                'telefonoEmpresa':telefonoEmpresa.valor,
+                                'correoEmpresa':correoEmpresa.valor,
+                                'caiEmpresa':correlativo.cai,
+                                'numeroFactura':numeroFactura,
+                                'fechaFactura':recaudo.fechaFacturacion,
+                                'fechaLimite':correlativo.fechaLimiteEmision,
+                                'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
+                                'nombreCliente':'Consumidor Final',
+                                'documentoCliente':'N/A',
+                                'telefonoCliente':'N/A',
+                                'correoCliente':'N/A',
+                                'direccionCliente':'N/A',
+                                'metodoPago':metodo.nombre,
+                                'rangoInicial':rangoInicialF,
+                                'rangoFinal':rangoFinalF
+                            }
+                            mensaje_post = {'message':"Registro Exitoso.", 'numeroFactura': numeroFactura, 'datos_pdf':datos_pdf}
         return JsonResponse(mensaje_post)
 
 #Actualizar un registro de cargos
+    def put(self, request,id):
+        try:
+            jd=json.loads(request.body)
+            mensaje_put = list(Recaudo.objects.filter(id=id).values())
+            if len(mensaje_put) > 0:
+                recaudo=Recaudo.objects.get(id=id)
+                estados_permitidos = ['Pendiente', 'Enviada', 'Pagada', 'Vencida', 'Anulada']
 
+                if jd['estado'] not in estados_permitidos:
+                    mensaje_put = {'message': "Seleccione un estado existente."}
+                else:
+                    if jd['estado'] == 'Pendiente':
+                        activa = 1
+                        fecha = None
+                    elif jd['estado'] == 'Enviada' or jd['estado'] == 'Pagada' or jd['estado'] == 'Vencida':
+                        activa = 1
+                        fecha = date.today()
+                    elif jd['estado'] == 'Anulada':
+                        activa = 0
+                        fecha = None
+                    else:
+                        activa = 0
+                        fecha = None
+                        
+                    recaudo.estado = jd['estado']
+                    recaudo.activa = activa
+                    recaudo.fechaEntrega = fecha
+                    recaudo.save()
+                    mensaje_put = {'message': "La actualización fue exitosa."}
+            return JsonResponse(mensaje_put)
+        except Exception as e:
+            mensaje_put = {'message': f"Error: {e}"}
+            return JsonResponse(mensaje_put)
         
 #Eliminar un registro de cargos
     def delete(self, request,id):
-        enfermedades = list(Enfermedad.objects.filter(id=id).values())
-        if len(enfermedades) > 0:
-            Enfermedad.objects.filter(id=id).delete()
+        recaudos = list(Recaudo.objects.filter(id=id).values())
+        if len(recaudos) > 0:
+            examenes = list(RecaudoDetalleExamen.objects.filter(id=id).values())
+            if len(examenes) > 0:
+                for item in examenes:
+                    RecaudoDetalleExamen.objects.filter(idRecaudo=item['id']).delete()
+            tratamientos = list(RecaudoDetalleTratamiento.objects.filter(id=id).values())
+            if len(tratamientos) > 0:
+                for item in tratamientos:
+                    RecaudoDetalleTratamiento.objects.filter(idRecaudo=item['id']).delete()
+            medicamentos = list(RecaudoDetalleMedicamento.objects.filter(id=id).values())
+            if len(medicamentos) > 0:
+                for item in medicamentos:
+                    RecaudoDetalleMedicamento.objects.filter(idRecaudo=item['id']).delete()
+            Recaudo.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
             datos = {'message':"No se encontraron registros", 'enfermedades': []}
@@ -538,14 +619,14 @@ def buscar_paciente(diccionario, id):
                 'nombre': registro.nombre + " " + registro.apellido,
                 'documento': registro.documento
             }
-            diccionario['idPaciente'][0] = diagnostico_dict
+            diccionario['idPaciente'] = diagnostico_dict
         return diccionario
     else:
         diagnostico_dict = {
             'id': 0,
             'nombre': 'Consumidor Final'
         }
-        diccionario['idPaciente'][0] = diagnostico_dict
+        diccionario['idPaciente'] = diagnostico_dict
         return diccionario
     
 def instanciar_correlativo(id):
@@ -622,3 +703,9 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y")
+        return fecha_formateada
+    else:
+        return None

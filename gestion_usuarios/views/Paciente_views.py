@@ -90,7 +90,7 @@ class PacienteViews(View):
         elif (rsp_fechaNacimiento) is None:
             pacientes = {'message': "La fecha esta vacía"}
         elif (rsp_fechaNacimiento) > datetime.date.today():
-            pacientes = {'message': "la fecha actual es incorrecta"}
+            pacientes = {'message': "La fecha de nacimiento es incorrecta"}
         
         elif validar_fecha(jd['fechaNacimiento']):
             pacientes = {'message': "La fecha de Nacimiento no puede ser mayor a la actual"}

@@ -19,15 +19,15 @@ class CitasViews(View):
     def get(self, request, campo="",criterio=""):
         if (len(campo)> 0 and len(criterio)> 0):
             if criterio == "id":
-                citas = Cita.objects.filter(id=campo).select_related('idPaciente')
+                citas = Cita.objects.filter(id=campo).select_related('idPaciente').order_by('-id')
                 if len(citas) > 0:
                     cita_values = []
                     for cita in citas:
                         cita_dict={
                             'id':cita.id,
-                            'fechaActual':cita.fechaActual,
-                            'fechaProgramada':cita.fechaProgramada,
-                            'fechaMaxima':cita.fechaMaxima,
+                            'fechaActual':formato_fecha(cita.fechaActual),
+                            'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                            'fechaMaxima':formato_fecha(cita.fechaMaxima),
                             'activa':cita.activa,
                             'idPaciente':{
                                 'id':cita.idPaciente.id,
@@ -42,15 +42,15 @@ class CitasViews(View):
                     context = {'message': "No se encontraron los datos", 'citas': []} 
                     return JsonResponse(context)
             elif criterio == "documento":
-                    citas = Cita.objects.filter(idPaciente__documento=campo).select_related('idPaciente')
+                    citas = Cita.objects.filter(idPaciente__documento=campo).select_related('idPaciente').order_by('-id')
                     if citas is not None:
                         citas_values = []
                         for cita in citas:
                             cita_dict={
                                 'id':cita.id,
-                                'fechaActual':cita.fechaActual,
-                                'fechaProgramada':cita.fechaProgramada,
-                                'fechaMaxima':cita.fechaMaxima,
+                                'fechaActual':formato_fecha(cita.fechaActual),
+                                'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                                'fechaMaxima':formato_fecha(cita.fechaMaxima),
                                 'activa':cita.activa,
                                 'idPaciente':{
                                     'id':cita.idPaciente.id,
@@ -71,15 +71,15 @@ class CitasViews(View):
                         }
                         return JsonResponse(context)
         else:
-            citas = Cita.objects.select_related('idPaciente')
+            citas = Cita.objects.select_related('idPaciente').order_by('-id')
             if len(citas) > 0:
                 cita_values = []
                 for cita in citas:
                     cita_dict={
                         'id':cita.id,
-                        'fechaActual':cita.fechaActual,
-                        'fechaProgramada':cita.fechaProgramada,
-                        'fechaMaxima':cita.fechaMaxima,
+                        'fechaActual':formato_fecha(cita.fechaActual),
+                        'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                        'fechaMaxima':formato_fecha(cita.fechaMaxima),
                         'activa':cita.activa,
                         'idPaciente':{
                             'id':cita.idPaciente.id,
@@ -325,6 +325,12 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None
 
     
          

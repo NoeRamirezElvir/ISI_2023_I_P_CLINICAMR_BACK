@@ -26,7 +26,7 @@ class tratamientosViews(View):
                         paciente = tratamiento.idPaciente
                         tratamiento_dict = {
                             'id': tratamiento.id,
-                            'fecha': tratamiento.fecha,
+                            'fecha': formato_fecha(tratamiento.fecha),
                             'diasTratamiento':tratamiento.diasTratamiento,
                             'estado': tratamiento.estado,
                             'idPaciente': {
@@ -64,7 +64,7 @@ class tratamientosViews(View):
                                 paciente = tratamiento.idPaciente
                                 tratamiento_dict = {
                                     'id': tratamiento.id,
-                                    'fecha': tratamiento.fecha,
+                                    'fecha': formato_fecha(tratamiento.fecha),
                                     'diasTratamiento':tratamiento.diasTratamiento,
                                     'estado': tratamiento.estado,
                                     'idPaciente': {
@@ -110,7 +110,7 @@ class tratamientosViews(View):
                     paciente = tratamiento.idPaciente
                     tratamiento_dict = {
                         'id': tratamiento.id,
-                        'fecha': tratamiento.fecha,
+                        'fecha': formato_fecha(tratamiento.fecha),
                         'diasTratamiento':tratamiento.diasTratamiento,
                         'estado': tratamiento.estado,
                         'idPaciente': {
@@ -285,3 +285,9 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y")
+        return fecha_formateada
+    else:
+        return None

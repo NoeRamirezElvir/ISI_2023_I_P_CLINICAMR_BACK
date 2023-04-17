@@ -27,8 +27,8 @@ class CostoHistoricoMedicamentosViews(View):
                         medicamento = historico.idmedicamento
                         historico_dict = {
                             'id': historico.id,
-                            'fechaInicio': historico.fechaInicio,
-                            'fechaFinal': historico.fechaFinal,
+                            'fechaInicio': formato_fecha(historico.fechaInicio),
+                            'fechaFinal': formato_fecha(historico.fechaFinal),
                             'activo':historico.activo,
                             'costo': historico.costo,
                             'idmedicamento': {
@@ -59,8 +59,8 @@ class CostoHistoricoMedicamentosViews(View):
                                 med = historico.idmedicamento
                                 historico_dict = {
                                     'id': historico.id,
-                                    'fechaInicio': historico.fechaInicio,
-                                    'fechaFinal': historico.fechaFinal,
+                                    'fechaInicio': formato_fecha(historico.fechaInicio),
+                                    'fechaFinal': formato_fecha(historico.fechaFinal),
                                     'activo':historico.activo,
                                     'costo': historico.costo,
                                     'idmedicamento': {
@@ -99,8 +99,8 @@ class CostoHistoricoMedicamentosViews(View):
                     medicamento = historico.idmedicamento
                     historico_dict = {
                         'id': historico.id,
-                        'fechaInicio': historico.fechaInicio,
-                        'fechaFinal': historico.fechaFinal,
+                        'fechaInicio': formato_fecha(historico.fechaInicio),
+                        'fechaFinal': formato_fecha(historico.fechaFinal),
                         'activo':historico.activo,
                         'costo': historico.costo,
                         'idmedicamento': {
@@ -205,3 +205,10 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
+
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None

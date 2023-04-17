@@ -124,4 +124,4 @@ class ConsultaDetallesViews(View):
         else:
             datos = {'message':"No se encontraró el registro", 'detalles': []}
         return JsonResponse(datos)
-    
+

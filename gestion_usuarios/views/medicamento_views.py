@@ -29,7 +29,7 @@ class MedicamentosViews(View):
                             medicamento_dict = {
                                 'id': medicamento.id,
                                 'nombre': medicamento.nombre,
-                                'fechaRegistro': medicamento.fechaRegistro,
+                                'fechaRegistro': formato_fecha(medicamento.fechaRegistro),
                                 'activo': medicamento.activo,
                                 'stockActual': medicamento.stockActual,
                                 'stockMinimo': medicamento.stockMinimo,
@@ -69,7 +69,7 @@ class MedicamentosViews(View):
                             medicamento_dict = {
                                 'id': medicamento.id,
                                 'nombre': medicamento.nombre,
-                                'fechaRegistro': medicamento.fechaRegistro,
+                                'fechaRegistro': formato_fecha(medicamento.fechaRegistro),
                                 'activo': medicamento.activo,
                                 'stockActual': medicamento.stockActual,
                                 'stockMinimo': medicamento.stockMinimo,
@@ -109,7 +109,7 @@ class MedicamentosViews(View):
                         medicamento_dict = {
                             'id': medicamento.id,
                             'nombre': medicamento.nombre,
-                            'fechaRegistro': medicamento.fechaRegistro,
+                            'fechaRegistro': formato_fecha(medicamento.fechaRegistro),
                             'activo': medicamento.activo,
                             'stockActual': medicamento.stockActual,
                             'stockMinimo': medicamento.stockMinimo,
@@ -500,6 +500,12 @@ def validar_id_impuesto(id):
             return False
         else:
             return True
-        
+
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y")
+        return fecha_formateada
+    else:
+        return None    
 
 

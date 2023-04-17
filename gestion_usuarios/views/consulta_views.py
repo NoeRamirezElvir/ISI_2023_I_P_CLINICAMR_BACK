@@ -25,7 +25,7 @@ class ConsultaViews(View):
                     for consulta in consultas:
                         consulta_dict = {
                             'id': consulta.id,
-                            'fecha': consulta.fecha,
+                            'fecha': formato_fecha(consulta.fecha),
                             'recomendaciones': consulta.recomendaciones,
                             'informacionAdicional': consulta.informacionAdicional,
                             'idCita':{
@@ -35,8 +35,8 @@ class ConsultaViews(View):
                                     'nombre': consulta.idCita.idPaciente.nombre,
                                     'documento': consulta.idCita.idPaciente.documento,
                                     'id': consulta.idCita.id,
-                                    'fechaProgramada': consulta.idCita.fechaProgramada,
-                                    'fechaMaxima': consulta.idCita.fechaMaxima
+                                    'fechaProgramada': formato_fecha(consulta.idCita.fechaProgramada),
+                                    'fechaMaxima': formato_fecha(consulta.idCita.fechaMaxima)
                                 }
                             },
                             'idTipo':{
@@ -74,7 +74,7 @@ class ConsultaViews(View):
                     for consulta in consultas:
                         consulta_dict = {
                             'id': consulta.id,
-                            'fecha': consulta.fecha,
+                            'fecha': formato_fecha(consulta.fecha),
                             'recomendaciones': consulta.recomendaciones,
                             'informacionAdicional': consulta.informacionAdicional,
                             'idCita':{
@@ -84,8 +84,8 @@ class ConsultaViews(View):
                                     'nombre': consulta.idCita.idPaciente.nombre,
                                     'documento': consulta.idCita.idPaciente.documento,
                                     'id': consulta.idCita.id,
-                                    'fechaProgramada': consulta.idCita.fechaProgramada,
-                                    'fechaMaxima': consulta.idCita.fechaMaxima
+                                    'fechaProgramada': formato_fecha(consulta.idCita.fechaProgramada),
+                                    'fechaMaxima': formato_fecha(consulta.idCita.fechaMaxima)
                                 }
                             },
                             'idTipo':{
@@ -123,7 +123,7 @@ class ConsultaViews(View):
                 for consulta in consultas:
                     consulta_dict = {
                         'id': consulta.id,
-                        'fecha': consulta.fecha,
+                        'fecha': formato_fecha(consulta.fecha),
                         'recomendaciones': consulta.recomendaciones,
                         'informacionAdicional': consulta.informacionAdicional,
                         'idCita':{
@@ -133,8 +133,8 @@ class ConsultaViews(View):
                                 'nombre': consulta.idCita.idPaciente.nombre,
                                 'documento': consulta.idCita.idPaciente.documento,
                                 'id': consulta.idCita.id,
-                                'fechaProgramada': consulta.idCita.fechaProgramada,
-                                'fechaMaxima': consulta.idCita.fechaMaxima
+                                'fechaProgramada': formato_fecha(consulta.idCita.fechaProgramada),
+                                'fechaMaxima': formato_fecha(consulta.idCita.fechaMaxima)
                             }
                         },
                         'idTipo':{
@@ -329,3 +329,9 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y")
+        return fecha_formateada
+    else:
+        return None

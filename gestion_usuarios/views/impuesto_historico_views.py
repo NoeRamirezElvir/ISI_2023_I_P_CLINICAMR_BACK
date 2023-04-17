@@ -26,8 +26,8 @@ class ImpuestoHistorico(View):
                         impuesto = historico.idImpuesto
                         historico_dict = {
                             'id': historico.id,
-                            'fechaInicio': historico.fechaInicio,
-                            'fechaFinal': historico.fechaFinal,
+                            'fechaInicio': formato_fecha(historico.fechaInicio),
+                            'fechaFinal': formato_fecha(historico.fechaFinal),
                             'valor': historico.valor,
                             'idImpuesto': {
                                 'id': impuesto.id,
@@ -58,8 +58,8 @@ class ImpuestoHistorico(View):
                                 impuesto = historico.idImpuesto
                                 historico_dict = {
                                     'id': historico.id,
-                                    'fechaInicio': historico.fechaInicio,
-                                    'fechaFinal': historico.fechaFinal,
+                                    'fechaInicio': formato_fecha(historico.fechaInicio),
+                                    'fechaFinal': formato_fecha(historico.fechaFinal),
                                     'valor': historico.valor,
                                     'idImpuesto': {
                                         'id': impuesto.id,
@@ -98,8 +98,8 @@ class ImpuestoHistorico(View):
                     impuesto = historico.idImpuesto
                     historico_dict = {
                         'id': historico.id,
-                        'fechaInicio': historico.fechaInicio,
-                        'fechaFinal': historico.fechaFinal,
+                        'fechaInicio': formato_fecha(historico.fechaInicio),
+                        'fechaFinal': formato_fecha(historico.fechaFinal),
                         'valor': historico.valor,
                         'idImpuesto': {
                             'id': impuesto.id,
@@ -193,7 +193,12 @@ class ImpuestoHistorico(View):
         return JsonResponse(datos)       
     
 
-
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None
 
 def validar_Impuesto_repetido(nombre): 
     if (nombre):

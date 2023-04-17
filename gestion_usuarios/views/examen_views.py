@@ -26,8 +26,8 @@ class examenViews(View):
                     for examen in examenes:
                         examen_dict = {
                             'id': examen.id,
-                            'fecha': examen.fecha,
-                            'fechaProgramada': examen.fechaProgramada,
+                            'fecha': formato_fecha(examen.fecha),
+                            'fechaProgramada': formato_fecha(examen.fechaProgramada),
                             'observacion': examen.observacion,
                             'idMuestra':{
                                 'id':examen.idMuestra.id,
@@ -70,8 +70,8 @@ class examenViews(View):
                     for examen in examenes:
                         examen_dict = {
                             'id': examen.id,
-                            'fecha': examen.fecha,
-                            'fechaProgramada': examen.fechaProgramada,
+                            'fecha': formato_fecha(examen.fecha),
+                            'fechaProgramada': formato_fecha(examen.fechaProgramada),
                             'observacion': examen.observacion,
                             'idMuestra':{
                                 'id':examen.idMuestra.id,
@@ -114,8 +114,8 @@ class examenViews(View):
                     for examen in examenes:
                         examen_dict = {
                             'id': examen.id,
-                            'fecha': examen.fecha,
-                            'fechaProgramada': examen.fechaProgramada,
+                            'fecha': formato_fecha(examen.fecha),
+                            'fechaProgramada': formato_fecha(examen.fechaProgramada),
                             'observacion': examen.observacion,
                             'idMuestra':{
                                 'id':examen.idMuestra.id,
@@ -158,8 +158,8 @@ class examenViews(View):
                 for examen in examenes:
                     examen_dict = {
                             'id': examen.id,
-                            'fecha': examen.fecha,
-                            'fechaProgramada': examen.fechaProgramada,
+                            'fecha': formato_fecha(examen.fecha),
+                            'fechaProgramada': formato_fecha(examen.fechaProgramada),
                             'observacion': examen.observacion,
                             'idMuestra':{
                                 'id':examen.idMuestra.id,
@@ -374,3 +374,9 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None

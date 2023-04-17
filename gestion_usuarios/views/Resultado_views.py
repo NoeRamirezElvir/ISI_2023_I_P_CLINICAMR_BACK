@@ -28,7 +28,7 @@ class resultadosViews(View):
                         resultado_dict = {
                             'id': resultado.id,
                             'observacion': resultado.observacion,
-                            'fecha': resultado.fecha,
+                            'fecha': formato_fecha(resultado.fecha),
 
                             'idTratamiento':{
                                 'idPaciente': {
@@ -67,7 +67,7 @@ class resultadosViews(View):
                         resultado_dict = {
                             'id': resultado.id,
                             'observacion': resultado.observacion,
-                            'fecha': resultado.fecha,
+                            'fecha': formato_fecha(resultado.fecha),
 
                             'idTratamiento':{
                                 'idPaciente': {
@@ -103,7 +103,7 @@ class resultadosViews(View):
                     resultado_dict = {
                         'id': resultado.id,
                         'observacion': resultado.observacion,
-                        'fecha': resultado.fecha,
+                        'fecha': formato_fecha(resultado.fecha),
 
                         'idTratamiento':{
                             'idPaciente': {
@@ -285,4 +285,9 @@ def validar_fecha_max(fecha):
         return True
     
 
-
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y")
+        return fecha_formateada
+    else:
+        return None

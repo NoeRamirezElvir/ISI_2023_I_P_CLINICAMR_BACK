@@ -168,16 +168,12 @@ class ProveedorView(View):
         
 #Eliminar un registro de cargos
     def delete(self, request,id):
-        try:
             proveedores = list(Proveedor.objects.filter(id=id).values())
             if len(proveedores) > 0:
                 Proveedor.objects.filter(id=id).delete()
                 mensaje_delete = {'message':"Registro Eliminado"}
             else:
                 mensaje_delete = {'message':"No se encontró el registro", 'proveedores': []}
-            return JsonResponse(mensaje_delete)
-        except Exception as e:
-            mensaje_delete = {'message': f"Error: {e}"}
             return JsonResponse(mensaje_delete)
 
 def validar_telefono_repetido(valor): 

@@ -26,8 +26,8 @@ class PrecioHistoricoExamenesViews(View):
                     for historico in precioHistoricos:
                         historico_dict = {
                             'id': historico.id,
-                            'fechaInicio': historico.fechaInicio,
-                            'fechaFinal': historico.fechaFinal,
+                            'fechaInicio': formato_fecha(historico.fechaInicio),
+                            'fechaFinal': formato_fecha(historico.fechaFinal),
                             'activo':historico.activo,
                             'precio': historico.precio,
                             'idTipo': {
@@ -58,8 +58,8 @@ class PrecioHistoricoExamenesViews(View):
                     for historico in precioHistoricos:
                         historico_dict = {
                             'id': historico.id,
-                            'fechaInicio': historico.fechaInicio,
-                            'fechaFinal': historico.fechaFinal,
+                            'fechaInicio': formato_fecha(historico.fechaInicio),
+                            'fechaFinal': formato_fecha(historico.fechaFinal),
                             'activo':historico.activo,
                             'precio': historico.precio,
                             'idTipo': {
@@ -90,8 +90,8 @@ class PrecioHistoricoExamenesViews(View):
                 for historico in precioHistoricos:
                     historico_dict = {
                         'id': historico.id,
-                        'fechaInicio': historico.fechaInicio,
-                        'fechaFinal': historico.fechaFinal,
+                        'fechaInicio': formato_fecha(historico.fechaInicio),
+                        'fechaFinal': formato_fecha(historico.fechaFinal),
                         'activo':historico.activo,
                         'precio': historico.precio,
                         'idTipo': {
@@ -125,3 +125,10 @@ class PrecioHistoricoExamenesViews(View):
         else:
             precioHistorico = {'message':"No se encontró el registro", 'precioHistorico': []}
         return JsonResponse(precioHistorico)
+
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None

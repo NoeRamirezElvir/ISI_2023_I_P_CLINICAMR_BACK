@@ -30,7 +30,7 @@ class MuestrasViews(View):
                                 'id':muestra.idTipoMuestra.id,
                                 'nombre':muestra.idTipoMuestra.nombre
                             },
-                            'fecha': muestra.fecha,
+                            'fecha': formato_fecha(muestra.fecha),
                             'idPaciente': {
                                 'id': paciente.id,
                                 'nombre': paciente.nombre,
@@ -39,11 +39,11 @@ class MuestrasViews(View):
                             }
                         }
                         muestras_values.append(muestra_dict)
-                        context = {
-                            'message': "Consulta exitosa",
-                            'muestras': muestras_values
-                        }
-                        return JsonResponse(context)
+                    context = {
+                        'message': "Consulta exitosa",
+                        'muestras': muestras_values
+                    }
+                    return JsonResponse(context)
                 else:
                     context = {
                         'message': "No se encontraron los datos",
@@ -65,7 +65,7 @@ class MuestrasViews(View):
                                         'id':muestra.idTipoMuestra.id,
                                         'nombre':muestra.idTipoMuestra.nombre
                                     },
-                                    'fecha': muestra.fecha,
+                                    'fecha': formato_fecha(muestra.fecha),
                                     'idPaciente': {
                                         'id': paciente.id,
                                         'nombre': paciente.nombre,
@@ -108,7 +108,7 @@ class MuestrasViews(View):
                             'id':muestra.idTipoMuestra.id,
                             'nombre':muestra.idTipoMuestra.nombre
                         },
-                        'fecha': muestra.fecha,
+                        'fecha': formato_fecha(muestra.fecha),
                         'idPaciente': {
                             'id': paciente.id,
                             'nombre': paciente.nombre,
@@ -233,3 +233,9 @@ def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
 
+def formato_fecha(fecha):
+    if fecha is not None:
+        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        return fecha_formateada
+    else:
+        return None
