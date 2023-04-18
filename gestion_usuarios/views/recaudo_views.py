@@ -591,18 +591,18 @@ class RecaudoView(View):
     def delete(self, request,id):
         recaudos = list(Recaudo.objects.filter(id=id).values())
         if len(recaudos) > 0:
-            examenes = list(RecaudoDetalleExamen.objects.filter(id=id).values())
+            examenes = list(RecaudoDetalleExamen.objects.filter(idRecaudo=id).values())
             if len(examenes) > 0:
                 for item in examenes:
-                    RecaudoDetalleExamen.objects.filter(idRecaudo=item['id']).delete()
-            tratamientos = list(RecaudoDetalleTratamiento.objects.filter(id=id).values())
+                    RecaudoDetalleExamen.objects.filter(id=item['id']).delete()
+            tratamientos = list(RecaudoDetalleTratamiento.objects.filter(idRecaudo=id).values())
             if len(tratamientos) > 0:
                 for item in tratamientos:
-                    RecaudoDetalleTratamiento.objects.filter(idRecaudo=item['id']).delete()
-            medicamentos = list(RecaudoDetalleMedicamento.objects.filter(id=id).values())
+                    RecaudoDetalleTratamiento.objects.filter(id=item['id']).delete()
+            medicamentos = list(RecaudoDetalleMedicamento.objects.filter(idRecaudo=id).values())
             if len(medicamentos) > 0:
                 for item in medicamentos:
-                    RecaudoDetalleMedicamento.objects.filter(idRecaudo=item['id']).delete()
+                    RecaudoDetalleMedicamento.objects.filter(id=item['id']).delete()
             Recaudo.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:

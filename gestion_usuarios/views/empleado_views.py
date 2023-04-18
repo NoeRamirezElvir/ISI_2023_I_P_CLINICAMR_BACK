@@ -305,6 +305,8 @@ def instanciar_especialidad(id):
         especialidad = EspecialidadMedico.objects.get(id=id)
         if especialidad:
             return especialidad
+        else:
+            None
 
 def instanciar_cargo(id):
     if (id>0):
