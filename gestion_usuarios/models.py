@@ -272,3 +272,8 @@ class RecaudoDetalleTratamiento(models.Model):
 class RecaudoDetalleExamen(models.Model):
         idExamen = models.ForeignKey(Examen, on_delete=models.PROTECT)
         idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)
+
+
+class Descuento(models.Model):
+        nombre = models.CharField(max_length=20)
+        valor = models.DecimalField(max_digits=4, decimal_places=2)
