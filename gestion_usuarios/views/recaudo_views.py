@@ -21,7 +21,7 @@ class RecaudoView(View):
         #try:
             if (len(campo)> 0 and len(criterio)> 0):
                 if criterio == "id":
-                    recaudos = Recaudo.objects.filter(id=campo).select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta')
+                    recaudos = Recaudo.objects.filter(id=campo).select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta','idDescuento')
                     if recaudos is not None:
                         recaudos_values = []
                         for recaudo in recaudos:
@@ -34,6 +34,12 @@ class RecaudoView(View):
                                 'fechaEntrega': formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
+                                'total': recaudo.total,
+                                'subtotal':recaudo.subtotal,
+                                'cambio': recaudo.cambio,
+                                'descuento': recaudo.descuento,
+                                'impuesto': recaudo.impuesto,
+                                'idDescuento': {},
                                 'idCorrelativo':{
                                     'id': recaudo.idCorrelativo.id,
                                     'cai': recaudo.idCorrelativo.cai,
@@ -59,6 +65,13 @@ class RecaudoView(View):
                                 'tratamientos':{},
                                 'examenes':{}
                             }
+                            if(recaudo.idDescuento):
+                                descuento_dict = {
+                                    'id':recaudo.idDescuento.id,
+                                    'valor':recaudo.idDescuento.valor,
+
+                                }
+                                recaudo_dict['idDescuento'] = descuento_dict
                             if(recaudo.idConsulta):
                                 consulta_dict = {
                                     'id':recaudo.idConsulta.id,
@@ -109,7 +122,7 @@ class RecaudoView(View):
                         }
                         return JsonResponse(context)
                 elif criterio == "numeroFactura":
-                    recaudos = Recaudo.objects.filter(noFactura=campo).select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta')
+                    recaudos = Recaudo.objects.filter(noFactura=campo).select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta','idDescuento')
                     if recaudos is not None:
                         recaudos_values = []
                         for recaudo in recaudos:
@@ -122,6 +135,12 @@ class RecaudoView(View):
                                 'fechaEntrega':formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
+                                'total': recaudo.total,
+                                'subtotal':recaudo.subtotal,
+                                'cambio': recaudo.cambio,
+                                'descuento': recaudo.descuento,
+                                'impuesto': recaudo.impuesto,
+                                'idDescuento': {},
                                 'idCorrelativo':{
                                     'id': recaudo.idCorrelativo.id,
                                     'cai': recaudo.idCorrelativo.cai,
@@ -147,6 +166,13 @@ class RecaudoView(View):
                                 'tratamientos':{},
                                 'examenes':{}
                             }
+                            if(recaudo.idDescuento):
+                                descuento_dict = {
+                                    'id':recaudo.idDescuento.id,
+                                    'valor':recaudo.idDescuento.valor,
+
+                                }
+                                recaudo_dict['idDescuento'] = descuento_dict
                             if(recaudo.idConsulta):
                                 consulta_dict = {
                                     'id':recaudo.idConsulta.id,
@@ -197,7 +223,7 @@ class RecaudoView(View):
                         }
                         return JsonResponse(context)
             else:
-                recaudos = Recaudo.objects.select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta').order_by('-id')
+                recaudos = Recaudo.objects.select_related('idCorrelativo','idEmpleado','idMetodoPago','idPaciente','idConsulta','idDescuento').order_by('-id')
                 if recaudos is not None:
                     recaudos_values = []
                     for recaudo in recaudos:
@@ -210,6 +236,12 @@ class RecaudoView(View):
                             'tarjeta': mascara_tarjeta(recaudo.tarjeta),
                             'estado': recaudo.estado,
                             'activa': recaudo.activa,
+                            'total': recaudo.total,
+                            'subtotal':recaudo.subtotal,
+                            'cambio': recaudo.cambio,
+                            'descuento': recaudo.descuento,
+                            'impuesto': recaudo.impuesto,
+                            'idDescuento': {},
                             'idCorrelativo':{
                                 'id': recaudo.idCorrelativo.id,
                                 'cai': recaudo.idCorrelativo.cai,
@@ -235,6 +267,13 @@ class RecaudoView(View):
                             'tratamientos':{},
                             'examenes':{}
                         }
+                        if(recaudo.idDescuento):
+                            descuento_dict = {
+                                'id':recaudo.idDescuento.id,
+                                'valor':recaudo.idDescuento.valor,
+
+                            }
+                            recaudo_dict['idDescuento'] = descuento_dict
                         if(recaudo.idConsulta):
                             consulta_dict = {
                                 'id':recaudo.idConsulta.id,
