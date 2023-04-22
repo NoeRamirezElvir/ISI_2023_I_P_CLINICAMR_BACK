@@ -57,8 +57,8 @@ class DescuentoViews(View):
             Descuentos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 20:
             Descuentos = {'message': "El nombre debe tener menos de 20 caracteres."}
-        elif jd['valor'] <= 0:
-            Descuentos = {'message': "El valor debe ser mayor a 0."}
+        elif jd['valor'] < 0:
+            Descuentos = {'message': "El valor debe ser igual o mayor a 0."}
         elif (validar_valor_repetido(jd['valor'])):
             Descuentos = {'message': "El valor ya esta en uso."}
         elif jd['valor'] > 1:
@@ -92,8 +92,8 @@ class DescuentoViews(View):
                 Descuentos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 20:
                 Descuentos = {'message': "El nombre debe tener menos de 20 caracteres."}
-            elif jd['valor'] <= 0:
-                Descuentos = {'message': "El valor debe ser mayor a 0."}
+            elif jd['valor'] < 0:
+                Descuentos = {'message': "El valor debe ser igual o mayor a 0."}
             elif jd['valor'] > 1:
                 Descuentos = {'message': "El valor es muy alto."}
             elif jd['valor'] > 0.25:
@@ -116,14 +116,9 @@ class DescuentoViews(View):
             Descuento.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro", 'Descuentos': []}
+            datos = {'message':"No se encontrarón registros", 'Descuentos': []}
         return JsonResponse(datos)       
     
-
-
-def fecha_final():
-    fecha_menos_un_dia=datetime.today()+timedelta(days=-1)
-    return fecha_menos_un_dia
 
 def validar_descuento_repetido(nombre): 
     if (nombre):
@@ -150,9 +145,3 @@ def validar_cadena_repeticion(cadena):
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,1}[^ ]+)*$'
     return bool(re.match(patron,cadena))
-
-def instanciar_descuento(nombre):
-    if (nombre):
-        descuento = Descuento.objects.filter(nombre=nombre).last()
-    if descuento:
-        return descuento

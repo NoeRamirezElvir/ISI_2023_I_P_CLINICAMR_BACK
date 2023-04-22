@@ -44,6 +44,7 @@ from .views.recaudo_detalle_tratamiento_views import *
 from .views.recaudo_detalle_examen_views import *
 from .views.recaudo_views import *
 from .views.descuentos_views import *
+from .views.views_listas_recaudo import *
 
 urlpatterns = [
     path('login/', LoginViews.as_view() , name='login_view'),
@@ -206,7 +207,7 @@ urlpatterns = [
     path('Descuentos/busqueda/<str:criterio>/<str:campo>', DescuentoViews.as_view() , name='Descuentos_process'),
     path('Descuentos/id/<int:id>', DescuentoViews.as_view() , name='Descuentos_process_id'), 
 
-
+    path('listasRecaudo/', ListasRecaudo.as_view() , name='listas_recaudo_list'),
 ]
 
 

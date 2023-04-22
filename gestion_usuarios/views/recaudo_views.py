@@ -30,7 +30,7 @@ class RecaudoView(View):
                                 'noFactura': recaudo.noFactura,
                                 'fechaFacturacion': recaudo.fechaFacturacion,
                                 'efectivo': recaudo.efectivo,
-                                'tarjeta': recaudo.tarjeta,
+                                'tarjeta': mascara_tarjeta(recaudo.tarjeta),
                                 'fechaEntrega': formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
@@ -118,7 +118,7 @@ class RecaudoView(View):
                                 'noFactura': recaudo.noFactura,
                                 'fechaFacturacion': recaudo.fechaFacturacion,
                                 'efectivo': recaudo.efectivo,
-                                'tarjeta': recaudo.tarjeta,
+                                'tarjeta': mascara_tarjeta(recaudo.tarjeta),
                                 'fechaEntrega':formato_fecha(recaudo.fechaEntrega),
                                 'estado': recaudo.estado,
                                 'activa': recaudo.activa,
@@ -207,7 +207,7 @@ class RecaudoView(View):
                             'fechaFacturacion': recaudo.fechaFacturacion,
                             'fechaEntrega': formato_fecha(recaudo.fechaEntrega), 
                             'efectivo': recaudo.efectivo,
-                            'tarjeta': recaudo.tarjeta,
+                            'tarjeta': mascara_tarjeta(recaudo.tarjeta),
                             'estado': recaudo.estado,
                             'activa': recaudo.activa,
                             'idCorrelativo':{
@@ -343,6 +343,20 @@ class RecaudoView(View):
                 efectivo = round(Decimal(jd['montoEfectivo']),2)
             else: 
                 efectivo = None
+            if jd['cambio']:
+                cambio = round(Decimal(jd['cambio']),2)
+            else: 
+                cambio = None
+            if jd['imp']:
+                impuesto = round(Decimal(jd['imp']),2)
+            else: 
+                impuesto = None
+            if jd['descuento']:
+                descuento = round(Decimal(jd['descuento']),2)
+            else: 
+                descuento = None
+            total = round(Decimal(jd['total']),2)
+            subtotal = round(Decimal(jd['subtotal']),2)
 
             if jd['estado'] == 'Pendiente':
                 activa = 1
@@ -416,7 +430,13 @@ class RecaudoView(View):
                                 efectivo = efectivo,
                                 tarjeta = jd['numeroTarjeta'],
                                 estado = jd['estado'],
-                                activa = activa
+                                activa = activa,
+                                total = total,
+                                subtotal = subtotal,
+                                descuento = descuento,
+                                impuesto = impuesto,
+                                idDescuento = instanciar_descuento(jd['idDescuento']),
+                                cambio = cambio
                             )
                             if jd['medicamentos']:
                                 for item in jd['medicamentos']:
@@ -441,6 +461,7 @@ class RecaudoView(View):
                             direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
                             telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
                             correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                            rtnEmpresa = ParametrosGenerales.objects.filter(nombre = 'rtn').last()
                             empleado = instanciar_empleado(int(jd['idEmpleado']))
                             metodo = instanciar_metodo(int(jd['idMetodo']))
                             cliente = instanciar_paciente(int(jd['idPaciente']))
@@ -450,10 +471,11 @@ class RecaudoView(View):
                                 'direccionEmpresa':direccionEmpresa.valor,
                                 'telefonoEmpresa':telefonoEmpresa.valor,
                                 'correoEmpresa':correoEmpresa.valor,
+                                'rtnEmpresa':rtnEmpresa.valor,
                                 'caiEmpresa':correlativo.cai,
                                 'numeroFactura':numeroFactura,
                                 'fechaFactura':recaudo.fechaFacturacion,
-                                'fechaLimite':correlativo.fechaLimiteEmision,
+                                'fechaLimite':formato_fecha(correlativo.fechaLimiteEmision),
                                 'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
                                 'nombreCliente':cliente.nombre + " " + cliente.apellido,
                                 'documentoCliente':cliente.documento,
@@ -470,6 +492,20 @@ class RecaudoView(View):
                         consulta = instanciar_consulta(int(jd['idConsulta']))
                     else:
                         consulta = None
+                    if jd['cambio']:
+                        cambio = round(Decimal(jd['cambio']),2)
+                    else: 
+                        cambio = None
+                    if jd['imp']:
+                        impuesto = round(Decimal(jd['imp']),2)
+                    else: 
+                        impuesto = None
+                    if jd['descuento']:
+                        descuento = round(Decimal(jd['descuento']),2)
+                    else: 
+                        descuento = None
+                    total = round(Decimal(jd['total']),2)
+                    subtotal = round(Decimal(jd['subtotal']),2)
 
                     condicion = 0
                     nombres = ''
@@ -503,7 +539,13 @@ class RecaudoView(View):
                                 efectivo = efectivo,
                                 tarjeta = jd['numeroTarjeta'],
                                 estado = jd['estado'],
-                                activa = activa
+                                activa = activa,
+                                total = total,
+                                subtotal = subtotal,
+                                descuento = descuento,
+                                impuesto = impuesto,
+                                idDescuento = instanciar_descuento(jd['idDescuento']),
+                                cambio = cambio
                             )
                             if jd['medicamentos']:
                                 for item in jd['medicamentos']:
@@ -527,6 +569,7 @@ class RecaudoView(View):
                             direccionEmpresa = ParametrosGenerales.objects.filter(nombre = 'direccion').last()
                             telefonoEmpresa = ParametrosGenerales.objects.filter(nombre = 'telefono').last()
                             correoEmpresa = ParametrosGenerales.objects.filter(nombre = 'correo').last()
+                            rtnEmpresa = ParametrosGenerales.objects.filter(nombre = 'rtn').last()
                             empleado = instanciar_empleado(int(jd['idEmpleado']))
                             metodo = instanciar_metodo(int(jd['idMetodo']))
                                 
@@ -535,10 +578,11 @@ class RecaudoView(View):
                                 'direccionEmpresa':direccionEmpresa.valor,
                                 'telefonoEmpresa':telefonoEmpresa.valor,
                                 'correoEmpresa':correoEmpresa.valor,
+                                'rtnEmpresa':rtnEmpresa.valor,
                                 'caiEmpresa':correlativo.cai,
                                 'numeroFactura':numeroFactura,
                                 'fechaFactura':recaudo.fechaFacturacion,
-                                'fechaLimite':correlativo.fechaLimiteEmision,
+                                'fechaLimite':formato_fecha(correlativo.fechaLimiteEmision),
                                 'nombreEmpleado':empleado.nombre + " " + empleado.apellidos,
                                 'nombreCliente':'Consumidor Final',
                                 'documentoCliente':'N/A',
@@ -659,6 +703,14 @@ def instanciar_metodo(id):
     else:
         return None
 
+def instanciar_descuento(id):
+    if (id > 0):
+        item = Descuento.objects.filter(id=id).last()
+    if item:
+        return item
+    else:
+        return None
+
 def instanciar_consulta(id):
     if (id > 0):
         item = Consulta.objects.filter(id=id).last()
@@ -706,6 +758,15 @@ def validar_cadena_espacios(cadena):
 def formato_fecha(fecha):
     if fecha is not None:
         fecha_formateada = fecha.strftime("%d-%m-%Y")
+        fecha_formateada = fecha_formateada.replace('-', '/')
         return fecha_formateada
     else:
         return None
+    
+def mascara_tarjeta(str):
+    if str is None or len(str) <= 4:
+        return str
+    else:
+        ultimos_4_caracteres = str[-4:]
+        asteriscos = "*" * (len(str) - 4)
+        return "{}{}".format(asteriscos, ultimos_4_caracteres)

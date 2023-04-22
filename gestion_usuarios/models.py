@@ -158,6 +158,7 @@ class Consulta(models.Model):
         fecha = models.DateField(auto_now_add=True)
         recomendaciones = models.CharField(max_length=100)
         informacionAdicional = models.CharField(max_length=100)
+        pagado = models.PositiveSmallIntegerField(default=0)
 
 class ParametrosGenerales(models.Model):
         nombre =models.CharField(max_length=50)
@@ -178,6 +179,7 @@ class Tratamiento(models.Model):
         fecha = models.DateField()
         diasTratamiento = models.PositiveIntegerField()
         estado = models.CharField(max_length=50)
+        pagado = models.PositiveSmallIntegerField(default=0)
 
 class Resultados(models.Model):
         idTratamiento = models.ForeignKey(Tratamiento, on_delete=models.PROTECT)        
@@ -191,6 +193,7 @@ class Examen(models.Model):
         fechaProgramada = models.DateTimeField()
         observacion = models.CharField(max_length=100)
         idLaboratorio = models.ForeignKey(Laboratorios, on_delete=models.PROTECT)
+        pagado = models.PositiveSmallIntegerField(default=0)
 
 class PrecioHistoricoExamen(models.Model):
         idTipo = models.ForeignKey(Tipo, on_delete=models.PROTECT)
@@ -240,6 +243,11 @@ class CorrelativoSar(models.Model):
         fechaInicio = models.DateField()
         activo = models.PositiveSmallIntegerField(null=True, blank=True, default=1)
 
+class Descuento(models.Model):
+        nombre = models.CharField(max_length=20)
+        valor = models.DecimalField(max_digits=4, decimal_places=2)
+
+
 class Recaudo(models.Model):
         idCorrelativo = models.ForeignKey(CorrelativoSar, on_delete=models.PROTECT)
         noFactura = models.CharField(max_length=50)
@@ -253,6 +261,12 @@ class Recaudo(models.Model):
         fechaEntrega = models.DateField(null=True, blank=True)
         estado = models.CharField(max_length=20, default='Pendiente')
         activa = models.PositiveSmallIntegerField(default=1)
+        idDescuento = models.ForeignKey(Descuento, null=True, blank=True, on_delete=models.PROTECT)
+        total = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, default=00.00)
+        subtotal = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
+        descuento = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
+        impuesto = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
+        cambio = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
 
         def __str__(self):
                 if self.idPaciente is not None:
@@ -274,6 +288,3 @@ class RecaudoDetalleExamen(models.Model):
         idRecaudo = models.ForeignKey(Recaudo, on_delete=models.PROTECT)
 
 
-class Descuento(models.Model):
-        nombre = models.CharField(max_length=20)
-        valor = models.DecimalField(max_digits=4, decimal_places=2)
