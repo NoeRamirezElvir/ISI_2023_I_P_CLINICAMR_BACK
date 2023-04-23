@@ -268,11 +268,6 @@ class Recaudo(models.Model):
         impuesto = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
         cambio = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True,default=00.00)
 
-        def __str__(self):
-                if self.idPaciente is not None:
-                        return str(self.idPaciente)
-                else:
-                        return "Usuario final"
 
 class RecaudoDetalleMedicamento(models.Model):
         idMedicamento = models.ForeignKey(Medicamento, on_delete=models.PROTECT)

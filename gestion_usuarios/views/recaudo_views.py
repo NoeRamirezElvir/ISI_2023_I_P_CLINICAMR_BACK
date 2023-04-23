@@ -397,18 +397,9 @@ class RecaudoView(View):
             total = round(Decimal(jd['total']),2)
             subtotal = round(Decimal(jd['subtotal']),2)
 
-            if jd['estado'] == 'Pendiente':
-                activa = 1
-                fecha = None
-            elif jd['estado'] == 'Enviada' or jd['estado'] == 'Pagada' or jd['estado'] == 'Vencida':
-                activa = 1
-                fecha = date.today()
-            elif jd['estado'] == 'Anulada':
-                activa = 0
-                fecha = None
-            else:
-                activa = 0
-                fecha = None
+
+            fecha = date.today()
+
 
             correlativo = instanciar_correlativo(int(jd['correlativo']))
             consecutivo = correlativo.consecutivo
@@ -433,6 +424,8 @@ class RecaudoView(View):
                 if instanciar_paciente(int(jd['idPaciente'])):
                     if instanciar_consulta(int(jd['idConsulta'])):
                         consulta = instanciar_consulta(int(jd['idConsulta']))
+                        consulta.pagado = 1
+                        consulta.save()
                     else:
                         consulta = None
 
@@ -468,8 +461,8 @@ class RecaudoView(View):
                                 idConsulta = consulta,
                                 efectivo = efectivo,
                                 tarjeta = jd['numeroTarjeta'],
-                                estado = jd['estado'],
-                                activa = activa,
+                                estado = 'Pagada',
+                                activa = 1,
                                 total = total,
                                 subtotal = subtotal,
                                 descuento = descuento,
@@ -487,10 +480,14 @@ class RecaudoView(View):
                             if jd['tratamientos']:
                                 for item in jd['tratamientos']:
                                     registro = instanciar_tratamiento(int(item['id']))
+                                    registro.pagado = 1
+                                    registro.save()
                                     RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
                             if jd['examenes']:
                                 for item in jd['examenes']:
                                     registro = instanciar_examen(int(item['id']))
+                                    registro.pagado = 1
+                                    registro.save()
                                     RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
 
                             correlativo.consecutivo += 1           
@@ -529,6 +526,8 @@ class RecaudoView(View):
                 else:
                     if instanciar_consulta(int(jd['idConsulta'])):
                         consulta = instanciar_consulta(int(jd['idConsulta']))
+                        consulta.pagado = 1
+                        consulta.save()
                     else:
                         consulta = None
                     if jd['cambio']:
@@ -577,8 +576,8 @@ class RecaudoView(View):
                                 idConsulta = consulta,
                                 efectivo = efectivo,
                                 tarjeta = jd['numeroTarjeta'],
-                                estado = jd['estado'],
-                                activa = activa,
+                                estado = 'Pagada',
+                                activa = 1,
                                 total = total,
                                 subtotal = subtotal,
                                 descuento = descuento,
@@ -595,10 +594,14 @@ class RecaudoView(View):
                             if jd['tratamientos']:
                                 for item in jd['tratamientos']:
                                     registro = instanciar_tratamiento(int(item['id']))
+                                    registro.pagado = 1
+                                    registro.save()
                                     RecaudoDetalleTratamiento.objects.create(idRecaudo=recaudo, idTratamiento = registro)
                             if jd['examenes']:
                                 for item in jd['examenes']:
                                     registro = instanciar_examen(int(item['id']))
+                                    registro.pagado = 1
+                                    registro.save()
                                     RecaudoDetalleExamen.objects.create(idRecaudo=recaudo, idExamen = registro)
 
                             correlativo.consecutivo += 1

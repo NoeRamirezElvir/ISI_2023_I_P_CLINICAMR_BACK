@@ -60,8 +60,8 @@ class CorrelativoViews(View):
             mensaje_post = {'message': "El cai debe tener mas de 10 digitos."}
         elif CorrelativoSar.objects.filter(cai=(jd['cai'])).exists():
             mensaje_post = {'message': "El cai ya esta en uso."}
-        elif validar_cadena_repeticion(jd['cai']):
-            mensaje_post = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo[cai]."}
+        elif not validar_cai(jd['cai']):
+            mensaje_post = {'message': "La cadena de texto debe tener 36 caracteres, contar con cuatro guines(-), unicamente numeros y letras"}
         elif not validar_cadena_espacios(jd['cai']):
             mensaje_post = {'message': "No se permiten espacios[cai]."}
         elif len(jd['cai']) > 50:
@@ -112,8 +112,8 @@ class CorrelativoViews(View):
                 mensaje_put = {'message': "El cai debe tener mas de 10 digitos."}
             elif CorrelativoSar.objects.filter(cai=len(jd['cai'])).exists():
                 mensaje_put = {'message': "El cai ya esta en uso."}
-            elif validar_cadena_repeticion(jd['cai']):
-                mensaje_put = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo[cai]."}
+            elif not validar_cai(jd['cai']):
+                mensaje_put = {'message': "La cadena de texto debe tener 36 caracteres, contar con cuatro guines(-), unicamente numeros y letras"}
             elif not validar_cadena_espacios(jd['cai']):
                 mensaje_put = {'message': "No se permiten espacios[cai]."}
             elif len(jd['cai']) > 50:
@@ -173,4 +173,8 @@ def validar_cadena_repeticion(cadena):
 
 def validar_cadena_espacios(cadena):
     patron = r'^[^ ]+(?: {0,0}[^ ]+)*$'
+    return bool(re.match(patron,cadena))
+
+def validar_cai(cadena):
+    patron = r'^[a-z0-9]{8}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{4}-[a-z0-9]{12}$'
     return bool(re.match(patron,cadena))
