@@ -57,9 +57,9 @@ class ReimprimirPdf(View):
                     'metodoPago':metodo.nombre,
                     'rangoInicial':rangoInicialF,
                     'rangoFinal':rangoFinalF,
-                    'subtotalFactura':recaudo.subtotal,
-                    'totalFactura':recaudo.total,
-                    'impuestosFactura':recaudo.impuesto,
+                    'subtotalFactura':format(float(recaudo.subtotal),',.2f'),
+                    'totalFactura':format(float(recaudo.total),',.2f'),
+                    'impuestosFactura':format(float(recaudo.impuesto),',.2f'),
                     'montoTarjeta':'0.00',
                     'montoEfectivo':'0.00',
                     'cambio':'0.00',
@@ -75,13 +75,13 @@ class ReimprimirPdf(View):
             datos_pdf['direccionCliente']= cliente.direccion
 
         if recaudo.idMetodoPago.id == 1:
-            datos_pdf['montoTarjeta']= recaudo.total
+            datos_pdf['montoTarjeta']= format(float(recaudo.total),',.2f')
             datos_pdf['numMasc'] = mascara_tarjeta(recaudo.tarjeta)
         elif recaudo.idMetodoPago.id == 2:
-            datos_pdf['montoEfectivo']= recaudo.efectivo
+            datos_pdf['montoEfectivo']= format(float(recaudo.efectivo),',.2f')
         elif recaudo.idMetodoPago.id == 3:
-            datos_pdf['montoEfectivo']= recaudo.efectivo
-            datos_pdf['montoTarjeta']= recaudo.total - recaudo.efectivo
+            datos_pdf['montoEfectivo']= format(float(recaudo.efectivo),',.2f')
+            datos_pdf['montoTarjeta']= format(float(recaudo.total - recaudo.efectivo),',.2f')
             datos_pdf['numMasc'] = mascara_tarjeta(recaudo.tarjeta)
         else:
             datos_pdf['montoEfectivo']= '0.00'
@@ -89,7 +89,7 @@ class ReimprimirPdf(View):
             datos_pdf['numMasc'] = 'N/A'
 
         if recaudo.cambio:
-            datos_pdf['cambio'] = recaudo.cambio
+            datos_pdf['cambio'] = format(float(recaudo.cambio),',.2f')
 
         if recaudo.idConsulta:
             consulta_value = []

@@ -27,6 +27,8 @@ class CitasViews(View):
                             'id':cita.id,
                             'fechaActual':formato_fecha(cita.fechaActual),
                             'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                            'fechaPcal':cita.fecha,
+                            'fechaMcal':cita.fechaMaxima,
                             'fechaMaxima':formato_fecha(cita.fechaMaxima),
                             'activa':cita.activa,
                             'idPaciente':{
@@ -50,6 +52,8 @@ class CitasViews(View):
                                 'id':cita.id,
                                 'fechaActual':formato_fecha(cita.fechaActual),
                                 'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                                'fechaPcal':cita.fecha,
+                                'fechaMcal':cita.fechaMaxima,
                                 'fechaMaxima':formato_fecha(cita.fechaMaxima),
                                 'activa':cita.activa,
                                 'idPaciente':{
@@ -79,6 +83,8 @@ class CitasViews(View):
                         'id':cita.id,
                         'fechaActual':formato_fecha(cita.fechaActual),
                         'fechaProgramada':formato_fecha(cita.fechaProgramada),
+                        'fechaPcal':cita.fechaProgramada,
+                        'fechaMcal':cita.fechaMaxima,
                         'fechaMaxima':formato_fecha(cita.fechaMaxima),
                         'activa':cita.activa,
                         'idPaciente':{
@@ -327,7 +333,7 @@ def validar_cadena_espacios(cadena):
 
 def formato_fecha(fecha):
     if fecha is not None:
-        fecha_formateada = fecha.strftime("%d-%m-%Y %H:%M:%S")
+        fecha_formateada = fecha.strftime("%d/%m/%Y %H:%M:%S")
         return fecha_formateada
     else:
         return None
