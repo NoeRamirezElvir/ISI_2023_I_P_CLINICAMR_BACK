@@ -221,7 +221,7 @@ class RecaudoTests(TestCase):
         self.assertTrue(Recaudo.objects.filter(idPaciente__documento='8901220004753').exists())
 
 
-    def test_delete_tratamiento_invalid(self):
+    def test_delete_recaudo(self):
         data = {
                 'correlativo' : self.correlativo.pk,
                 'idPaciente' : self.paciente.pk,
@@ -255,7 +255,7 @@ class RecaudoTests(TestCase):
         with self.assertRaises(recaudo.DoesNotExist):
             recaudo.refresh_from_db()
 
-    def test_delete_tratamiento_invalid(self):
+    def test_delete_recaudo_invalid(self):
         data = {
                 'correlativo' : self.correlativo.pk,
                 'idPaciente' : self.paciente.pk,
