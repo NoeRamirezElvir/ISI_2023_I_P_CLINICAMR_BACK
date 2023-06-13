@@ -57,7 +57,7 @@ class ImpuestoViews(View):
             Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
         elif len(jd['nombre']) > 20:
             Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
-        elif jd['valor'] <= 0:
+        elif jd['valor'] < 0:
             Impuestos = {'message': "El valor debe ser mayor a 0."}
         elif (validar_valor_repetido(jd['valor'])):
             Impuestos = {'message': "El valor ya esta en uso."}
@@ -90,7 +90,7 @@ class ImpuestoViews(View):
                 Impuestos = {'message': "No se permiten mas de dos caracteres consecutivos del mismo tipo."}
             elif len(jd['nombre']) > 20:
                 Impuestos = {'message': "El nombre debe tener menos de 20 caracteres."}
-            elif jd['valor'] <= 0:
+            elif jd['valor'] < 0:
                 Impuestos = {'message': "El valor debe ser mayor a 0."}
             elif jd['valor'] > 1:
                 Impuestos = {'message': "El valor es muy alto."}

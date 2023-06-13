@@ -68,7 +68,7 @@ class metodoPagoViews(View):
             metodop = {'message': "La descripción debe tener menos de 50 caracteres."}
         else:
             nombre_minuscula = (jd['nombre']).lower()
-            MetodoDePago.objects.create(nombre_minuscula, descripcion=jd['descripcion'])
+            MetodoDePago.objects.create(nombre=nombre_minuscula, descripcion=jd['descripcion'])
             metodop = {'message':"Registro Exitoso."}
         return JsonResponse(metodop)
 

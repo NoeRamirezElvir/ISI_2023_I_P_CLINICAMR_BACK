@@ -122,9 +122,9 @@ urlpatterns = [
     path('enfermedadDetalle/busqueda/<str:criterio>/<str:campo>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process'),
     path('enfermedadDetalle/id/<int:id>', EnfermedadDetalleView.as_view() , name='enfermedades_detalles_process_id'), 
 
-    path('metodop/', metodoPagoViews.as_view() , name='metodop'),
-    path('metodop/busqueda/<str:criterio>/<str:campo>', metodoPagoViews.as_view() , name='metodop'),
-    path('metodop/id/<int:id>', metodoPagoViews.as_view() , name='metodop'), 
+    path('metodop/', metodoPagoViews.as_view() , name='metodop_list'),
+    path('metodop/busqueda/<str:criterio>/<str:campo>', metodoPagoViews.as_view() , name='metodop_process'),
+    path('metodop/id/<int:id>', metodoPagoViews.as_view() , name='metodop_process_id'), 
 
     path('diagnostico/', DiagnosticoView.as_view() , name='diagnostico_list'),
     path('diagnostico/busqueda/<str:criterio>/<str:campo>', DiagnosticoView.as_view() , name='diagnostico_process'),
