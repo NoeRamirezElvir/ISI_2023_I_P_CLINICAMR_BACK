@@ -181,8 +181,8 @@ class PermisosViews(View):
             permisos = {'message': "Activo debe unicamente puede ser 0 o 1."}
         else:
             permiso.idCargoEmpleado = instanciar_cargo(jd['idCargoEmpleado'])
-            permiso.idAcciones = instanciar_acciones(jd['idAutorizacionCargo'])
-            permiso.idPantallas = instanciar_pantallas(jd['idEmpleado'])
+            permiso.idAcciones = instanciar_acciones(jd['idAcciones'])
+            permiso.idPantallas = instanciar_pantallas(jd['idPantallas'])
             permiso.activo = jd['activo']
             permiso.save()
             permisos = {'message': "La actualización fue exitosa."}
@@ -191,12 +191,12 @@ class PermisosViews(View):
         
 #Eliminar un registro de tipo
     def delete(self, request,id):
-        permiso = list(Permisos.objects.filter(id=id).values())
-        if len(permiso) > 0:
+        permisos = list(Permisos.objects.filter(id=id).values())
+        if len(permisos) > 0:
             Permisos.objects.filter(id=id).delete()
             datos = {'message':"Registro Eliminado"}
         else:
-            datos = {'message':"No se encontraró el registro", 'traslado': []}
+            datos = {'message':"No se encontraró el registro", 'permisos': []}
         return JsonResponse(datos)
     
 def instanciar_cargo(id):
